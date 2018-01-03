@@ -1,0 +1,104 @@
+<admintpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('user/index')}">{:L('ADMIN_USER_INDEX')}</a></li>
+			<li><a href="{:U('user/add')}">{:L('ADMIN_USER_ADD')}</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('User/edit_post')}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">登录用户名</label>
+					<div class="controls">
+						<input type="text" name="user_login" value="{$user_login}">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">{:L('PASSWORD')}</label>
+					<div class="controls">
+						<input type="password" name="user_pass" value="" placeholder="******">
+					</div>
+				</div>
+                <div class="control-group">
+                    <label class="control-label">真实姓名</label>
+                    <div class="controls">
+                        <input type="text" name="user_nicename" value="{$user_nicename}">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">电话号码</label>
+                    <div class="controls">
+                        <input type="text" name="user_tel" value="{$user_tel}">
+                    </div>
+                </div>
+				<div class="control-group">
+					<label class="control-label">{:L('EMAIL')}</label>
+					<div class="controls">
+						<input type="text" name="user_email" value="{$user_email}">
+					</div>
+				</div>
+                <div class="control-group">
+                    <label class="control-label">上级部门:</label>
+                    <div class="controls">
+                        <select name="id_department[]" multiple="multiple" style="width:80%;height:300px;">
+                            <option value="0">--</option>
+                            <foreach name="department" item="item">
+                                <option value="{$item.id_department}" <php>echo in_array($item['id_department'],$depart_user)?'selected="selected"':'';</php>>{$item.title}</option>
+                            </foreach>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">上级领导</label>
+                    <div class="controls">
+                        <select name="superior_user_id">
+                            <option value="0"></option>
+                            <foreach name="all_user" item="vo">
+                                <option value="{$vo.id}"<php> echo $vo['id']==$superior_user_id?' selected="selected"':'';</php>>{$vo.user_nicename}</option>
+                            </foreach>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">所属仓库</label>
+                    <div class="controls">
+                        <select name="belong_ware_id[]" multiple="multiple" style="width:14.7%;height:100px;">
+                            <foreach name="warehouse" item="ware">
+                                <option value="{$ware.id_warehouse}"<php> echo in_array($ware['id_warehouse'],$warehouse_user)?' selected="selected"':'';</php>>{$ware.title}</option>
+                            </foreach>
+                        </select>
+                    </div>
+                </div>
+				<div class="control-group">
+					<label class="control-label">所属地区</label>
+					<div class="controls">
+						<select name="belong_zone_id[]" multiple="multiple" style="width:14.7%;height:100px;">
+							<foreach name="zone" item="zoneitem">
+								<option value="{$zoneitem.id_zone}"<php> echo in_array($zoneitem['id_zone'],$zone_user)?' selected="selected"':'';</php>>{$zoneitem.title}</option>
+							</foreach>
+						</select>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">权限</label>
+					<div class="controls">
+						<foreach name="roles" item="vo">
+						<label class="checkbox inline">
+							<php>$role_id_checked=in_array($vo['id'],$role_ids)?"checked":"";</php>
+							<input value="{$vo.id}" type="checkbox" name="role_id[]" {$role_id_checked} <if condition="sp_get_current_admin_id() neq 1 && $vo['id'] eq 1">disabled="true"</if>>{$vo.name}
+						</label>
+						</foreach>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<input type="hidden" name="id" value="{$id}" />
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

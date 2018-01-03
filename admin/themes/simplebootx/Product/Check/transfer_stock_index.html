@@ -1,0 +1,116 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">原部门:</label>
+            <select name="id_department_old">
+                <option value="0">所有</option>
+                <foreach name="department" item="item" key="key">
+                    <option value="{$key}" <php>echo isset($_GET['id_department_old']) && $_GET['id_department_old']==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">新部门:</label>
+            <select name="id_department_new">
+                <option value="0">所有</option>
+                <foreach name="department" item="item" key="key">
+                    <option value="{$key}" <php>echo isset($_GET['id_department_new']) && $_GET['id_department_new']==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">关键词:</label>
+            <input type="text" name="keyword" style="width: 200px;" value="{:I('request.keyword/s','')}" placeholder="请输入关键字...">
+            <label class="control-label">转移时间:</label>
+            <input type="text" name="start_time" class="js-datetime" value="<php>echo isset($_GET['start_time'])?str_replace('+',' ',$_GET['start_time']):'';</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="end_time" value="<php>echo isset($_GET['end_time'])?str_replace('+',' ',$_GET['end_time']):'';</php>" style="width: 120px;">
+            <button class="btn btn-primary searchButton">搜索</button>
+            <button class="btn btn-primary exportButton">导出</button>
+            <button class="btn btn-primary exportPriceButton">结款</button>
+        </div>
+    </form>
+    <fieldset>
+        <table class="table table-hover table-bordered table-list">
+            <thead>
+            <tr>
+                <th width="15"><label><input type="checkbox" class="js-check-all checkAllbox" data-direction="x" data-checklist="js-check-x"></label></th>
+                <th style="text-align:center">产品图片</th>
+                <th style="text-align:center">产品名</th>
+                <th style="text-align:center">SKU</th>
+                <th style="text-align:center">原部门</th>
+                <th style="text-align:center">新部门</th>
+                <th style="text-align:center">转移库存</th>
+                <th style="text-align:center">采购单价</th>
+                <th style="text-align:center">转移总价</th>
+                <th style="text-align:center">转移时间</th>
+                <th style="text-align:center">结款</th>
+            </tr>
+            </thead>
+            <tbody>
+            <foreach name="list" item="val" key='key'>
+                <tr>
+                    <td><input type="checkbox" class="js-check" name="list_id" value="{$val.id}"></td>
+                    <td style="text-align:center">
+                        <img id="photo-preview" src="'.sp_get_image_preview_url($val['img']).'" style="height:36px;width: 36px;">
+                    </td>
+                    <td style="text-align:center">{$val.product_name}</td>
+                    <td style="text-align:center">{$val.sku}</td>
+                    <td style="text-align:center">{$val.old_department}</td>
+                    <td style="text-align:center">{$val.new_department}</td>
+                    <td style="text-align:center">{$val.transfer_stock}</td>
+                    <td style="text-align:center">{$val.purchase_price}</td>
+                    <td style="text-align:center">{$val.transfer_stock_count}</td>
+                    <td style="text-align:center">{$val.transfer_time}</td>
+                    <td style="text-align:center"><php>echo $val['status']==0?'未结款':'已结款'</php></td>
+                </tr>
+            </foreach>
+            </tbody>
+        </table>
+
+        <div class="pagination">{$page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search').attr('action',"{:U('product/check/transfer_stock_index')}");
+    });
+    $('.exportButton').click(function(){
+        $('.form-search').attr('action',"{:U('product/check/export_transfer_stock')}");
+    });
+
+    $(".checkAllbox").click(function(){
+        var setVal = $(this).attr('checked')=='checked'?true:false;
+        $("input[name=list_id]").attr("checked",setVal);
+        //$(".table-list :checkbox").attr("checked",setVal);
+    });
+
+    $('.exportPriceButton').click(function(){
+        var id = [];
+        $("input[name=list_id]:checked").each(function(){
+            id.push($(this).attr('value'));
+        });
+        if(id.length==0){alert('请至少选择一个订单');return false;}
+        $(this).attr("disabled", true);
+        $.ajax({
+            url:"{:U('product/check/ajax_batch_settle')}",
+            type:'POST',
+            dataType:'json',
+            data:{'id':id},
+            success:function(data){
+                if(data.status == 1) {
+                    alert(data.message);
+                    window.location.reload();
+                } else {
+                    alert(data.message);
+                    window.location.reload();
+                }
+                $(this).removeAttr("disabled");
+            }
+        });
+    });
+</script>
+</body>
+</html>

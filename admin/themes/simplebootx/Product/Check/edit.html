@@ -1,0 +1,376 @@
+<admintpl file="header" />
+<style type="text/css">
+    .pic-list li {
+        margin-bottom: 5px;
+    }
+    .tipShow{
+        float:left;
+        position: absolute;
+    }
+    .tipShow ul{
+        height:150px;
+        overflow:auto;
+        width:421px;
+        background-color: white;
+        margin:0 0 0 0;
+    }
+    .tipShow2{
+        float:left;
+        position: absolute;
+    }
+    .tipShow2 ul{
+        height:150px;
+        overflow:auto;
+        width:421px;
+        background-color: white;
+        margin:0 0 0 0;
+    }
+</style>
+<!-- 进度条 -->
+<style type="text/css">
+     .jindutiao{ margin-left: 200px;margin-top: -19px; display: none;}
+     .process{ width:100px; height:18px; border:1px solid #ddd; background-color:#4f5254;}
+	 .process i{ display:block; width:0; height:100%; background-color:rgba(251,255,255,0.7);}
+</style>
+<!-- 进度条 -->
+<script type="text/html" id="photos-item-wrapper">
+    <li id="savedimage{id}">
+        <input id="photo-{id}" type="hidden" name="photos_url[]" class="testPhoto" value="{filepath}">
+        <img id="photo-{id}-preview" src="{url}" style="height:36px;width: 36px;" onclick="parent.image_preview_dialog(this.src);">
+        <a href="javascript:upload_one_image('图片上传','#photo-{id}');">替换</a>
+        <a href="javascript:$('#savedimage{id}').remove();">移除</a>
+    </li>
+</script>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('Product/check/index')}">产品列表</a></li>
+        <li class="active"><a href="{:U('Product/check/edit',array('id'=>$_GET['id']))}">编辑产品</a></li>
+    </ul>
+    <form action="{:U('Product/check/save_post')}" method="post" class="form-horizontal js-ajax-forms" enctype="multipart/form-data" onsubmit="return checkForm()">
+        <div class="row-fluid">
+            <div class="">
+                <table class="table table-bordered">
+
+                    <tr>
+                        <th>图片</th>
+                        <td>
+                            <ul id="photos" class="pic-list unstyled">
+                                <notempty name="smeta[0]['url']">
+                                    <foreach name="smeta" item="vo">
+                                        <php> $img_url=sp_get_image_preview_url($vo['url']);</php>
+                                        <li id="savedimage{$key}">
+                                            <input id="photo-{$key}" type="hidden" name="photos_url[]" value="{$vo['url']}">
+                                            <img id="photo-{$key}-preview" src="{:sp_get_image_preview_url($vo['url'])}" style="height:36px;width: 36px;" onclick="parent.image_preview_dialog(this.src);">
+                                            <if condition="$isader eq 0">
+                                            <a href="javascript:upload_one_image('图片上传','#photo-{$key}');">替换</a>
+                                            <a href="javascript:$('#savedimage{$key}').remove();">移除</a>
+                                                </if>
+                                        </li>
+                                    </foreach>
+                                </notempty>
+                            </ul>
+                    <if condition="$isader eq 0"><a href="javascript:upload_multi_image('图片上传','#photos','photos-item-wrapper');"  class="btn btn-small">选择图片</a><span style="color:red;margin-left:20px;">*必选项</span></if>
+                    <!-- 进度条 -->
+                    <div style="" class="jindutiao" >
+                    <div class="process" style="float:left;">
+                        <i id="jindu"></i>
+                    </div>
+                    <div style="float:left;margin-left: 5px;color:#ab2727">添加中......</div>
+                    </div>
+                    <!-- 进度条 -->
+                    </td>
+                    </tr>
+                    <tr>
+                        <th width="80">产品分类</th>
+                        <td>
+                         <!--   <select name="post[id_check_category]" class="category_select" required  <if condition="$isader eq 1">disabled</if>>
+                               &lt;!&ndash; <option value="0">分类</option>&ndash;&gt;
+                                {$select_category}
+                            </select>-->
+                            <input type="text" style="width: 400px;"   class="search-text2" name="post[cat_name]"  <if condition="$isader eq 1">readonly</if> value ="{$product.cat_name}"  autocomplete="off" />
+                            <div name="tipShow2" class="tipShow2" style=""></div>
+                            <span style="padding-left: 10px;">输入分类名称选中提示分类</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>产品名称</th>
+                        <td>
+                            <php>if($product['id_checked']){</php>
+                            <input type="hidden" name="post[pid]" value="{$product.pid}">
+                            <input type="hidden" name="post[id_checked]" value="{$product.id_checked}">
+                            <input type="hidden" name="post[old_id_domain]" value="{$product.id_domain}">
+                            <php>}</php>
+                            <input type="text" style="width: 400px;" name="post[title]"  value="{$product.title}" placeholder="请输入标题"/>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>内部名</th>
+                        <td>
+                            <input type="text" style="width: 400px;"   class="search-text" name="post[inner_name]" value ="{$product.inner_name}"  autocomplete="off"/>
+                            <div name="tipShow" class="tipShow" style=""></div>
+                        </td>
+
+                    </tr>
+                    <php>if($product['id_checked']){</php>
+                    <tr>
+                        <th>产品id</th>
+                        <td>
+                            <input type="text" style="width: 400px;"  name="post[id_product]" value ="{$product.id_product}" readonly/>
+                        </td>
+                    </tr>
+                    <php>}</php>
+                    <tr>
+                        <th>款式</th>
+                        <td>
+                            <input type="text" style="width: 400px;" name="post[style]" value="{$product.style}" placeholder="请输入款式"/>
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th width="90">部门</th>
+                        <td>
+                            <select name="post[id_department]" required <if condition="$isader eq 1">readonly</if>>
+                            <php> foreach($department as $key =>$dep_id){
+                                $selected = $key==$product['id_department']?' selected="selected"':'';
+                                echo '<option value="'.$key.'"'.$selected.'>'.$department[$key].'</option>';
+                                }
+                            </php>
+                            </select>
+                            <span style="color:red;margin-left:20px;">*必选项</span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th width="80">广告专员</th>
+                        <td>
+
+                            <!--<select name="post[id_users]" required>
+
+                                <option value="0">请选择</option>
+                                <foreach name="classify" item="item">
+                                    <option value="{$item.id_classify}" <php>echo $item['id_classify']==$product['id_classify'] ? 'selected' : ''</php>>{$item.name}</option>
+                                </foreach>
+                            </select>-->
+                            <input type="text" style="width:400px;" name="post[name_users]"  placeholder="广告专员"  
+                    <php>if(!empty($product['name_users'])){ </php>
+                        value="{$product['name_users']}"  
+                        <php>}else{</php>
+                        value="{$user['user_nicename']}"
+                        <php>}</php>
+                        readonly  />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>业务链接</th>
+                        <td><input type="text" style="width:400px;" name="post[sale_url]" value="{$product.sale_url}" placeholder="业务链接" <if condition="$isader eq 1">readonly</if> /></td>
+                    </tr>
+                    <tr>
+                        <th>采购链接</th>
+                        <td><input type="text" style="width:400px;" name="post[purchase_url]" value="{$product.purchase_url}" placeholder="采购链接"/></td>
+                    </tr>
+                    <tr>
+                        <th>备注</th>
+                        <td><input type="text" style="width:400px;" name="post[remark]" value="{$product.remark}" placeholder="备注" <if condition="$isader eq 1">readonly</if> /></td>
+                    </tr>
+                    <tr>
+                        <th>域名</th>
+                        <td>
+                            <input type="text" style="width:400px;" name="post[domain]" value="{$product.domain}" placeholder="域名" <notempty name="product.domain">required</notempty>/>
+                            <span style="padding-left: 10px;">添加域名和内部名后自动建档备案</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>二级域名</th>
+                        <td>
+                            <input type="text" style="width:400px;" name="post[extra_domain]" value="{$product.extra_domain}" placeholder="完整访问链接，如www.abc.com/TW" />
+                            <span style=" padding-left: 10px;">二级域名即完整的链接</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+        <notempty name="product.domain">
+            <notempty name="domain_list">
+                <div class="row-fluid ">
+                    <label class="">历史域名：</label>
+                    <div class="">
+                        <table class="table table-hover table-bordered table-list attributesListBox">
+                            <tbody>
+                            <tr>
+                                <th>历史域名</th>
+                                <th>部门</th>
+                                <th>最近出单时间</th>
+                            </tr>
+                            <foreach name="domain_list" item="list2">
+                                    <tr>
+                                        <td>{$list2.domain}</td>
+                                        <td>{$list2.dtitle}</td>
+                                        <td>{$list2.date_purchase}</td>
+                                    </tr>
+                            </foreach>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </notempty>
+        </notempty>
+        
+        
+        
+        <empty name="Think.get.id" >
+            <div class="form-actions">
+            <button class="btn btn-primary js-ajax-submit" type="submit">提交</button>
+            <a class="btn" href="#"  onClick="javascript :history.back(-1);">返回</a>
+            </div>
+        <else />
+        <if condition="($product['id_users'] eq $_SESSION['ADMIN_ID']) || ($_SESSION['ADMIN_ID'] eq 1)">
+        <div class="form-actions">
+            <button class="btn btn-primary js-ajax-submit" type="submit">提交</button>
+            <a class="btn" href="#"  onClick="javascript :history.back(-1);">返回</a>
+            </div>
+        </if>
+        </empty>
+        
+        <input type='hidden' name="id_checked"  value="{$product.id_checked}" />
+    </form>
+</div>
+<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    showTips();
+    var goods_nameTmp = '';
+    function showTips(){
+
+        $('.search-text').each(function(){
+            $(".tipShow").empty();
+            $(this).live('input', function(){
+                //$(".tipShow").empty();
+                var goods_name = $(this).val();
+                goods_nameTmp = goods_name;
+                var ali_i = $(this);
+                if(goods_name != null && goods_name != ""){
+                    $.ajax({
+                        url:"{:U('check/search_text')}",
+                        type:"get",
+                        data:{'goods_name':goods_name},
+                        dataType:'json',
+                        success: function(data){
+                            if(data=='0' || data == "<ul></ul>"){
+                                ali_i.next().html('');
+                                $(".tipShow").empty();
+                            }
+                            else {
+                                console.log(data);
+                                ali_i.next().html(data).css('display','block');
+                            }
+                        }
+                    })
+                }else{
+                    ali_i.next().html('');
+                    $(".tipShow").empty();
+                }
+            })
+        })
+    }
+    $(".tipShow ul li").live('mouseover',function(){
+        $(this).parent().children().css("background","white");
+        $(this).css("background","#ddd");
+    })
+    $(".tipShow ul li").live('click',function(e){
+        $(this).parent().parent().prev().val($(this)[0].innerText);
+        $(".tipShow").empty();
+        stopPropagation(e);
+    })
+    showTips2();
+    var cat_nameTmp = '';
+    function showTips2(){
+
+        $('.search-text2').each(function(){
+            $(".tipShow2").empty();
+            $(this).live('input', function(){
+                //$(".tipShow").empty();
+                var goods_name = $(this).val();
+                cat_nameTmp = goods_name;
+                var ali_i = $(this);
+                if(goods_name != null && goods_name != ""){
+                    $.ajax({
+                        url:"{:U('check/search_cat_text')}",
+                        type:"get",
+                        data:{'goods_name':goods_name},
+                        dataType:'json',
+                        success: function(data){
+                            if(data=='0' || data == "<ul></ul>"){
+                                ali_i.next().html('');
+                                $(".tipShow2").empty();
+                            }
+                            else {
+                                console.log(data);
+                                ali_i.next().html(data).css('display','block');
+                            }
+                        }
+                    })
+                }else{
+                    ali_i.next().html('');
+                    $(".tipShow2").empty();
+                }
+            })
+        })
+    }
+    $(".tipShow2 ul li").live('mouseover',function(){
+        $(this).parent().children().css("background","white");
+        $(this).css("background","#ddd");
+    })
+    $(".tipShow2 ul li").live('click',function(e){
+        $(this).parent().parent().prev().val($(this)[0].innerText);
+        $(".tipShow2").empty();
+        stopPropagation(e);
+    })
+    $('input').click(function(e){
+        stopPropagation(e);
+        if(goods_nameTmp == ''){
+            $(".tipShow").empty();
+        }
+    })
+    //冒泡
+    function stopPropagation(e) {
+        if (e.stopPropagation)
+            e.stopPropagation();
+        else
+            e.cancelBubble = true;
+    }
+    var ranNum,clock,me,oriW;
+    function checkForm(){
+        var imgval = $(".testPhoto").val();
+        var id_checked = $("input[name=id_checked]").val();
+        //没有选择图片，不让提交表单
+        if(!id_checked){ //修改的时候，不修改图片也可以提交
+            if(!imgval){
+                alert('请选择图片');
+                return false;
+            }
+            $(".jindutiao").show();
+            me=$("#jindu");
+            console.log(me);
+            oriW=me.width();
+            ranNum=Math.floor(Math.random()*10+80);
+            clock=setInterval("prorun(ranNum)",50);
+        }
+    }
+    function prorun(num){
+            if(oriW>num){
+                me.width(num);
+                clearInterval(clock);
+                alert("run");
+            }else{
+                oriW=oriW+1;
+                me.width(oriW);
+            }
+        }
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<admintpl file="header" />
+<style>
+    .sort>th{
+        cursor:pointer;
+    }
+</style>
+</head>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="show" value="display">
+        <input type="hidden" name="sort" value="{$Think.get.sort}">
+        <input type="hidden" name="sort_by" value="">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">组长:</label>
+            <select name="team_leader">
+                <option value="">所有</option>
+                <foreach name="team_leaders" item="team_leader" key="k">
+                    <option value="{$k}" <php>if($_GET['team_leader'] == $k) echo 'selected'</php>>{$team_leader}</option>
+                </foreach>
+            </select>
+
+            <label class="control-label">部门:</label>
+            <select name="department_id">
+                <option value="">所有</option>
+                <foreach name="departments" item="department">
+                    <option value="{$department.id_department}" <php>if($_GET['department_id'] == $department['id_department']) echo 'selected'</php>>{$department.title}</option>
+                </foreach>
+            </select>
+
+            <label class="control-label">显示数量:</label>
+            <select name="view">
+                <option value="0">仅广告专员</option>
+                <option value="1" <php>if($_GET['view'] == 1) echo 'selected'</php>>广告专员和主管</option>
+
+            </select>
+        </div>
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">选择日期:</label>
+            <input type="text" name="start_time" class="js-datetime" value="<php>echo isset($_GET['start_time'])?str_replace('+',' ',$_GET['start_time']):'';</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="end_time" value="<php>echo isset($_GET['end_time'])?str_replace('+',' ',$_GET['end_time']):'';</php>" style="width: 120px;">
+            <button class="btn btn-primary searchButton">搜索</button>
+            <button class="btn btn-primary exportSearchButton">导出数据</button>
+        </div>
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr class="sort">
+            <th>部门</th>
+            <th>组长</th>
+            <th>姓名</th>
+            <th data-sort-by="effective_count">订单</th>
+            <th data-sort-by="mc_total">营业额(澳门)</th>
+            <th data-sort-by="hk_total">营业额(香港)</th>
+            <th data-sort-by="tw_total">营业额(台湾)</th>
+            <th data-sort-by="sg_total">营业额(新加坡)</th>
+            <th data-sort-by="jp_total">营业额(日本)</th>
+            <th data-sort-by="vnm_total">营业额(越南)</th>
+            <th data-sort-by="aed_total">营业额(迪拜)</th>
+            <th data-sort-by="aed_total">营业额(泰国)</th>
+            <th data-sort-by="aed_total">营业额(马来西亚)</th>
+            <th data-sort-by="aed_total">营业额(韩国)</th>
+            <th data-sort-by="aed_total">营业额(印尼)</th>
+            <th data-sort-by="total">总营业额(人民币)</th>
+            <th data-sort-by="expense_sum_usd">广告费(美元)</th>
+            <th data-sort-by="expense_sum_rmb">广告费(人民币)</th>
+            <th data-sort-by="ROI">ROI</th>
+        </tr>
+        </thead>
+        <tbody>
+            <foreach name="list" item="item" key='key'>
+                <tr>
+                    <td>{$item.department_name}</td>
+                    <td>{$item.team_leader}</td>
+                    <td>{$item.user_name}</td>
+                    <td>{$item.effective_count}</td>
+                    <td>{$item.mc_total}</td>
+                    <td>{$item.hk_total}</td>
+                    <td>{$item.tw_total}</td>
+                    <td>{$item.sg_total}</td>
+                    <td>{$item.jp_total}</td>
+                    <td>{$item.vnm_total}</td>
+                    <td>{$item.aed_total}</td>
+                    <td>{$item.tha_total}</td>
+                    <td>{$item.mys_total}</td>
+                    <td>{$item.kpw_total}</td>
+                    <td>{$item.rp_total}</td>
+                    <td>{$item.total}</td>
+                    <td>{$item.expense_sum_usd}</td>
+                    <td>{$item.expense_sum_rmb}</td>
+                    <td>{$item.ROI}</td>
+                </tr>
+            </foreach>
+        </tbody>
+    </table>
+
+    </fieldset>
+    <div style="display: none"><php>   echo '耗时'.round($t2-$t1,3).'秒<br>';echo '耗时'.round($t3-$t2,3).'秒<br>';echo '耗时'.round($t4-$t3,3).'秒<br>';var_dump($sql);</php></div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+
+    $('.searchButton').click(function(){
+        $('.form-search input[name="show"]').val('display');
+    });
+    $('.exportSearchButton').click(function(){
+        $('.form-search input[name="show"]').val('export_excel');
+    });
+
+    $('.sort>th').click(function(){
+        $('.form-search input[name="sort_by"]').val($(this).attr('data-sort-by'));
+        if($('.form-search input[name="sort"]').val() == 'asc'){
+            $('.form-search input[name="sort"]').val('desc');
+        }else{
+            $('.form-search input[name="sort"]').val('asc');
+        }
+        $(".form-search").submit();
+    });
+</script>
+</body>
+</html>

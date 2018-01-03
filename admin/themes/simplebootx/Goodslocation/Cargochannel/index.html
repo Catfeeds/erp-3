@@ -1,0 +1,102 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Cargochannel/index')}">货位通道</a></li>
+    </ul>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">仓库:</label>
+            <select name="warehouse_id" id="slect">
+                <option value="">所有</option>
+                <foreach name="warehouse" item="ware" key="key">
+                    <option value="{$key}" <php>echo isset($_GET['warehouse_id']) && $_GET['warehouse_id']==$key ? 'selected' : ''</php> >{$ware}</option>
+                </foreach>
+            </select>
+            <label class="control-label">货位区域名称:</label>
+            <select name="local_id" class="local_id">
+                <option value="">请选择</option>
+                <foreach name="warehouse_location" item="location" key='k'>
+                    <option value="{$k}" <php>echo isset($_GET['local_id']) && $_GET['local_id']==$k ? 'selected' : ''</php>>{$location}</option>
+                </foreach>
+            </select>
+            <!--<input type="text" name="goods_location_name" value="{$_GET['goods_location_name']}" />-->
+            <label class="control-label">货位通道:</label>
+            <input type="text" name="channel_name" value="{$_GET['channel_name']}"/>
+
+            <button class="btn btn-primary searchButton" id="searchBtn">搜索</button>
+            <a href="{:U('cargochannel/add')}" class="btn btn-primary searchButton">添加货位通道</a>
+        </div>
+    </form>
+    <fieldset>
+        <table class="table table-hover table-bordered table-list order-table">
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>货位区域名称</th>
+                <th>货位通道</th>
+                <th>所属仓库</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <foreach name="list" item="item" key='key'>
+                <tr style="font-weight: bold;background:#f5f5f5;">
+                    <td><php>echo $key+1</php></td>
+                    <td>{$item.area_name}</td>
+                    <td>{$item.channel_name}</td>
+                    <td>{$item.warehouse_name}</td>
+                    <td>
+                        <a class="btn btn-small" href="{:U('cargochannel/edit',array('id'=>$item['id_cargo_channel']))}">编辑</a>
+                        <a class="btn btn-small del" href="javaScript:;" data-id="{$item.id_cargo_channel}">删除</a>
+                    </td>
+                </tr>
+            </foreach>
+            </tbody>
+
+        </table>
+        <div class="pagination">{$page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>\
+<script>
+    $('#slect').change(function () {
+        var warehouse_id = $('#slect').val();
+        $.ajax({
+            url: "{:U('Cargochannel/get_goods_location')}",
+            type: 'post',
+            dataType: 'html',
+            data: {'warehouse_id': warehouse_id},
+            success: function (shtml) {
+                $('.local_id').replaceWith(shtml);
+            }
+        })
+    });
+
+    $('.del').click(function(){
+        if(confirm('确定要删除吗?')){
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url: "{:U('Cargochannel/del')}",
+                type:"post",
+                dataType:"json",
+                data:{'id':id},
+                success:function(data){
+                    if(data.flag==1) {
+                        alert(data.msg);
+                        window.location.reload();
+                    } else {
+                        alert(data.msg);
+                        window.location.reload();
+                    }
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

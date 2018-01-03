@@ -1,0 +1,200 @@
+<admintpl file="header"/>
+</head>
+<body>
+<style>
+    .tableLayer table td{white-space:normal}
+</style>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('index/check_single',array('id_purchase'=>$_GET['id_purchase']))}">{:L('审核采购单')}</a></li>
+    </ul>
+    <div class="searchLayer">
+    <form class="form-horizontal" action="" method="post">
+        <table cellspacing="1" class="table-bordered">
+            <tr>
+                <td class="th">采购单号</td>
+                <td>
+                    {$list.purchase_no}
+                </td>
+                <td class="th">内部采购单号：</td>
+                <td>
+                    {$list.inner_purchase_no}
+                </td>
+                <td class="th">内部采购时间：</td>
+                <td>
+                    {$list.inner_purchase_time}
+                </td>
+
+                <td class="th">部门</td>
+                <td>
+                    {$department}
+                </td>
+
+
+            </tr>
+            <tr>
+                <td class="th">创建人</td>
+                <td>
+                    {$nicename}
+                </td>
+                <td class="th">创建时间</td>
+                <td>
+                    {$list.created_at}
+                </td>
+                <td class="th">运费</td>
+                <td>
+                    {$list.price_shipping}
+                </td>
+                <td class="th">总金额</td>
+                <td colspan="">
+                    {$list.price}
+                </td>
+            </tr>
+            <tr>
+                <td class="th">仓库</td>
+                <td>
+                    {$warehouse.ware_title}
+                </td>
+                <td class="th">采购渠道</td>
+                <td>
+                    {$list.purchase_channel}
+                </td>
+                <td class="th">供应商</td>
+                <td>
+                    {$supplier_name.sup_title}
+                </td>
+                <td class="th">预付金额</td>
+                <td>
+                    {$list.prepay}
+                </td>
+            </tr>
+        </table>
+        <br/>
+
+        <div class="ctab-panel">
+            <div class="ctab-head">
+                <a id="items" href="#" class="active">属性详情</a>
+            </div>
+            <div class="ctab-body" id="first">
+                <div class="tableLayer" style="height:400px">
+                    <table class="table table-hover table-bordered table-list order-table">
+                        <tr>
+                            <td>SKU</td>
+                            <td>产品名</td>
+                            <td>属性名</td>
+                            <td>采购单价</td>
+                            <td>数量</td>
+                            <td>采购金额</td>
+                            <td>库存</td>
+                            <td>在途数量</td>
+                            <td>缺货量</td>
+                            <td>近三日销量</td>
+                            <td>日均销量</td>
+                        </tr>
+                        <foreach name="list['purchase_product']" item="product">
+                            <tr>
+                                <td>{$product.sku}</td>
+                                <td>{$product.ptitle}</td>
+                                <td>{$product.title}</td>
+                                <td>{$product.price}</td>
+                                <td>{$product.quantity}</td>
+                                <td><php>echo $product['price']*$product['quantity']</php></td>
+                                <td>{$product.quantity}</td>
+                                <td>{$product.road_num}</td>
+                                <td>
+                                    <php>
+                                        $stockout = M('Order')->alias('o')
+                                        ->join('__ORDER_ITEM__ as oi on o.id_order = oi.id_order','LEFT')
+                                        ->where(array('id_product_sku'=>$product['id_product_sku'],'id_order_status'=>'6'))
+                                        ->getField('count(o.id_order) as stockout');
+                                        echo $stockout;
+                                    </php>
+                                </td>
+                                <td>
+                                    <php>
+                                        //统计近三日销量
+                                        $date_start = date('Y-m-d',strtotime('-3 day'));
+                                        $data_end = date('Y-m-d');
+                                        $where = "created_at >= '".$date_start."' and created_at < '".$data_end."'";
+                                        $order_item =  M('OrderItem')->alias('oi')
+                                        ->join('__ORDER__ as o on o.id_order = oi.id_order','LEFT')
+                                        ->field('count(id_order_item) as count,DATE_FORMAT(created_at,"%Y-%m-%d") as new_created_at')
+                                        ->where(array('id_product_sku'=>$product['id_product_sku'],$where,'id_order_status'=>array('IN','4,5,6,7,8,9,10,16')))
+                                        ->group('new_created_at')
+                                        ->select();
+                                        $sum = '';
+                                        if($order_item){
+                                        foreach($order_item as $v){
+                                        echo $v['new_created_at'].':'.$v['count'].'</br>';
+                                        $sum+=$v['count'];
+                                        }
+                                        }else{
+                                        echo '无';
+                                        }
+                                    </php>
+                                </td>
+                                <td> <php> if($sum!=0 )echo round($sum/3,2);</php></td>
+                            </tr>
+                        </foreach>
+                    </table>
+                </div>
+            </div>
+            <br/>
+            <table cellspacing="1" class="table-bordered">
+                <tr>
+                    <td class="th">备注</td>
+                    <td>{$list.remark}</td>
+                    <td class="th">审核</td>
+                    <td>
+                        <select name="check" id="check" style="height:30px;width:20%">
+                            <option value="0">请选择</option>
+                            <option value="pass">审核通过</option>
+                            <option value="refuse">拒绝</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+
+        <input type="hidden" name="id_purchase" value="{$_GET['id_purchase']}"/>
+        <div class="form-actions">
+            <button type="button" class="btn btn-primary js-ajax-submit" id="add_btn">{:L('提交')}</button>
+            <a class="btn" href="{:U('waiting_approval')}">{:L('BACK')}</a>
+        </div>
+    </form>
+        </div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('#check').change(function(){
+        var select = $('#check').val();
+        if(select == 'refuse'){
+            $('#check').after(' <input type="text" placeholder="请输入拒绝的原因" name="reason"/>')
+        }
+        if(select == 'pass'||select ==0){
+            $('#check').siblings().remove('input');
+        }
+    })
+
+    $('#add_btn').click(function(){
+        if($('#check').val() == 0){
+            alert('请选择审批状态');
+            return;
+        }
+        var reason = $('input[name=reason]').val();
+        if($('#check').val() == 'refuse'){
+            if(reason == ''){
+                alert('必须填写拒绝原因');
+                return;
+            }else{
+                window.confirm('确定拒绝？');
+            }
+        }
+        $('.form-horizontal').attr('value','check_single');
+        $('.form-horizontal').attr('action',"{:U('Purchase/Index/check_single')}");
+        $('.form-horizontal').submit();
+
+
+    });
+</script>
+</body>
+</html>

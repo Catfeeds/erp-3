@@ -1,0 +1,169 @@
+<admintpl file="header" />
+</head>
+<body>
+
+<style>
+.fixedlayer {
+    position: fixed;
+    top: 0px;
+    height: 220px;
+    left: 20px;
+    right: 20px;
+    padding-top: 20px;
+    background-color: #fff;
+    z-index: 10;
+}
+.buttonLayer {margin-bottom: 10px;  background-color: #fff;}
+
+.customerlayer {height: 100%; padding-top: 210px; }
+.fixedlayer .pagination { margin-top: 10px; margin-bottom: 0px; }
+.searchLayer {border: solid 1px #ddd; margin-bottom: 10px; }
+#id_warehouse{height: 30px;}
+.searchLayer input,.searchLayer select{height: 30px;}
+.searchLayer table {width: 100%; background-color: #fff; border-spacing: 1px !important; border-collapse: separate; font-family: "宋体"; table-layout: fixed; }
+.searchLayer table td {padding: 5px; margin: 1px; width: auto; }
+.searchLayer table td.th {background: #f1f1f1; width: 80px; }
+.searchLayer input[type="text"] {margin-bottom: 0px; border: none; box-shadow: none; border-bottom: solid 1px #ddd; border-radius: 0px; outline: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+.searchLayer select {margin-bottom: 0px; border-radius: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; outline: 0px;  line-height: 20px;}
+
+.tableLayer {width: 100%; overflow: scroll; height: 480px; }
+.tableLayer table{width: 100%}
+.tableLayer table th {border: solid 1px #ddd; padding: 10px; font-weight: bold; background: #f1f1f1; }
+.tableLayer table td {border: solid 1px #ddd; padding: 10px;}
+.ctab-panel {width: 100%; position: relative; margin-bottom: 10px; }
+.ctab-head {height: 40px; }
+.ctab-head > a {display: inline-block; color: #333; padding: 0px 10px; line-height: 40px; }
+.ctab-head > a.active {border: solid 1px #ddd; border-bottom: none; background-color: #fff; border-top: solid 2px #3daae9; }
+.ctab-body {border: solid 1px #ddd; padding: 10px; }
+.btn a{color: white;text-decoration: none;}
+</style>
+<form method="get" action=""  id="form-search">
+<div class="fixedlayer">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#">查询条件</a></li>
+    </ul>
+    <div class="buttonLayer">
+        <button class="btn btn-primary searchButton" >查询</button>
+        <span class="btn btn-primary exportButton">导出</span>
+    </div>
+    <div class="searchLayer">
+        
+        <input type="hidden" name="page" value="">
+        <table cellspacing="1">
+            <tr>
+
+                <td class="th">仓库：</td>
+                <td>
+                    <select name="id_warehouse" id="id_warehouse">
+                    <option value="">--选择--</option>
+                    <foreach name="warehouseList" item="warehouse" key="id" >      
+                    <option value="{$id}" {$id==$getdata['id_warehouse']?'selected':''}>{$warehouse}</option>      
+                    </foreach>            
+                    </select>
+                </td>
+                <td class="th">部门：</td>
+                <td>
+                    <select name="department" id="department">
+                    <option value="">--选择--</option>
+                    <foreach name="departmentList" item="department" key="id" >      
+                    <option value="{$id}" {$id==$getdata['department']?'selected':''}>{$department}</option>      
+                    </foreach>            
+                    </select>
+                </td>                
+                <td class="th">SKU查询：</td>
+                <td><input type="text" name="sku" class="" value="{$getdata['sku']}"></td>
+                <td class="th">内部名：</td>
+                <td><input type="text" name="inner_name" class="" value="{$getdata['inner_name']}"></td>
+            </tr>
+  
+        </table>
+        
+    </div>   
+    <div class="pagination">{$page}<input type="text" value="" name="displayRow" placeholder="输入每页显示{$getdata['displayRow']}数">
+        <input type="button" class="btn btn-small submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">
+    </div>     
+</div>
+
+<div class="wrap">
+
+    <div class="customerlayer">
+        <!--  -->
+
+        <!--  -->
+        <div class="ctab-panel">
+
+            <div class="ctab-body">
+                <div class="tableLayer">
+                    <table>
+                        <thead>
+                            <tr>
+                                <!-- <th><input type="checkbox" class="allChecked" > </th> -->
+                                <th>序号</th>
+                                <th>仓库名称</th>
+                                <th>部门名称</th>
+                                <th>产品名称</th>
+                                <th>内部名</th>
+                                <th>sku</th>
+                                <th>属性</th>
+                                <th>可配库存</th>
+                                <th>库存量</th>
+                                <th>在途量</th>
+                                <th>在单量（锁定库存）</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <foreach name="stocklist" item="stock" key='key'>
+                                <tr>
+                                    <!-- <td><input type="checkbox" class=" checkItem"  value=""  > </td> -->
+                                    <td>{$key+1}</td>
+                                    <td>{$warehouseList[$stock['id_warehouse']]}</td>
+                                    <td>{$departmentList[$stock['id_department']]}</td>
+                                    <td>{$stock.ptitle}</td>
+                                    <td>{$stock.inner_name}</td>
+                                    <td>{$stock.sku}</td>
+                                    <td>{$stock.attr}</td>
+                                    <td>{$stock.canuse}</td>
+                                    <td>{$stock.quantity}</td>
+                                    <td>{$stock.road_num}</td>
+                                    <td>{$stock.qty_preout}</td>
+                                </tr>
+                            </foreach>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    
+    </div>
+
+</div>
+</form>
+
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/jquery.stickytableheaders.js"></script>
+<script type="text/javascript">
+
+
+    $(document).ready(function(){
+        $(".tableLayer table").stickyTableHeaders({scrollableArea: $('.tableLayer')});
+    });
+    $('.searchButton').on('click',function(){
+         $('#form-search').attr('action',"{:U('warehouse/index/stock_search')}");
+        $('#form-search').trigger('submit');
+
+    });    
+    $('.submitDisplayRow').on('click',function(){
+         $('#form-search').attr('action',"{:U('warehouse/index/stock_search')}");
+        $('#form-search').trigger('submit');
+    });   
+
+    $('.exportButton').click(function(){
+        $('#form-search').attr('action',"{:U('warehouse/index/stockImport')}");
+        $('#form-search').trigger('submit');
+    });     
+</script>
+</body>
+</html>

@@ -1,0 +1,458 @@
+<admintpl file="header"/>
+</head>
+<body>
+<style>
+#search_auto, #search_auto_pro{border:1px solid #dce4ec; position:absolute; display:none;}
+#search_auto li, #search_auto_pro li{background:#FFF; text-align:left;list-style-type:none;}
+#search_auto li.cls, #search_auto_pro li.cls{text-align:right;}
+#search_auto li a, #search_auto_pro li a{display:block; padding:5px 6px; cursor:pointer; color:#666;}
+#search_auto li a:hover, #search_auto_pro li a:hover{background:#D8D8D8; text-decoration:none; color:#000;}
+ul{margin: 0 0 10px;}
+.searchLayer table td{white-space:normal}
+</style>
+    <div class="wrap js-check-wrap">
+        <ul class="nav nav-tabs">
+            <li><a href="{:U('Index/index')}">采购订单</a></li>
+            <li class="active"><a href="{:U('Index/edit',array('id'=>$data['id_purchase']))}">编辑采购</a></li>
+        </ul>
+        <div class="searchLayer">
+        <form class="form-horizontal js-ajax-form" action="{:U('Index/edit_post')}" method="post" style="padding:20px">
+        <table cellspacing="1" class="table-bordered">
+            <tr>
+                <td class="th">采购单号：</td>
+                <td>PO#{$data.purchase_no}</td>
+                <td class="th">内部采购单号：</td>
+                <td>
+                    <input class="inputtxt1 ui-autocomplete-input" id="inner_purchase_no" name="inner_purchase_no" type="text" value="{$data['inner_purchase_no']}">
+                </td>
+                <td class="th">采购渠道订单号：</td>
+                <td>
+                    <input class="inputtxt1 ui-autocomplete-input" id="alibaba_no" name="alibaba_no" type="text" value="{$data['alibaba_no']}">
+                </td>                
+                <td class="th">内部采购时间：</td>
+                <php>$inner_purchase_time = date('Y-m-d');</php>
+                <td><input type="text" class="js-datetime date"   name="inner_purchase_time"  style=" width: 90%;" value="{$data['inner_purchase_time']}" autocomplete="off"></td>
+
+                <td class="th">部门：</td>
+                <td>
+                    <input type="hidden" value="{$data.id_purchase}" name="id" class="id_purchase">
+                    <select title="" class="selectDepartment" name="id_department" style="width:100px;height:30px">
+                        <foreach name="department" item="depart">
+                            <option value="{$depart.id_department}" <php>echo $data['id_department']==$depart['id_department'] ? 'selected' : ''</php>>{$depart.title}</option>
+                        </foreach>
+                    </select>
+                    <span class="form-required" style="color:red">*</span>
+                </td>
+
+            </tr>
+            <tr>
+
+                <td class="th">供货商：</td>
+                <td>
+                    <div id="search">
+                        <input name="id_supplier" id="supplier_id" type="hidden" value="{$data.id_supplier}">
+                        <input class="inputtxt1 ui-autocomplete-input" id="supplier" name="supplier_name" type="text" autocomplete="off" value="{$supplier_name.title}" required style="width:120px;height:30px">
+                        <span class="form-required" style="color:red">*</span>
+                        <span class="error-msg"></span>
+                    </div>
+                    <div id="search_auto"></div>
+                </td>
+                <td class="th">供应商链接：</td>
+                <td>
+                    <div id="search_url">
+                        <input class="inputtxt1 ui-autocomplete-input" id="supurl" name="supplier_url" type="text" autocomplete="off" value="{$supplier_name.supplier_url}" required style="width:200px;height:30px">
+                        <span class="form-required" style="color:red">*</span>
+                    </div>
+                    <div id="search_url_auto"></div>
+                </td>
+
+                <td class="th">产品：</td>
+                <td colspan="">
+                    <div id="search_pro">
+                        <input name="product_id" id="product_id" type="hidden" value="{$product.0.id_product}">
+                        <input class="inputtxt1 ui-autocomplete-input" id="inner" name="inner_name" type="text" autocomplete="off" value="{$product.0.inner_name}" required style="width:200px">
+                        <span class="form-required" style="color:red">*</span>
+                        <span class="error-msg-pro"></span>
+                    </div>
+                    <div id="search_auto_pro" style="z-index:1"></div>
+                </td>
+                <td class="th">采购渠道：</td>
+                <td>
+                    <select title="" class="selectChannel" name="pur_channel" required style="width:100px;height:30px">
+                        <option value="">请选择</option>
+                        <option value="1" <php>echo $data['purchase_channel']==1?'selected="selected"':'';</php>>阿里巴巴</option>
+                        <option value="2" <php>echo $data['purchase_channel']==2?'selected="selected"':'';</php>>淘宝</option>
+                        <option value="3" <php>echo $data['purchase_channel']==3?'selected="selected"':'';</php>>线下</option>
+                    </select>
+                    <span class="form-required" style="color:red">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="th">仓库：</td>
+                <td>
+                    <select title="" class="selectWarehouse" name="id_warehouse" required style="width:100px;height:30px">
+                        <foreach name="warehouse" item="ware">
+                            <option value="{$ware.id_warehouse}" <php>echo $data['id_warehouse']==$ware['id_warehouse'] ? 'selected' : ''</php>>{$ware.title}</option>
+                        </foreach>
+                    </select>
+                    <span class="form-required" style="color:red">*</span>
+                </td>
+                <td class="th">采购总价：</td>
+                <td>
+                    <input type="text" class="tpi" name="total_price" value="{$data.price}" required style="width:90px">
+                    <a href="javascript:;" class="btn btn-primary up_price">更新采购单价</a>
+                </td>
+                <td class="th">运费：</td>
+                <td>
+                    <input type="text" name="price_shipping" value="{$data.price_shipping}" onchange="calculate_unit_price()" style="width:80px">
+                </td>
+                <td class="th">预付金额</td>
+                <td>
+                    <input type="text" name="prepay" value="{$data.prepay}" style="width:80%">
+                </td>
+            </tr>
+        </table>
+            <br/>
+            <div class="ctab-panel">
+                <div class="ctab-head">
+                    <a id="items" href="#" class="active">属性详情</a>
+                    <!--<a href="#" id="import">导入SKU数量</a>-->
+                </div>
+                <div class="ctab-body" id="first">
+                    <div class="tableLayer" style="height:400px">
+                        <table class="table table-hover table-bordered table-list attributesListBox">
+                            <php>
+
+                                $status = array(                //需计算的订单状态
+                                Order\Lib\OrderStatus::UNPICKING,     //未配货
+                                Order\Lib\OrderStatus::PICKED,        //已配货
+                                Order\Lib\OrderStatus::APPROVED,      //已审核
+                                );
+
+                                if($product){
+                                $tempData = array();
+                                //dump($product);
+                                foreach($product as $key=>$item){
+
+                                //计算实际库存
+                                $item['sku_qty'] = empty($item['sku_qty']) ? 0 : $item['sku_qty'];
+                                $actual_quantity = M('Order')->alias('o')
+                                ->field("SUM(oi.quantity) AS actual_quantity")
+                                ->join("__ORDER_ITEM__ as oi ON o.id_order=oi.id_order", 'left')
+                                ->where(array('oi.id_product_sku'=>$item['id_product_sku']))
+                                ->where(array('o.id_order_status'=> array('IN', $status)))
+                                ->find();
+                                $actual_quantity = empty($actual_quantity['actual_quantity']) ? 0 : intval($actual_quantity['actual_quantity']) + $item['sku_qty'];
+
+
+                                if(!in_array($item['id_product'],$tempData)){
+                                echo '<tr class="productBox' . $item['id_product'] . '"><td colspan="10" style="background-color: #f5f5f5;">'.$item['inner_name'].'</td></tr>';
+                                echo '<tr><th>SKU</th><th>属性</th><th>采购单价</th><th>数量</th><th>可用库存</th><th>实际库存</th><th>在途数量</th><th>缺货量</th><th>近三日销量</th><th>日均销量</th></tr>';
+                                $tempData[] = $item['id_product'];
+                                }
+                                echo '<tr><td>'.$item['sku'].'</td><td>'.$item['option_value'].'</td>
+                                <input type="hidden" value="' . $item['option_value'] . '" name="attr_name[' . $item['id_product'] . '][' . $item['id_product_sku'] . ']"/>
+                                <td><input type="text" class="sprice dsprice sprice'.$item['id_product_sku'].'" value="' . $item['price'] . '" name="set_price[' . $item['id_product'] . '][' . $item['id_product_sku'] . ']" onchange="price_change('.$item[id_product_sku].')"/></td>
+                                <td><input type="text" class="sqt dsqt sqt'.$item['id_product_sku'].'" value="' . $item['quantity'] . '" name="set_qty[' . $item['id_product'] . '][' . $item['id_product_sku'] . ']" onchange="qty_change('.$item[id_product_sku].')"/></td>
+                                <input type="hidden" class="hid_p hid_p' . $item['id_product_sku'] . '" value="' . $item['quantity']*$item['price'] . '">
+                                <td>'.$item['sku_qty'].'</td><td>'.$actual_quantity.'</td>
+                                <td>'.$item['sku_road_qty'].'</td><td>'.$item['sku_qh_sale'].'</td>
+                                <td>'.$item['sku_three_sales'].'</td><td>'.$item['sku_three_sale'].'</td></tr>';
+                                }
+                                }
+                            </php>
+                        </table>
+                    </div>
+
+                </div>
+                <!--<div class="ctab-body" style='display:none;' id="second">-->
+                    <!--<div class="tableLayer"  style="height:400px">-->
+                        <!--<textarea placeholder="从Excel中复制两列:sku, 数量" style="width: 600px; height:300px;" id="import_data"></textarea>-->
+                        <!--<a class="btn" id="import_btn">导入</a>-->
+                        <!--<div id="warning"></div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            </div>
+            <table cellspacing="1" class="table-bordered">
+                <tr>
+                    <td class="th">备注：</td>
+                    <td>
+                        <textarea name="remark" rows="2" cols="20" class="inputtext" style="height: 50px; width: 90%;">{$data.remark}</textarea>
+                    </td>
+                    <td class="th">预计发货时间：</td>
+                    <td><input type="text" name="date_from" class="js-datetime date" value="{$data.date_from}" style=" width: 90%;" autocomplete="off"></td>
+                    <td class="th">预计到货时间：</td>
+                    <td><input type="text" name="date_to" class="js-datetime date" value="{$data.date_to}" style=" width: 90%;" autocomplete="off"></td>
+
+                </tr>
+                <input type="hidden" name="hid" value="" class="tj_hid">
+            </table>
+            <div class="form-actions">
+                <!--<input type="hidden" name="id" value="{$data.id}"/>-->
+                <button type="submit" class="btn btn-primary  js-ajax-submit sub">{:L('SAVE')}</button>
+                <button class="btn btn-primary js-ajax-submit tj_sub">提交</button>
+                <a class="btn" href="javascript:;" onClick="javascript :history.back(-1);">{:L('BACK')}</a>
+                <!--<a class="btn" href="{:U('Index/index')}">{:L('BACK')}</a>-->
+            </div>
+        </form>
+            </div>
+    </div>
+    <script src="__PUBLIC__/js/common.js"></script>
+    <script>
+        $(function () {
+            //搜索提示供应商
+            $('#search_auto').css({'width':'220px','background':'white','height':'100px','overflow':'auto'});
+            function supp_post() {
+                $.post("{:U('Index/get_supp_attr')}",{'value':$('#supplier').val(),'pro_id':$('#product_id').val()},function(data){
+                    if(data=='0') {
+                        $('.error-msg').html('无此供应商').css({'color':'red'});
+                        $('#search_auto').html('').css('display','none');
+//                        $('.sub').attr("disabled", true);
+//                        $('.tj_sub').attr("disabled", true);
+                    }else{                             
+                        $('#search_auto').html(data).css('display','block');                            
+                        setTimeout(function(){
+                            $('#search_auto').html('').css('display','none');
+                        },4000);
+                    }
+                }); 
+            }
+
+            $('#supplier').click(function(){
+                supp_post();
+            });
+//            $('#supplier').bind('input propertychange', function() {
+            $('#search input[name="supplier_name"]').keyup(function(){
+                supp_post();
+            });           
+            //搜索提示产品内部名
+            $('#search_auto_pro').css({'width': '220px', 'background': 'white','height':'180px','overflow':'auto'});
+            $('#search_pro input[name="inner_name"]').keyup(function () {
+                var inputText= $.trim(this.value);  
+                if(inputText!=""){
+                    $.post("{:U('Index/get_product_title')}",{'value':$(this).val(),'id_department':$('.selectDepartment').val()},function(data){
+                        if(data=='0') {
+                            $('.error-msg-pro').html('无此产品').css({'color':'red'});
+                            $('#search_auto_pro').html('').css('display','none');
+//                            $('.sub').attr("disabled", true);
+//                            $('.tj_sub').attr("disabled", true);
+                        }else {
+                            $('#search_auto_pro').html(data).css('display','block');
+                        }
+                    });
+                } else {
+                    $('.error-msg-pro').html('');
+                    $('#search_auto_pro').html('').css('display','none');
+                }
+            });
+        });
+
+        function get_supp(i) {
+            var name = $('.sup' + i).text();
+            var id_supp = i;
+            $('#supplier_id').val(id_supp);
+            $('#supplier').val(name);
+            $('#search_auto').html('').css('display', 'none');
+            $('.sub').removeAttr("disabled");
+            $('.tj_sub').removeAttr("disabled");
+            get_sup_url();
+        }
+
+        function get_pro_param(j) {
+            var name = $('.pro' + j).text();
+            var id_pro = j;
+            $('#product_id').val(id_pro);
+            $('#inner').val(name);
+            $('#search_auto_pro').html('').css('display', 'none');
+            get_pro_attr(id_pro);
+            $('.sub').removeAttr("disabled");
+            $('.tj_sub').removeAttr("disabled");
+        }
+
+        $('#supurl').keyup(function(){
+            $.ajax({
+                url:"{:U('Index/get_supplier_title')}",
+                type:'post',
+                dataType:'json',
+                data:{'value':$(this).val(),'id_department':$('.selectDepartment').val()},
+                success:function(data) {
+                    if(data != '') {
+                        $('#supplier_id').val(data.id);
+                        $('#supplier').val(data.title);
+                    }
+                }
+            });
+        });
+
+        function get_sup_url() {
+            $.post("{:U('Index/get_supp_url')}",{'supp_id':$('#supplier_id').val(),'id_department':$('.selectDepartment').val()},function(res){
+                $('#supurl').val(res);
+            });
+        }
+
+        //更新采购单价
+        $('.up_price').click(function(){
+            var total_price = parseFloat($('.tpi').val());
+            var f_price = $('[name="price_shipping"]').val();
+            var sqt = 0;
+            if(f_price <= 0 || f_price == '') {
+                var fprice = 0;
+            } else {
+                var fprice = parseFloat(f_price);
+            }
+            if(total_price > 0) {
+                var price = total_price-f_price;
+
+                $('.sqt').each(function(e){
+                    if($(this).val() > 0) {
+                        sqt += parseInt($(this).val());
+                    }
+                    $(this).attr('id','dquity'+e);
+                });
+                $('.sprice').each(function(e){
+                    $(this).attr('id','dsp'+e);
+                });
+
+                $('.dsqt').each(function(i){
+                    var qty = $(this).val();
+                    var u_price = price/sqt;
+                    if(qty == '' || qty == 0) {
+                        $('#dsp'+i).val('');
+                    } else {
+                        $('#dsp'+i).val(u_price.toFixed(4));
+                    }
+                });
+            } else {
+                alert('总价要大于0');
+                return false;
+            }
+        });
+
+        //算出采购金额
+        function qty_change(k) {
+            var spr = $('.sprice'+k).val();
+            var qty = $('.sqt'+k).val();
+            if(qty > 0) {
+//                calculate_unit_price();
+//                if(unit_price === 0 && spr > 0){
+//                    //count_price = Math.round(count_price*100)/100;
+//                    $('.cprice'+k).text(spr/qty);
+//                }
+                $('.hid_p'+k).val(spr*10000*qty/10000);
+                calculate_unit_price();
+            }
+        }
+        //算出采购金额
+        function price_change(k) {
+            var qty = $('.sqt'+k).val();
+            var spr = $('.sprice'+k).val();
+            if(qty == '' || qty < 0 || spr == '' || spr < 0) {
+                $('.hid_p'+k).text(0);
+            } else {
+//                var count_price = spr/qty;
+//                if(unit_price > 0){
+//                    alert('填写总金额后填写单项金额无效');
+//                    $('.sprice'+k).val(0);
+//                }else{
+//                    //count_price = Math.round(count_price*100)/100;
+//                    $('.cprice'+k).text(count_price);
+//                }
+                $('.hid_p'+k).val(spr*10000*qty/10000);
+                calculate_unit_price();
+            }
+        }
+        //统一单价设置
+        function calculate_unit_price(){
+//            var total = $('[name="total_price"]').val();
+            var fp = $('[name="price_shipping"]').val();
+            var qty = 0;
+            $('.hid_p').each(function(){
+                if($(this).val() > 0){
+                    qty += parseFloat($(this).val())*10000;
+                }
+            });
+            if(fp==0) {
+                var fprice = 0;
+            } else {
+                var fprice = parseFloat(fp)*10000;
+            }
+
+            var co_price = (qty+fprice)/10000;
+            $('[name="total_price"]').val(co_price);
+        }
+
+        function get_pro_attr(id){
+            var getProId = id;
+            if (getProId == 0) {
+                return false;
+            }
+            if ($('.productBox' + getProId).text()) {
+                alert('已经存在');
+                return false;
+            }
+            
+            $('.loading').show();
+            $.post("{:U('Index/get_attr')}", {'product_id': getProId,'warehouse_id':$('.selectWarehouse').val(),'id_purchase':$('.id_purchase').val()}, function (data) {
+                $('.loading').hide();
+                var resultData = $.parseJSON(data);
+                //var tableHeader = '<tr class="headings"><th>SKU</th><th>属性</th><th>库存</th><th>价格</th></tr>';
+                if (resultData.status) {
+                    //$('.attributesListBox').append(tableHeader);
+                    $('.attributesValueList').show();
+                    $('.attributesListBox').append(resultData.row);
+//                    $('.attributesListBox').html(resultData.row);
+                    $('.deleteBox').click(function () {
+                        var getBoxId = $(this).attr('delete');
+//                        console.log(getBoxId);
+                        if ($(this) && window.confirm('你确定要删除该记录！')) {
+                            $('.' + getBoxId).remove();
+                            $('#inner').val('');
+//                            $('.attributesValueList').hide();
+//                            if($(".selectProduct option:first").val() == 0) {
+//                                $('.selectProduct').val(0);
+//                            }
+                        }
+                    });
+                }
+            });
+        }
+        
+        $('.tj_sub').click(function(){
+            if (confirm('确定要提交？')) {
+                var pid = $('#product_id').val();
+                if(pid == ''){
+                    alert('产品不能为空！');
+                    return false;
+                } else {
+                    $('.form-horizontal input[name="hid"]').val('2');
+                    $('.form-horizontal').submit();
+                }
+            } else {
+                return false;
+            }            
+        });
+        
+        $('.selectDepartment').change(function() {
+            $('#product_id').val('');
+            $('#inner').val('');
+            $('#supplier_id').val('');
+            $('#supplier').val('');
+            $('#search_auto_pro').html('').css('display','none');
+            $('.attributesValueList').hide();
+            $('.attributesListBox').html('');
+            $('.error-msg-pro').html('');
+        });
+        
+        $('.selectWarehouse').change(function() {
+            $('#product_id').val('');
+            $('#inner').val('');
+            $('#supplier_id').val('');
+            $('#supplier').val('');
+            $('#search_auto_pro').html('').css('display','none');
+            $('.attributesValueList').hide();
+            $('.attributesListBox').html('');
+            $('.error-msg-pro').html('');
+        });
+    </script>
+</body>
+</html>

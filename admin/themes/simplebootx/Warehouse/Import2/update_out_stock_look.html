@@ -1,0 +1,148 @@
+<admintpl file="header" />
+</head>
+<body>
+
+<style>
+.fixedlayer {
+    position: fixed;
+    top: 0px;
+    height: 90px;
+    left: 20px;
+    right: 20px;
+    padding-top: 20px;
+    background-color: #fff;
+    z-index: 10;
+}
+.buttonLayer {margin-bottom: 10px;  background-color: #fff;}
+
+.customerlayer {height: 100%; padding-top: 120px; }
+.customerlayer .pagination { margin-top: 10px; margin-bottom: 0px; }
+.searchLayer {border: solid 1px #ddd; margin-bottom: 10px; }
+.searchLayer table {width: 100%; background-color: #fff; border-spacing: 1px !important; border-collapse: separate; font-family: "宋体"; table-layout: fixed; }
+.searchLayer table td {padding: 5px; margin: 1px; width: auto; }
+.searchLayer table td.th {background: #f1f1f1; width: 80px; }
+.searchLayer input[type="text"] {margin-bottom: 0px; border: none; box-shadow: none; border-bottom: solid 1px #ddd; border-radius: 0px; outline: 0px; width: 90%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+.searchLayer select {margin-bottom: 0px; border-radius: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; outline: 0px; height: 20px; line-height: 20px;}
+
+.tableLayer {width: 100%; overflow: scroll; height: 300px; }
+.tableLayer table th {border: solid 1px #ddd; padding: 10px; font-weight: bold; background: #f1f1f1; }
+.tableLayer table td {border: solid 1px #ddd; padding: 10px; }
+.ctab-panel {width: 100%; position: relative; margin-bottom: 10px; }
+.ctab-head {height: 40px; }
+.ctab-head > a {display: inline-block; color: #333; padding: 0px 10px; line-height: 40px; }
+.ctab-head > a.active {border: solid 1px #ddd; border-bottom: none; background-color: #fff; border-top: solid 2px #3daae9; }
+.ctab-body {border: solid 1px #ddd; padding: 10px; }
+
+#search_auto_pro{border:1px solid #dce4ec; position:absolute; display:none;}
+#search_auto_pro li{background:#FFF; text-align:left;list-style-type:none;}
+#search_auto_pro li.cls{text-align:right;}
+#search_auto_pro li a{display:block; padding:5px 6px; cursor:pointer; color:#666;}
+#search_auto_pro li a:hover{background:#D8D8D8; text-decoration:none; color:#000;}
+input{min-height:30px;}
+
+</style>
+
+<div class="loading" style="display:none;position:absolute; left:0; top:0;width:100%; height:100%;z-index:20000;background-color:gray;opacity:0.5; -moz-opacity:0.5; filter:alpha(opacity=50);">
+        loading...
+    </div>
+
+<div class="fixedlayer">
+    <ul class="nav nav-tabs">
+        <li class="active"><a id="loc" href="<php>echo U('Import2/look', array('id'=>$id,'type_id'=>$type_id)); </php>" onclick="javascript:window.location.href=this.href;">更新缺货</a></li>
+    </ul>
+    
+    <div class="buttonLayer">
+
+        <button class="btn btn-primary js-ajax-submit tj_sub" onclick="javascript:window.location.href='{:U('Import2/update_out_stock')}';">{:L('BACK')}</button>
+    </div>
+    
+    
+</div>
+<div class="wrap" style='padding-top:0px;'>
+
+	
+    <div class="customerlayer">
+    	
+    	<div class="searchLayer">
+            <table cellspacing="1">
+                                
+                <tr>
+                		<td class="th">单据编号：</td>
+                    <td>{$import['docno']}</td>
+                    <td class="th">订单状态：</td>
+                    <td>
+                    	<select style="height:30px;" disabled="disabled" id="order_action">
+                        <option value="0">--选择订单状态--</option>
+                        <php>
+                            if($order_action){
+                            foreach($order_action as $k=>$v){
+                            $select = !empty($import) && $import['order_action']==$k ? 'selected' : '';
+                            echo '<option value="'.$k.'" '.$select.'>'.$v.'</option>';
+                            }
+                            }
+                        </php>
+                    </select>
+                    </td>
+                    <td class="th">备注：</td>
+                    <td>{$import['description']}</td>
+                </tr>
+                
+            </table>
+        </div>
+        
+        <php>if(!empty($import)){ </php>
+        <form method="get" action="<php>echo U('Import2/look', array('id'=>$id,'type_id'=>$type_id)); </php>" id="page_search_form">
+                <div class="pagination">{$page}<input type="text" value="{$pcount}" name="pcount" id="pcount2" placeholder="输入每页显示数">
+                    <input type="button" id="page_search" class="btn btn-small submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">
+                </div>
+        </form>
+                <php>}</php>
+    	
+        <!--  -->
+        <div class="ctab-panel">
+            <div class="ctab-head">
+                <a id="items" href="#" class="active" onclick="javascript:window.location.reload();">明细</a>
+            </div>
+            <div class="ctab-body">
+                <div class="tableLayer">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="text-align:center;">&nbsp;序号</th>
+                                <th style="text-align:center;">运单号/定单号</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <php>if(!empty($import)){foreach($list as $k=>$v){ $k++; </php>
+                                <tr>
+                                    <td style="text-align:center;">&nbsp{$k}</td>
+                                    <td style="text-align:center;">{$v.track_number}</td>
+                                </tr>
+                            <php>}}</php>
+                        </tbody>
+                    </table>
+                </div>
+                
+            </div>
+            
+        </div>
+
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $(function(){
+  
+	      /*显示条数*/
+    		$("#page_search").click(function(){
+    			var pcount = parseInt($('input[name="pcount"]').val());
+    			if(pcount<0){alert('请输入每页显示条数');return false;}
+ 
+    			$('#page_search_form').submit();
+    		});
+    });
+        
+</script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<admintpl file="header" />
+</head>
+<body>
+
+<style>
+.fixedlayer {
+    position: fixed;
+    top: 0px;
+    height: 90px;
+    left: 20px;
+    right: 20px;
+    padding-top: 20px;
+    background-color: #fff;
+    z-index: 10;
+}
+.buttonLayer {margin-bottom: 10px;  background-color: #fff;}
+
+.customerlayer {height: 100%; padding-top: 120px; }
+.customerlayer .pagination { margin-top: 10px; margin-bottom: 0px; }
+.searchLayer {border: solid 1px #ddd; margin-bottom: 10px; }
+.searchLayer table {width: 100%; background-color: #fff; border-spacing: 1px !important; border-collapse: separate; font-family: "宋体"; table-layout: fixed; }
+.searchLayer table td {padding: 5px; margin: 1px; width: auto; }
+.searchLayer table td.th {background: #f1f1f1; width: 80px; }
+.searchLayer input[type="text"] {margin-bottom: 0px; border: none; box-shadow: none; border-bottom: solid 1px #ddd; border-radius: 0px; outline: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+.searchLayer select {margin-bottom: 0px; border-radius: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; outline: 0px; height: 20px; line-height: 20px;}
+
+.tableLayer {width: 100%; overflow: scroll; height: 300px; }
+.tableLayer table th {border: solid 1px #ddd; padding: 10px; font-weight: bold; background: #f1f1f1; }
+.tableLayer table td {border: solid 1px #ddd; padding: 10px; }
+.ctab-panel {width: 100%; position: relative; margin-bottom: 10px; }
+.ctab-head {height: 40px; }
+.ctab-head > a {display: inline-block; color: #333; padding: 0px 10px; line-height: 40px; }
+.ctab-head > a.active {border: solid 1px #ddd; border-bottom: none; background-color: #fff; border-top: solid 2px #3daae9; }
+.ctab-body {border: solid 1px #ddd; padding: 10px; }
+input{min-height:30px;}
+
+</style>
+
+<div class="fixedlayer">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Warehouse/Transfer/producting')}">调拨单列表</a></li>
+    </ul>
+</div>
+
+<div class="wrap" style='padding-top:0px;'>
+    <div class="customerlayer">
+        <!--  -->
+        <form method="get" action="{:U('Warehouse/Transfer/producting')}">
+        <input type="hidden" name="pcount" value="<php>echo $_GET['pcount']</php>">
+        <div class="searchLayer">
+            <table cellspacing="1">
+                <tr>
+                    <td class="th">单据编号：</td>
+                    <td><input type="text" name="docno" value="<php>echo $_GET['docno']</php>" ></td>
+                    <td class="th">物流公司：</td>
+                    <td><input type="text" name="logistics" value="<php>echo $_GET['logistics']</php>" ></td>
+                    <td class="th">物流单号：</td>
+                    <td><input type="text" name="logistics_docno" value="<php>echo $_GET['logistics_docno']</php>" ></td>
+                </tr>
+                <tr>                		
+                    <td class="th">发货仓库：</td>
+                    <td>
+                    	<select name="c_orig_id" style="height:30px;line-height:30px;">
+					                <option value="">全部</option>
+					                <php> 
+					                	foreach($warehouses as $warehouse){ 
+					                			$selected = (isset($_GET['c_orig_id'])&&$_GET['c_orig_id']==$warehouse['id_warehouse'])?' selected="selected"':'';
+					                </php>
+					                    <option value="{$warehouse['id_warehouse']}" <php> echo $selected; </php> >{$warehouse['title']}</option>
+					                <php> } </php>
+					            </select>	
+                    </td>
+                    <td class="th">收货仓库：</td>
+                    <td>
+                    	<select name="c_dest_id" style="height:30px;line-height:30px;">
+					                <option value="">全部</option>
+					                <php> 
+					                	foreach($warehouses as $warehouse2){ 
+					                			$selected = (isset($_GET['c_dest_id'])&&$_GET['c_dest_id']==$warehouse2['id_warehouse'])?' selected="selected"':'';
+					                </php>
+					                    <option value="{$warehouse2['id_warehouse']}" <php> echo $selected; </php> >{$warehouse2['title']}</option>
+					                <php> } </php>
+					            </select>
+                    </td>
+                    <td class="th">提交状态：</td>
+                    <td>
+                    	<select name="status2" style="height:30px;line-height:30px;">
+					                <option value="0">全部</option>
+					                <php> 
+					                	$status2=array(1=>'未提交',2=>'已提交');
+					                	foreach($status2 as $k=>$v){ 
+					                			$selected = ((!isset($_GET['status2'])&&$k==1)||(isset($_GET['status2'])&&$_GET['status2']==$k))?' selected="selected"':'';
+					                </php>
+					                    <option value="{$k}" <php> echo $selected; </php> >{$v}</option>
+					                <php> } </php>
+					            </select>
+                    </td>
+                </tr>
+                <tr style="display:none;"><td colspan='4'><button class="btn btn-primary searchButton">搜索</button></td></tr>
+            </table>
+        </div>
+      	</form>
+      	
+      	<div class="buttonLayer">
+            <button class="btn btn-primary" id="search2">搜索</button>
+            <button class="btn btn-primary" id="sub" style="float:right;margin-right:2px;">提交</button>
+            <button class="btn btn-primary" id="dels" style="float:right;margin-right:2px;">作废</button>
+            <button class="btn btn-primary" id="add" style="float:right;margin-right:2px;">新增</button>       		
+        </div>
+        
+        <div class="pagination">{$page}<input type="text" value="{$pcount}" id="pcount2" placeholder="输入每页显示数" style="min-height:18px;" />
+                    <input type="button" id="page_search" class="btn btn-small submitDisplayRow" style="min-height:18px;margin-top:-9px;" value="确定">
+                </div>
+        
+        <!--  -->
+        <div class="ctab-panel">
+            <!--<div class="ctab-head">
+                <a href="#" class="active">head1</a>
+                <a href="#">head2</a>
+            </div>-->
+            <div class="ctab-body">
+                <div class="tableLayer">
+                    <table>
+                        <thead>
+                            <tr>
+                            		<th style="text-align:center;"><label><input type="checkbox" value="" id="all" class="checkAllbox js-check-all" style="vertical-align:middle;padding-left:0px;"></label></th>
+                            		<th style="text-align:center;">序号</th>
+                                <th style="text-align:center;">单据编号</th>
+                                <th style="text-align:center;">发货仓库</th>
+                                <th style="text-align:center;">收货仓库</th>
+                                <th style="text-align:center;">物流公司</th>
+                                <th style="text-align:center;">物流单号</th>
+                                <th style="text-align:center;">总调拨数量</th>
+                                <th style="text-align:center;">制单人</th>
+                                <th style="text-align:center;">制单时间</th>
+                                <th style="text-align:center;">提交人</th>
+                                <th style="text-align:center;">提交时间</th>
+                                <th style="text-align:center;">提交状态</th>
+                                <!--<th>操作</th>-->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <php>$k=0;foreach($list as $v){ $k++; </php>
+                                <tr>
+                                		
+                                		<td style="text-align:center;">
+                                			<if condition="$v['status'] eq 1">
+                                    	<input name="id" class="checkAllbox js-check-all" type="checkbox" value="{$v.id}" style="vertical-align:middle;">
+                                    		</if>	
+                                		</td>
+                                		
+                                		<td style="text-align:center;">
+                                			<if condition="$v['status'] eq 1">
+                                			<a href="{:U('Transfer/add',array('id'=>$v['id']))}">{$k}</a>
+                                			<else />
+                                			<a href="{:U('Transfer/look',array('id'=>$v['id']))}">{$k}</a>
+                                			</if>
+                                		</td>
+                                		
+                                    <td style="text-align:center;">{$v.docno}</td>
+                                    <td style="text-align:center;">{$v.c_orig_id_ware_name}</td>
+                                    <td style="text-align:center;">{$v.c_dest_id_ware_name}</td>
+                                    <td style="text-align:center;">{$v.logistics}</td>
+                                    <td style="text-align:center;">{$v.logistics_docno}</td>
+                                    <td style="text-align:center;">{$v.cnt}</td>
+                                    <td style="text-align:center;">{$v.owner_id_nicename}</td>
+                                    <td style="text-align:center;">{$v.create_time}</td>
+                                    <td style="text-align:center;">{$v.statuser_id_nicename}</td>
+                                    <td style="text-align:center;">{$v.status_time}</td>
+                                    <td style="text-align:center;">
+                                    		<if condition="$v['status'] eq 1">
+                                    			未提交
+                                    		<else />
+                                    			已提交
+                                    		</if>
+                                    </td>
+                                    <!--
+                                    <td>
+                                    	<if condition='$v.status eq 1 or $v.status eq 2'>
+                                    		<a href="{:U('Transfer/add',array('id'=>$v['id']))}">查看</a>
+                                    	</if>
+                                    	<if condition='$v.status eq 1'>
+                                    		<a href="{:U('Transfer/add',array('id'=>$v['id']))}">编辑</a>
+                                    		<a href="{:U('Transfer/delete',array('id'=>$v['id']))}">删除</a>
+                                    	</if>
+                                    </td>-->
+                                </tr>
+                            <php>}</php>
+                        </tbody>
+                    </table>
+                </div>
+                
+            </div>
+        </div>
+        <!--页面下方搜索-->
+        <form method="get" action="{:U('Warehouse/Transfer/producting')}"  class="well form-search" style="display:none;">
+        <input type="hidden" name="pcount" value="<php>echo $_GET['pcount']</php>">
+        <div class="searchLayer">
+            <table cellspacing="1">
+                <tr>
+                    <td class="th">单据编号：</td>
+                    <td><input type="text" name="docno" value="<php>echo $_GET['docno']</php>" ></td>
+                    <td class="th">物流公司：</td>
+                    <td><input type="text" name="logistics" value="<php>echo $_GET['logistics']</php>" ></td>
+                    <td class="th">物流单号：</td>
+                    <td><input type="text" name="logistics_docno" value="<php>echo $_GET['logistics_docno']</php>" ></td>
+                </tr>
+                <tr>                		
+                    <td class="th">发货仓库：</td>
+                    <td>
+                    	<select name="c_orig_id" style="width:300px;height:30px;line-height:30px;">
+					                <option value="">全部</option>
+					                <php> 
+					                	foreach($warehouses as $warehouse1){ 
+					                			$selected = (isset($_GET['c_orig_id'])&&$_GET['c_orig_id']==$warehouse1['id_warehouse'])?' selected="selected"':'';
+					                </php>
+					                    <option value="{$warehouse1['id_warehouse']}" <php> echo $selected; </php> >{$warehouse1['title']}</option>
+					                <php> } </php>
+					            </select>	
+                    </td>
+                    <td class="th">收货仓库：</td>
+                    <td>
+                    	<select name="c_dest_id" style="width:300px;height:30px;line-height:30px;">
+					                <option value="">全部</option>
+					                <php> 
+					                	foreach($warehouses as $warehouse21){ 
+					                			$selected = (isset($_GET['c_dest_id'])&&$_GET['c_dest_id']==$warehouse21['id_warehouse'])?' selected="selected"':'';
+					                </php>
+					                    <option value="{$warehouse21['id_warehouse']}" <php> echo $selected; </php> >{$warehouse21['title']}</option>
+					                <php> } </php>
+					            </select>
+                    </td>
+                </tr>
+                <tr><td colspan='4'><button class="btn btn-primary searchButton">搜索</button></td></tr>
+            </table>
+        </div>
+      	</form>
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $(function(){
+    	
+    		/*显示条数*/
+    		$("#page_search").click(function(){
+    			var pcount = parseInt($('#pcount2').val());
+    			if(pcount<0){alert('请输入每页显示条数');return false;}
+    			$('input[name="pcount"]').val(pcount);
+    			$("button[class*='searchButton']:first").trigger('click');
+    		});
+    		
+    		/*搜索*/
+    		$("#search2").click(function(){
+    			$("button[class*='searchButton']:first").trigger('click');
+    		});
+    		
+    		/*全选/全不选*/
+    		$("#all").click(function(){
+		        if(this.checked){
+		            $("td :checkbox").prop("checked", true);
+		        }else{
+		            $("td :checkbox").prop("checked", false);
+		        }
+		    });    		
+		    
+		    /*提交调拨单*/
+		    $('#sub').click(function(){
+	        var transfer_id = [];
+	        $("input[name='id']:checked").each(function(){            
+	            transfer_id.push($(this).attr('value'));
+	        }); 
+	        if(transfer_id.length==0){alert('请选择单据编号');return false;}
+	        if (confirm('确定要提交？')) {
+	            $.ajax({
+	                url:"{:U('Transfer/submit2')}",
+	                type:'POST',
+	                dataType:'json',
+	                data:{'transfer_id':transfer_id},
+	                success:function(data){
+	                    alert(data.message);
+	                    window.location.reload();
+	                }
+	            });
+	        }
+	      });
+	      
+	      /*添加调拨单*/
+		    $('#add').click(function(){
+	        
+	        window.location.href="{:U('Warehouse/Transfer/add')}";
+	      });
+	      
+	      /*作废*/
+		    $('#dels').click(function(){
+	        var transfer_id = [];
+	        $("input[name='id']:checked").each(function(){            
+	            transfer_id.push($(this).attr('value'));
+	        }); 
+	        if(transfer_id.length==0){alert('请选择单据编号');return false;}
+	        if (confirm('确定要作废？')) {
+	            $.ajax({
+	                url:"{:U('Transfer/delete')}",
+	                type:'POST',
+	                dataType:'json',
+	                data:{'transfer_id':transfer_id},
+	                success:function(data){
+	                    alert(data.message);
+	                    window.location.reload();
+	                }
+	            });
+	        }
+	      });
+	    
+    });
+    
+</script>
+</body>
+</html>

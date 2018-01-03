@@ -1,0 +1,402 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="fixedlayer" style="height: 40px;">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Purchase/Index/purchase_warning')}">采购预警</a></li>
+    </ul>
+</div>
+<div class="wrap">
+    <div class="customerlayer" style="height: 300px;">
+    <form method="get" action=""  class="well form-search" style="margin-top: -80px;width:100$;">
+        <div class="searchLayer" style="padding:20px;background-color: #ecf0f1;">
+            <table cellspacing="1">
+                <tr>
+                    <td class="th">部门：</td>
+                    <td>
+                        <select name="department_id" style="height:30px">
+                            <option value="1000" <php>echo  $select_department==1000 ? 'selected' : ''</php> >所有部门</option>
+                            <foreach name="department" item="item">
+                                <option value="{$item.id_department}" <php>echo  $select_department==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <td class="th">仓库：</td>
+                    <td>
+                        <select name="id_warehouse" style="height:30px">
+                            <option value="0">所有</option>
+                            <foreach name="warehouse" item="item">
+                                <option value="{$key}" <php>echo isset($_GET['id_warehouse']) && $_GET['id_warehouse']==$key? 'selected' : ''</php>>{$item}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <td class="th">SKU：</td>
+                    <td>
+                        <input type="text" name="sku" value="{$_GET['sku']}"/>
+                    </td>
+                    
+                </tr>
+                <tr>
+                    <td class="th">产品名：</td>
+                    <td>
+                        <input type="text" name="title" value="{$_GET['title']}"/>
+                    </td>
+                    <td class="th">内部名：</td>
+                    <td>  <input type="text" name="innername" value="{$_GET['innername']}"/>
+                    </td>
+                    <td class="th">排序：</td>
+                    <td>
+                        <select name="order" id="" style="width:100%;height:30px">
+                            <option value="shortage " <if condition="$_GET['order'] EQ shortage">selected</if>>缺货量</option>
+                            <!-- <option value="daysale" <if condition="$_GET['order'] EQ daysale">selected</if>>日均量</option>-->
+                            <option value="innername" <if condition="$_GET['order'] EQ innername">selected</if>>内部名</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+         </div>
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <input type="hidden" name="sort" value="{$Think.get.sort}">
+        <input type="hidden" name="orderby" value="{$Think.get.sort}">
+        <div class="control-group" style="line-height: 36px;">
+
+            &nbsp &nbsp
+            <button class="btn btn-primary searchButton">搜索</button>&nbsp &nbsp
+            <button class="btn btn-primary exportButton">导出</button>&nbsp &nbsp
+            <a class="btn btn-primary createButton">生成采购单</a>&nbsp &nbsp
+        </div>
+    </form>
+    <fieldset>
+        <table class="table table-hover table-bordered table-list order-table" style="table-layout:fixed;">
+            <!-- 表头随滚动固定 -->
+            <thead class="myth1" style="display:none;">
+        <tr class="sort">
+            <th width="8%"><input type="checkbox" value="" id="all">&nbsp&nbsp&nbsp&nbsp&nbsp产品图片</th>
+                <th width="5%">产品SKU</th>
+                <th width="5%">业务员</th>
+                <th width="9%" style="word-wrap:break-word;word-break:break-all;">域名</th>
+                <th width="5%">产品名</th>
+                <th  style="width: 180px;word-wrap:break-word;word-break:break-all;" >内部名</th>
+                <th width="5%"> 属性</th>
+                <th width="5%">采购单价</th>
+                <th width="3%">仓库</th>
+                <th width="3%">库存量</th>
+                <th width="3%">可用库存</th>
+                <th width="3%">在途量</th>
+                <th width="3%">在单量</th>
+                <th width="10%">近三日销量</th>
+                <th data-sort-by="daysale" width="3%">日均量</th>
+                <th data-sort-by="shortage" width="5%">缺货量</th>
+        </tr>
+        </thead>
+        <!-- 表头随滚动固定 -->
+            <thead  class="myth2">
+            <tr class="sort">
+
+                <th width="8%"><input type="checkbox" value="" id="all">&nbsp&nbsp&nbsp&nbsp&nbsp产品图片</th>
+                <th width="5%">产品SKU</th>
+                <th width="5%">业务员</th>
+                <th width="9%" style="word-wrap:break-word;word-break:break-all;">域名</th>
+                <th width="5%">产品名</th>
+                <th  style="width: 180px;word-wrap:break-word;word-break:break-all;" >内部名</th>
+                <th width="5%"> 属性</th>
+                <th width="5%">采购单价</th>
+                <th width="3%">仓库</th>
+                <th width="3%">库存量</th>
+                <th width="3%">可用库存</th>
+                <th width="3%">在途量</th>
+                <th width="3%">在单量</th>
+                <th width="10%">近三日销量</th>
+                <th data-sort-by="daysale" width="3%">日均量</th>
+                <th data-sort-by="shortage" width="5%">缺货量</th>
+            </tr>
+            </thead>
+            <tbody>
+            <foreach name="newarr" item="item">
+                <php>$i = 0;if($item['warehouse_product']){</php>
+                <foreach name="item['warehouse_product']" item="product">
+                    <php>$num = count($item['warehouse_product']);</php>
+                    <tr>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">
+                                <input name="product[]" class="single" type="checkbox" value="{$item['id_product']}">
+                                <input type="hidden" name="id_product_sku" value="{$item['id_product_sku']}"/>
+                                <notempty name="item['img']">
+                                    <img id="photo-preview" src="{:sp_get_image_preview_url($item['img'])}" style="height:36px;width: 36px;">
+                                </notempty>
+
+                            </td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">
+
+                                {$item.sku}
+                            </td>
+                        </if>
+                         <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$item.user_nicename}</td>
+                        </if>
+                         <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$item.name}</td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$item.title}</td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$item.inner_name}
+                            <br/>
+                    <a onclick="productMSG({$item['id_product']});" name={$item.id_product} style="cursor:pointer" >查看拿货备注</a>
+                           </td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$item.sku_title}</td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <!--采购单价-->
+                            <td rowspan="{$num}">
+                                <php>
+                                    $where_price['id_product_sku'] = $item['id_product_sku'];
+                                    $date = date('Y-m-d',strtotime('-90 day'));
+                                    $where_price[] = "created_at >= '".$date."'";
+                                    $purchase_product = M('PurchaseProduct')->alias('pp')->field('pp.price,pp.quantity')
+                                    ->join('__PURCHASE__ as p on p.id_purchase = pp.id_purchase','LEFT')
+                                    ->where($where_price)
+                                    ->select();
+                                    $sum = '';
+                                    $count = '';
+                                    foreach($purchase_product as $k=>$v){
+                                        $count+=$v['quantity'];
+                                        $sum+=(int)$v['price']*$v['quantity'];
+                                    }
+                                    echo round($sum/$count,2);
+                                </php>
+                            </td>
+                        </if>
+                        <td>{$warehouse[$product['id_warehouse']]}</td>
+                        <td>{$product.quantity}</td>
+                        <td>{$product['quantity']-$product['qty_preout']}
+                        </td>
+                        <td>{$product.road_num}</td>
+                        <td>{$product.qty_preout}</td>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">
+                                <!--近三日销量-->
+                                <php>
+                                    //统计近三日销量
+                                    $date_start = date('Y-m-d',strtotime('-3 day'));
+                                    $data_end = date('Y-m-d');
+                                    $where = "created_at >= '".$date_start."' and created_at < '".$data_end."'";
+                                    $order_item =  M('OrderItem')->alias('oi')
+                                    ->join('__ORDER__ as o on o.id_order = oi.id_order','LEFT')
+                                    ->field('count(id_order_item) as count,DATE_FORMAT(created_at,"%Y-%m-%d") as new_created_at')
+                                    ->where(array('id_product_sku'=>$product['id_product_sku'],$where,'id_order_status'=>array('IN','4,5,6,7,8,9,10,16')))
+                                    ->group('new_created_at')
+                                    ->select();
+                                    $sum = '';
+                                    if($order_item){
+                                    foreach($order_item as $v){
+                                    echo $v['new_created_at'].':'.$v['count'].'</br>';
+                                    $sum+=$v['count'];
+                                    }
+                                    }else{
+                                    echo '无';
+                                    }
+                                </php>
+                            </td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}"><php>if($sum!=0 )echo round($sum/3,2);</php></td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$item['stockout']}</td>
+                        </if>
+                    </tr>
+                    <php>$i++;</php>
+                </foreach>
+            <php>}else{</php>
+                <tr>
+        <!--            <td> <input name="product[]" class="single" type="checkbox" value="{$item['id_product']}">
+                        <input type="hidden" name="id_product_sku" value="{$item['id_product_sku']}"/>
+                        {$item.sku}
+                    </td>
+-->
+                    
+                    <td> <input name="product[]" class="single" type="checkbox" value="{$item['id_product']}">
+                        <input type="hidden" name="id_product_sku" value="{$item['id_product_sku']}"/>
+                            <notempty name="item['img']">
+                                <img id="photo-preview" src="{:sp_get_image_preview_url($item['img'])}" style="height:36px;width: 36px;">
+                            </notempty>
+
+                        </td>
+
+                        <td>
+
+                            {$item.sku}
+                        </td>
+
+                    <td>{$item.title}</td>
+                    <td>{$item.inner_name}<br/> 
+                    <a onclick="productMSG({$item['id_product']});" name={$item.id_product} style="cursor:pointer" >查看拿货备注</a></td></td>
+                    <td>{$item.sku_title}</td>
+                    <td>
+                        <php>
+                            $where_price['id_product_sku'] = $item['id_product_sku'];
+                            $date = date('Y-m-d',strtotime('-90 day'));
+                            $where_price[] = "created_at >= '".$date."'";
+                            $purchase_product = M('PurchaseProduct')->alias('pp')->field('pp.price,pp.quantity')
+                            ->join('__PURCHASE__ as p on p.id_purchase = pp.id_purchase','LEFT')
+                            ->where($where_price)
+                            ->select();
+                            $sum = '';
+                            $count = '';
+                            foreach($purchase_product as $k=>$v){
+                            $count+=$v['quantity'];
+                            $sum+=(int)$v['price']*$v['quantity'];
+                            }
+                            echo round($sum/$count,2);
+                        </php>
+                    </td>
+                    <td>{$warehouse[$product['id_warehouse']]}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>  <php>
+                        //统计近三日销量
+                        $date_start = date('Y-m-d',strtotime('-3 day'));
+                        $data_end = date('Y-m-d');
+                        $where = "created_at >= '".$date_start."' and created_at < '".$data_end."'";
+                        $order_item =  M('OrderItem')->alias('oi')
+                        ->join('__ORDER__ as o on o.id_order = oi.id_order','LEFT')
+                        ->field('count(id_order_item) as count,DATE_FORMAT(created_at,"%Y-%m-%d") as new_created_at')
+                        ->where(array('id_product_sku'=>$item['id_product_sku'],$where,'id_order_status'=>array('IN','4,5,6,7,8,9,10,16')))
+                        ->group('new_created_at')
+                        ->select();
+                        $sum = '';
+                        if($order_item){
+                        foreach($order_item as $v){
+                        echo $v['new_created_at'].':'.$v['count'].'</br>';
+                        $sum+=$v['count'];
+                        }
+                        }else{
+                        echo '无';
+                        }
+                    </php></td>
+                    <td><php>if($sum!=0 )echo round($sum/3,2);</php></td>
+                    <td>{$item['stockout']}</td>
+                </tr>
+                <php>}</php>
+            </foreach>
+            </tbody>
+        </table>
+        <div class="pagination">{$Page}</div>
+    </fieldset>
+    </div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','purchase_warning');
+        $('.form-search').attr('action',"{:U('Purchase/Index/purchase_warning')}");
+    });
+    $('.exportButton').click(function(){
+        $('.form-search input[name=a]').attr('value','export_warning');
+        $('.form-search').attr('action',"{:U('Purchase/Index/export_warning')}");
+    });
+
+    $('.sort>th').click(function(){
+        $('.form-search input[name="orderby"]').val($(this).attr('data-sort-by'));
+        if($('.form-search input[name="sort"]').val() == 'asc'){
+            $('.form-search input[name="sort"]').val('DESC');
+        }else{
+            $('.form-search input[name="sort"]').val('asc');
+        }
+        $(".form-search").submit();
+    });
+    $('.createButton').click(function(){
+        var arr = [];
+        var flag = true;
+
+        $("input[name^=product]:checkbox:checked").each(function(index,element){
+            arr[index]= element['value'];
+        });
+        var count = arr.length;
+        if(count != 1){
+            for(var i=0;i<count,i+1<count;i++){
+                if(arr[i]!=arr[i+1]){
+                    flag = false;
+                    alert('不同的产品不能在同一个采购单');
+                    break;
+                }
+            }
+        }
+        if(flag){
+            var id_product = $("input[name^=product]:checkbox:checked").val();
+            var id_product_sku = [];
+            $("input[name^=product]:checkbox:checked").next().each(function(index,element){
+                id_product_sku[index] = element['value'];
+            });
+            $('.form-search input[name=a]').attr('value','create');
+            var newstring="/Purchase/Index/create?id_product_sku="+id_product_sku+"&id_product="+id_product;
+            $('.createButton').attr('href',newstring);
+        }
+
+    });
+
+    $("#all").click(function(){
+        if(this.checked){
+            $("td :checkbox").prop("checked", true);
+        }else{
+            $("td :checkbox").prop("checked", false);
+        }
+    });
+    
+    /* 表头随滚动固定 */
+    $(function(){
+        var thtop,thleft,thwidth,thadd,alltd,myW;
+        var he=$(".fixedlayer");
+        var me=$(".order-table .myth1");
+        thtop=he.height()+parseInt(he.css("padding-top"))+"px";
+        thleft=he.css("left");
+        thwidth=$(".myth2").css("width");
+        thadd=$(".myth2").offset().top;
+        alltd=$(".order-table tr").eq(3).find("td");
+        for(var i=0;i<alltd.length;i++){
+            myW=alltd.eq(i).width();
+            me.find("th").eq(i).width(myW);
+        }
+        $(window).scroll(function(){
+            var scrollH=$(window).scrollTop();
+            if(scrollH>thadd){
+               me.css({"top":thtop,"left":thleft,"width":thwidth,"position":"fixed","z-index":"3","background-color":"#fff","display":"block"});
+            }else{
+               me.css({"top":"auto","left":"auto","width":"auto","position":"static","z-index":"1","display":"none"});
+            }
+        });
+        
+    })
+//点击弹出框显示 产品 拿货链接  备注   --Lily  2017-12-05
+    function productMSG(id_product){
+        var id_product = id_product;
+        var MSG = 'MSG';
+       $.post("{:U('purchase/Index/statistics')}",{'id_product':id_product,MSG:MSG},function(data){
+            if(data){
+                var obj = data;
+                var pro_data = $.parseJSON(obj);
+                var html = "<div style='font-size:16px;margin:auto 0;padding:20px;line-height:36px;'><font color='red'>拿货链接：</font>"+pro_data.purchase_url+"<br/><font color='red'>备注：</font>"+pro_data.pro_msg+"</div>";
+               parent.layer.open({
+                  type: 1,
+                  shade: 0.8,
+                  skin: 'layui-layer-rim', //加上边框
+                  area: ['60%', '40%'], //宽高
+                  time: false,
+                  shadeClose: true,
+                  content: html
+                });
+            }
+        });
+    }
+</script>
+</body>
+</html>

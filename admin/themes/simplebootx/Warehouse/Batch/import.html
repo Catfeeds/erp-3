@@ -1,0 +1,69 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li ><a href="{:U('Batch/index')}">批次单管理</a></li>
+        <li class="active"><a href="{:U('Batch/import')}">扫码更新批次</a></li>
+    </ul>
+
+    <fieldset>
+        <th>运单号</th>
+        <td>
+            <input type="text" style="width: 400px;"   class="search-text" name="track_number" value =""  autocomplete="off" id="track_number"/>
+            <form method="post" action="{:U('Batch/import')}"  id="form-search">
+                <div name="tipShow" class="tipShow" style="">
+             
+                </div>
+                <foreach name="errors" item="err">
+                    <div style="color:red;">{$err}</div>
+                </foreach>
+                 <button class="btn btn-primary submitButton" >生成批次单</button>
+            </form>
+        </td>
+    </fieldset>
+
+</div>
+<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+$(function(){
+    document.onkeydown = function(e){
+        var ev = document.all ? window.event : e;
+        if(ev.keyCode==13) {
+
+                var track_number = $('#track_number').val();
+                track_number = track_number;
+                var ali_i = $(this);
+                if(track_number != null && track_number != ""){
+                    $('#track_number').attr("readOnly",true);
+                    $.ajax({
+                        url:"{:U('Batch/checkTrackNum')}",
+                        type:"post",
+                        data:{'track_number':track_number},
+                        dataType:'json',
+                        success: function(data){
+                            if(data.status==1){
+                                //$('.tipShow').append(data);
+                                // $('.tipShow').prepend(data);
+                                console.log(data);
+                                var tarckinfo=data.trackInfo;
+                                var itemhtml="<div>订单号:"+tarckinfo.id_increment+"  ,运单号:"+tarckinfo.track_number;
+                                itemhtml+="<input type='hidden' name='order_ship["+tarckinfo.id_order+"]' value='"+tarckinfo.id_order+','+tarckinfo.id_order_shipping+','+track_number+"'/></div>"
+                                $('.tipShow').prepend(itemhtml);
+                            }
+                            else {
+                                 alert(data.msg);                                
+                            }
+                            $('#track_number').attr("readOnly",false).val('');
+                        }
+                    })
+                }else{
+                    alert('输入不能为空');
+                    $('#track_number').val('');
+                }
+        }
+    }
+});
+</script>
+</body>
+</html>

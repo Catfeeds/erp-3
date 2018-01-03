@@ -1,0 +1,45 @@
+<admintpl file="header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li  class="active"><a href="{:U('Area/edit_area')}">{:L('编辑货位区域')}</a></li>
+    </ul>
+    <form class="form-horizontal js-ajax-form" action="{:U('Area/edit_area')}" method="post">
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label">{:L('所属仓库')}</label>
+                <div class="controls">
+                    <select name="id_warehouse" style="width:100px;">
+                        <option value="0">所有</option>
+                        <foreach name="warehouse" item="item">
+                            <option value="{$key}" <if condition="$key EQ $list[id_warehouse]">selected</if>>{$item}</option>
+                        </foreach>
+                    </select>
+
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">货位区域编码</label>
+                <div class="controls">
+                    <input type="text" name="coding" value="{$list.coding}"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('货位区域名称')}</label>
+                <div class="controls">
+                    <input type="text" name="title" value="{$list.title}" />
+
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-actions">
+             <input type="hidden" name="id_goods_area" value="{$list.id_goods_area}"/>
+            <button type="submit" class="btn btn-primary js-ajax-submit" id="add_btn">{:L('EDIT')}</button>
+            <a class="btn" href="{:U('Area/list_area')}">{:L('BACK')}</a>
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

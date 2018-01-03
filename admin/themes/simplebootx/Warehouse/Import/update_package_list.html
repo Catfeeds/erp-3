@@ -1,0 +1,88 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('import/update_package_list')}">更新已打包记录列表</a></li>
+        <li><a href="{:U('import/update_package_code')}">扫码更新已打包</a></li>
+    </ul>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="act" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="id_department" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="department" item="item">
+                    <option value="{$key}" <if condition="$key EQ $_GET['id_department']">selected</if>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">扫码人员:</label>
+            <select name="id_users" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="users" item="item">
+                    <option value="{$key}" <if condition="$key EQ $_GET['id_users']">selected</if>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">订单号:</label>
+            <input type="text" name="id_increment" style="width: 120px;" value="{$getData.id_increment}"  placeholder="请输入订单号...">
+            <label class="control-label">快递单号:</label>
+            <input type="text" name="track_number" style="width: 200px;" value="{$getData.track_number}" placeholder="请输入快递单号...">
+            <label class="control-label">建立日期:</label>
+            <input type="text" name="start_time" class="js-datetime" value="{$getData.start_time}" style="width: 120px;" autocomplete="off">-
+            <input autocomplete="off" type="text" class="js-datetime" name="end_time" value="{$getData.end_time}" style="width: 120px;">
+
+            <button class="btn btn-primary searchButton" id="searchBtn">搜索</button>
+            <button class="btn btn-primary exportButton" id="exportBtn">导出</button>
+        </div>
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list order-table">
+        <thead>
+        <tr>
+            <th>id</th>
+            <th>物流</th>
+            <th>部门</th>
+            <th>扫码人员</th>
+            <th>订单号</th>
+            <th>快递单号</th>
+            <th>建立日期</th>
+        </tr>
+        </thead>
+        <tbody>
+            <foreach name="list" item="v">
+                <tr style="">
+                    <td>{$v.id}</td>
+                    <td>{$shipping_data[$v['id_shipping']]}</td>
+                    <td>{$department[$v['id_department']]}</td>
+                    <td>{$users[$v['id_users']]}</td>
+                    <td>{$v.id_increment}</td>
+                    <td>{$v.track_number}</td>
+                    <td>{$v.created_at}</td>
+                </tr>
+            </foreach>
+        </tbody>
+    </table>
+        <div class="pagination">{$Page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.submitDisplayRow').click(function(){
+        var getRow = $(this).parent().find('input[name=displayRow]').val();
+        if(getRow){
+            $.post("{:U('Ordercheck/setpagerow')}",{'row':getRow},function(data){
+                window.location.reload();
+            });
+        }
+    });
+    $('.searchButton').click(function(){
+        $('.form-search input[name=act]').attr('value','');
+        $('.form-search').attr('action',"{:U('import/update_package_list')}");
+    });
+    $('.exportButton').click(function(){
+        $('.form-search input[name=act]').attr('value','export');
+        $('.form-search').attr('action',"{:U('import/update_package_list')}");
+    });
+</script>
+</body>
+</html>

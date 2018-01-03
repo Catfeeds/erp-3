@@ -1,0 +1,108 @@
+<admintpl file="header" />
+<style>
+
+</style>
+</head>
+<body>
+<div class="wrap">
+    <form method="post" action="{:U('Index/statistics_order')}"  class="well form-search">
+        <div class="control-group" style="line-height: 36px;">
+            <p style="color:red;">默认只显示订单[未配货][配货中][缺货]状态</p>
+            <label>物流：</label>
+            <select name="shipping_id" style="width: 120px;">
+                <option value="">所有</option>
+                <foreach name="shippings" item="shipping">
+                    <option value="{$shipping.id_shipping}"<if condition="$Think.post.shipping_id eq $shipping['id_shipping']"> selected="selected"</if>>{$shipping.title}</option>
+                </foreach>
+            </select>
+            <label class="control-label">部门:</label>
+            <select name="department_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="department" item="item">
+                    <option value="{$item.id_department}" <if condition="$Think.post.department_id eq $item['id_department']"> selected="selected"</if>>{$item.title}</option>
+                </foreach>
+            </select>  
+            <label class="control-label">仓库:</label>
+            <select name="warehouse_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="warehouse" item="item">
+                    <option value="{$item.id_warehouse}" <if condition="$Think.post.warehouse_id eq $item['id_warehouse']"> selected="selected"</if>>{$item.title}</option>
+                </foreach>
+            </select>  
+            <label class="control-label">订单状态:</label>
+            <select name="status_id" style="width: 120px;">
+                <option value="0">所有</option>
+                <option value="4"<if condition="$Think.post.status_id eq 4"> selected="selected"</if>>未配货</option>
+                <option value="5"<if condition="$Think.post.status_id eq 5"> selected="selected"</if>>配货中</option>
+                <option value="7"<if condition="$Think.post.status_id eq 7"> selected="selected"</if>>已配货</option>
+                <option value="6"<if condition="$Think.post.status_id eq 6"> selected="selected"</if>>缺货</option>
+            </select>
+            <label class="control-label">下单时间:</label>
+            <input type="text" name="time_start" class="js-datetime" value="{$Think.post.time_start}" style="width: 120px;" autocomplete="off">-
+            <input autocomplete="off" type="text" class="js-datetime" name="time_end" value="{$Think.post.time_end}" style="width: 120px;">
+            <button class="btn btn-primary searchButton">搜索</button>
+        </div>
+    </form>
+    <div>
+        订单数: {$order_total}
+    </div>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list order-table">
+        <thead>
+        <tr>
+            <th>物流</th>
+            <th>订单状态</th>
+            <th>数量</th>
+        </tr>
+        </thead>
+        <tbody>
+        <php>$last_shipping_name = '';$total_qty = 0;</php>
+        <foreach name="stat_shipping" item="stat" key="shipping_name">
+            <foreach name="stat" item="qty" key="status_name">
+                <if condition="($last_shipping_name NEQ '') AND ($shipping_name NEQ $last_shipping_name)">
+                    <tr style="background:#ccc;">
+                        <td colspan="2">小计:</td>
+                        <td>{$total_qty}</td>
+                    </tr>
+                    <php>$total_qty = 0;$last_shipping_name = '';</php>
+                </if>
+                <tr>
+                    <td>{$shipping_name}</td>
+                    <td>{$status_name}</td>
+                    <td>{$qty}</td><php>$total_qty += $qty;</php>
+                </tr>
+                <php>$last_shipping_name = $shipping_name;</php>
+            </foreach>
+        </foreach>
+        <if condition="$last_shipping_name NEQ ''">
+            <tr style="background:#ccc;">
+                <td colspan="2">小计:</td>
+                <td>{$total_qty}</td>
+            </tr>
+        </if>
+        </tbody>
+    </table>
+        <br/>
+    <div>按订单状态</div>
+    <table class="table table-hover table-bordered table-list order-table">
+        <thead>
+        <tr>
+            <th>订单状态</th>
+            <th>数量</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="stat_status" item="stat" key="status_name">
+            <tr>
+                <td>{$status_name}</td>
+                <td>{$stat}</td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,130 @@
+<admintpl file="header"/>
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('Index/index')}">{:L('邮件队列管理')}</a></li>
+			<li class="active"><a href="{:U('index/add')}">{:L('添加邮件')}</a></li>
+		</ul>
+		<form class="form-horizontal js-ajax-form" action="{:U('index/add_post')}" method="post">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">域名</label>
+					<div class="controls">
+						<input type="text" name="name" value=""/>
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">发送人</label>
+					<div class="controls">
+						<input type="text" name="from_name" value="" />
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">发送人邮箱</label>
+					<div class="controls">
+						<input type="text" name="from_addr" value="" id=""/>
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">收件人</label>
+					<div class="controls">
+						<input type="text" name="to_name" value="" id=""/>
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">收件人邮箱</label>
+					<div class="controls">
+						<input type="text" name="to_addr" value="" id=""/>
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">标题</label>
+					<div class="controls">
+						<input type="text" name="subject" value="" id=""/>
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">内容</label>
+					<div class="controls">
+						<textarea name="content" rows="2" cols="20" class="inputtext" style="height: 100px; width: 500px;"></textarea>
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">是否HTML</label>
+					<div class="controls">
+						<label class="radio inline" for="active_true2"><input type="radio" name="is_html" value="1" id="active_true2" />{:L('ENABLED')}</label>
+						<label class="radio inline" for="active_false2"><input type="radio" name="is_html" value="0" checked id="active_false2">{:L('DISABLED')}</label>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">SMTP主机</label>
+					<div class="controls">
+						<input type="text" name="smtp_host" value="" id=""/>
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">SMTP用户</label>
+					<div class="controls">
+						<input type="text" name="smtp_user" value="" id=""/>
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">SMTP密码</label>
+					<div class="controls">
+						<input type="text" name="smtp_pwd" value="" id=""/>
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">SMTP端口</label>
+					<div class="controls">
+						<input type="text" name="smtp_port" value="25" id=""/>
+						<span class="form-required">*</span>
+					</div>
+				</div>
+                <div class="control-group">
+                    <label class="control-label">SMTP加密</label>
+                    <div class="controls">
+                        <label class="radio inline" for="active_true1"><input type="radio" name="smtp_ssl" value="1" id="active_true1" />{:L('ENABLED')}</label>
+                        <label class="radio inline" for="active_false1"><input type="radio" name="smtp_ssl" value="0" checked id="active_false1">{:L('DISABLED')}</label>
+                    </div>
+                </div>
+				<div class="control-group">
+					<label class="control-label">错误次数</label>
+					<div class="controls">
+						<input type="text" name="err_count" value=""/>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">错误消息</label>
+					<div class="controls">
+						<textarea name="err_msg" rows="2" cols="20" class="inputtext" style="height: 100px; width: 500px;"></textarea>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">状态</label>
+					<div class="controls">
+						<label class="radio inline" for="active_true"><input type="radio" name="status" value="1" checked id="active_true" />{:L('ENABLED')}</label>
+						<label class="radio inline" for="active_false"><input type="radio" name="status" value="0" id="active_false">{:L('DISABLED')}</label>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('ADD')}</button>
+				<a class="btn" href="{:U('index/index')}">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

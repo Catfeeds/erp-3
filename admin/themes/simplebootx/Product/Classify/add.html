@@ -1,0 +1,26 @@
+<admintpl file="header"/>
+</head>
+<body>
+    <div class="wrap js-check-wrap">
+        <ul class="nav nav-tabs">
+            <li><a href="{:U('Product/classify/index')}">产品属性列表</a></li>
+            <li class="active"><a href="{:U('Product/classify/add')}">添加产品属性</a></li>
+        </ul>
+        <form class="form-horizontal js-ajax-form" action="{:U('classify/add_post')}" method="post">
+            <fieldset>
+                <div class="control-group">
+                    <label class="control-label">属性名称</label>
+                    <div class="controls">
+                        <input type="text" name="name" value="" />
+                        <span class="form-required">*</span>
+                    </div>
+                </div>                
+            </fieldset>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary js-ajax-submit">添加</button>
+                <a class="btn" href="{:U('classify/index')}">返回</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

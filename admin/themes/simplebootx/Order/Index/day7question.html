@@ -1,0 +1,146 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li  <if condition= "$type eq 5" > class="active" </if> ><a href="{:U('Order/Index/day7question',array('type'=>5))}">5天问题单</a></li>
+        <li <if condition= "$type eq 7" > class="active" </if> ><a href="{:U('Order/Index/day7question',array('type'=>7))}">7天问题单
+    </a></li>
+        <li  <if condition= "$type eq 10" > class="active" </if> ><a href="{:U('Order/Index/day7question',array('type'=>10))}">10天问题单</a></li>
+        
+    </ul>
+ 
+    <div id="tableLayer">
+        <fieldset>
+            <table class="table table-hover table-bordered table-list order-table" >
+                <thead>
+                <tr>
+                    <th width="100">部门</th>
+                    <th width="100">缺货订单数（<{$end_time}）</th>
+                    <th width="100">未发货订单数（<{$end_time}）</th>
+                </tr>
+                </thead>
+                <tbody>
+                <foreach name="order_list" item="order">
+                    <tr>
+                        <td>
+                            {$order.dt_title}
+                        </td>
+                        <td>
+                            <a href="{:U('Order/Index/index',['id_department'=>$order['id_department'],'start_time'=>$start_time,'end_time'=>$end_time,'status_id'=>6]
+                            )}" target="_blank">
+                                {$order.qty}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{:U('Order/Index/index',['id_department'=>$order['id_department'],'start_time'=>$start_time,'end_time'=>$end_time,'status_id'=>'5,7,18']
+                            )}" target="_blank">
+                            {$order.nosend}
+                            </a>
+                        </td>
+                    </tr>
+                </foreach>
+                <tr>
+                    <td><span style="color:red">总计:</span></td>
+                    <td><span style="color:red">{$stockout_sum}</span></td>
+                    <td><span style="color:red">{$unshipped_sum}</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </fieldset>
+    </div>
+    <div class="pagination">{$page}<input type="text" value="" name="displayRow" placeholder="输入每页显示数">
+        <input type="button" class="btn btn-small submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    //console.debug(jQuery('.js-ajax-form'));
+    //
+    //
+    //
+
+    $('#morecheck').on('click',function(){
+        if($(this).attr('checked')){
+            $(this).val('1');
+        }else{
+            $(this).val('0');
+        }
+    });
+
+    $('.expand').click(function () {
+        var data=$('.form-search').serializeArray();
+        $('#dlist').html('');
+        $.ajax({
+            url:"{:U('Index/index')}",
+            type:'get',
+            dataType:'json',
+            data:{'data':data,'isajax':1},
+            success:function(data){
+                if(data.status==1){
+                    var temphtml='';
+                    temphtml+="<p>";
+                    var formdata=data.msg;
+                    for(var key in  formdata){
+                        temphtml+=formdata[key].name+"<span style='color:red;'>"+formdata[key].total+"</span>&nbsp;&nbsp;";
+                    }
+                    temphtml+="</p>";
+                    $('.dlist').html(temphtml);
+                }
+            }
+        })
+    
+    });
+    // echo $domain[$item['id_domain']].':<span style="color:red;">'.$item['total'].'</span>   ';
+    $('.submitDisplayRow').click(function(){
+        var getRow = $(this).parent().find('input[name=displayRow]').val();
+        if(getRow){
+            $.post("{:U('Ordercheck/setpagerow')}",{'row':getRow},function(data){
+                window.location.reload();
+            });
+        }
+    });
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('Order/Index/index')}");
+    });
+    $('.searchButtons').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('Warehouse/Update/match_forward_back')}");
+    });
+    $('.exportSearchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','export_search');
+        $('.form-search').attr('action',"{:U('Order/Index/export_search')}");
+    });
+    $('.exportCountButton').click(function(){
+        $('.form-search input[name=a]').attr('value','exportcount');
+        $('.form-search').attr('action',"{:U('Order/Index/exportcount')}");
+    });
+    $('.returnOrderAction').click(function(){$(this).hide().parent().find('.returnOrderBox').show()});
+    $('.js-ajax-submit').click(function(){
+        var curObj = $(this);
+        var orderId = curObj.attr('orderid');
+        var status_id = curObj.parent().find('select[name=order_action]').val();
+        var remarkText = curObj.parent().find('.orderRemarkText').val();
+        if(status_id==0){alert('请选择原因。');return false;}
+        $.post("{:U('Order/returnOrder')}",{'order_id':orderId,'status_id':status_id,'remark':remarkText},function(data){
+            var getJson = $.parseJSON(data);
+            if(getJson.status==0){
+                alert('操作失败，订单状态已经修改或订单不存在。');
+            }else{
+                alert('操作成功');
+            }
+            curObj.parent().hide();
+        });
+    });
+</script>
+</body>
+</html>

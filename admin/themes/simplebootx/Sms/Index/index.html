@@ -1,0 +1,98 @@
+<admintpl file="header" />
+</head>
+<body>
+    <div class="wrap js-check-wrap">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="{:U('Index/index')}">{:L('短信管理')}</a></li>
+            <li><a href="{:U('Index/add')}">{:L('添加短信')}</a></li>
+        </ul>
+        <form method="post" class="form-horizontal js-ajax-form" action="{:U('Index/index')}">
+            <table class="table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th width="30"></th>
+                        <th align="left">短信名称</th>
+                        <th align="left">短信接口名</th>
+                        <!--<th align="left">短信接口MD5密码</th>-->
+                        <th align="left">接收手机号码</th>
+                        <th align="left">短信内容</th>
+                        <th align="left">错误次数</th>
+                        <th align="left">错误消息</th>                        
+                        <th align="left">发送类型</th>
+                        <th align="left">添加日期</th>
+                        <th align="left">发送日期</th>
+                        <th align="left">是否发送了</th>
+                        <th width="120">操作</th>
+                    </tr>
+                    <tr>
+                        <th width="30">ID</th>
+                        <th align="left">
+                            <input type="text" name="name" style="width:80px;" value="{:I('post.name')}"/>
+                        </th>
+                        <th align="left"></th>
+                        <th align="left">
+                            <input type="text" name="mobile" style="width:80px;" value="{:I('post.mobile')}"/>
+                        </th>
+                        <th align="left">
+                            <input type="text" name="content" style="width:80px;" value="{:I('post.content')}"/>
+                        </th>
+                        <th align="left"></th>
+                        <th align="left"></th>
+                        <th align="left"></th>
+                        <th align="left"></th>
+                        <th align="left"></th>
+                        <th align="left"></th>
+                        <th width="120">
+                            <button type="submit" class="btn btn-primary btn-small">搜索</button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                <foreach name="sms" item="vo">
+                    <tr>
+                        <td>{$vo.id_sms}</td>
+                        <td>{$vo.name}</td>
+                        <td>{$vo.api}</td>
+                        <!--<td>{$vo.to_addr}</td>-->
+                        <td>{$vo.mobile}</td>
+                        <td>{$vo.content}</td>
+                        <td>{$vo.err_count}</td>
+                        <td>{$vo.err_msg|substr=0,23}</td>
+                        <td>{$vo.type}</td>
+                        <td>
+
+                    <if condition="$vo['created_at'] neq ''">
+                        {$vo.created_at}
+                    </if>
+                    </td>
+                    <td>
+                    <if condition="$vo['date_send'] neq ''">
+                        {$vo.date_send}
+                    </if>
+                    </td>
+                    <td>
+                    <if condition="$vo['status'] eq 1">
+                        <font color="red">╳</font>
+                        <else />
+                        <font color="red">√</font>
+                    </if>
+                    </td>
+                    <td>
+
+
+                        <!-- <a href="javascript:open_iframe_dialog('{:U('domain/member',array('id'=>$vo['id']))}','成员管理');">成员管理</a>| -->
+                        <a href="{:U('Index/edit',array('id'=>$vo['id_sms']))}">{:L('EDIT')}</a>|
+                        <a class="js-ajax-delete" href="{:U('Index/delete',array('id'=>$vo['id_sms']))}">{:L('DELETE')}</a>
+                        <!--<a href="{:U('Index/manual_send',array('id'=>$vo['id_mail_queue']))}">{:L('手动发送')}</a>-->
+
+                    </td>
+                    </tr>
+                </foreach>
+                </tbody>
+            </table>
+            <div class="pagination">{$Page}</div>
+        </form>
+    </div>
+    <script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

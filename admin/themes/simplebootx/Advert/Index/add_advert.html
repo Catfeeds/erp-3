@@ -1,0 +1,143 @@
+<admintpl file="header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('index/all_advert')}">{:L('广告列表')}</a></li>
+        <li class="active"><a href="{:U('index/add_advert')}">{:L('添加广告')}</a></li>
+    </ul>
+    <form class="form-horizontal js-ajax-form" action="{:U('index/add_advert')}" method="post">
+        <fieldset>
+            <!--                <div class="control-group">
+                                <label class="control-label">{:L('广告名称')}</label>
+                                <div class="controls">
+                                    <input type="text" name="id_advert" value="{$data.ad_name}" disabled="disabled"/>
+                                    <input type="hidden" name="id_ad" value="{$data.ad_id}">
+                                    <span class="form-required">*</span>
+                                </div>
+                            </div>-->
+            <div class="control-group">
+                <label class="control-label">{:L('优化师')}</label>
+                <div class="controls">
+                    <select name="id_users" style="width:100px" id="id_users">
+                        <option value="0">全部</option>
+                        <foreach name="users" item="user">
+                            <option value="{$key}" <if condition="$key == $_SESSION['ADMIN_ID']">selected</if>>{$user}</option>
+                        </foreach>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('域名')}</label>
+                <div class="controls">
+                    <select name="id_domain" id="id_domain">
+                        <option value="0">无</option>
+                        <foreach name="departments" item="department" >
+                            <option value="{$key}" <if condition="$advert.id_domain EQ $key">selected</if>>{$department}</option>
+                        </foreach>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">广告名</label>
+                <div class="controls">
+                    <input type="text" name="advert_name" value="{$advert.advert_name}"/>
+
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('链接')}</label>
+                <div class="controls">
+                    <input type="text" name="url" value="{$advert.url}" />
+
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('投放时间')}</label>
+                <div class="controls">
+                    <input type="text" name="post_at" class="js-datetime" value="{$advert.post_at}" style="width: 120px;" autocomplete="off">
+
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">{:L('状态')}</label>
+                <div class="controls">
+                    <select name="advert_status" aria-invalid="false">
+                        <option value="1">启用</option>
+                        <option value="0">停用</option>
+                    </select>
+                </div>
+            </div>
+
+        </fieldset>
+        <div class="form-actions">
+            <!--				<input type="hidden" name="user_id" value="{$advert_product.user_id}"/>
+                            <input type="hidden" name="advert_product_id" value="{$advert_product.advert_product_id}"/>-->
+            <button type="submit" class="btn btn-primary js-ajax-submit" id="add_btn">{:L('ADD')}</button>
+            <a class="btn" href="{:U('all_advert')}">{:L('BACK')}</a>
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+//    $(function(){
+//        var id_users = $('#id_users option:selected').val();
+//        if(id_users!=0){
+//            select_by_user(id_users);
+//        }else{
+//            $('#id_domain').append('<option value="0" >无</option>');
+//        }
+//    })
+//    $("#id_users").change(function(){
+//        var id_users = $('#id_users option:selected').val();
+//        $('#id_domain').empty();
+//        if(id_users!=0){
+//            select_by_user(id_users);
+//        }else{
+//            $('#id_domain').append('<option value="0" >无</option>');
+//        }
+//    });
+    $("#add_btn").click(function(){
+        var id_users = $('#id_users option:selected').val();
+        var aa = $('#id_domain option:selected').val();
+        flag = true;
+        if(id_users=='0')
+        {
+            alert('请选择优化师');
+            return flag = false;
+        }
+        if(aa=='0')
+        {
+            alert('请选择域名');
+            return flag = false;
+        }
+        return flag;
+
+    })
+//  function select_by_user(id_users){
+//      $.ajax({
+//          url: "{:U('advert/index/select_by_user')}",
+//          type: 'get',
+//          dataType:'json',
+//          data: {'id_users':id_users},
+//          success:function(data){
+//              if(data['flag']!=1)
+//              {
+//                  $.each(data,function(index,elem){
+////                      $('#id_domain').removeAttr("disabled");
+//                      $('#id_domain').append('<option value="'+elem['id_domain']+'" >'+elem['name']+'</option>');
+//                  });
+//              }else
+//              {
+//                  $('#id_domain').append('<option value="0" >无</option>');
+//              }
+//          }
+//      })
+//  }
+
+</script>
+
+
+</body>
+</html>

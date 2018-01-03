@@ -1,0 +1,220 @@
+<admintpl file="header" />
+<style>
+    ul li{
+        list-style-type:none;
+        position:albsute;
+        color: black;
+        width: 139px;
+        padding-left: 70px;
+    }
+    .tipShow{
+        float:left;
+        position: absolute;
+    }
+    .tipShow ul{
+        height:150px;
+        overflow:auto;
+        width:226px;
+        background-color: white;
+        margin:0 0 0 0;
+    }
+</style>
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Onsale/add')}">添加上架</a></li>
+    </ul>
+    <form method="get" action=""  class="well form-search ">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <!--<label class="control-label">仓库:</label>-->
+            <!--<select name="id_warehouse" style="width:100px;">-->
+            <!--<option value="0">所有</option>-->
+            <!--<foreach name="warehouse" item="item">-->
+            <!--<option value="{$key}" <if condition="$key EQ $_GET['id_warehouse']">selected</if>>{$item}</option>-->
+            <!--</foreach>-->
+            <!--</select>-->
+            <label class="control-label">采购单号:</label>
+            <input type="text" name="purchase_no" value="{$_GET['purchase_no']}"/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="btn btn-primary searchButton" id="searchBtn">搜索</button>
+
+        </div>
+    </form>
+    <fieldset>
+        <form class="form-horizontal js-ajax-form" action="{:U('Onsale/add')}" method="post" id="form">
+            <table class="table table-hover table-bordered table-list order-table" id="tba">
+                <thead>
+                <tr>
+                    <th>采购单号</th>
+                    <th>SKU</th>
+                    <th>产品名</th>
+                    <th>采购数量</th>
+                    <th>已收货数量</th>
+                    <th>货位</th>
+                    <th>该货位上架数量</th>
+                    <th>操作</th>
+                    <!--<th>备注</th>-->
+                </tr>
+                </thead>
+                <tbody>
+
+                <foreach name="datas" item="data">
+                    <tr>
+                        <td>{$data.purchase_no}</td>
+                        <td>{$data.sku}</td>
+                        <td>{$data.title}</td>
+                        <td>{$data.quantity}</td>
+                        <td>{$data.received}</td>
+
+                        <td>
+
+                            <!--<select name="data[id_warehouse_allocation][]" style="width:200px;" class="select">-->
+                            <!--<option value="0">所有</option>-->
+                            <!--<foreach name="data.goods_sku" item="item">-->
+                            <!--<option value="{$item.id_warehouse_allocation}">{$item.goods_name}</option>-->
+                            <!--</foreach>-->
+                            <!--</select>-->
+                            <div >
+                                <input type="text" name="data[id_warehouse_allocation][]" class="search-text" autocomplete="off"/>
+                                <div name="tipShow" class="tipShow"></div>
+                            </div>
+
+                            <!--<div class="search_auto"></div>-->
+                        </td>
+                        <td>
+                            <input type="text" name="data[quantity][]" class="text"  data-id="{$key}" received="{$data.received}"/>
+                        </td>
+                        <td>
+                            <!--<button type="button" class="btn btn-primary" id="add" onclick="addRow({$i})">{:L('新增')}</button>-->
+                            <button type="button" class="btn btn-primary" id="add">{:L('新增')}</button>
+                            <button class="btn " id="del">{:L('删除')}</button>
+                        </td>
+                        <!--<td>{$data.remark}</td>-->
+                        <input type="hidden" name="data[purchase_no][]" value="{$data.purchase_no}"/>
+                        <input type="hidden" name="data[id_warehouse][]" value="{$data.id_warehouse}"/>
+                        <input type="hidden" name="data[id_product][]" value="{$data.id_product}"/>
+                        <input type="hidden" name="data[id_product_sku][]" value="{$data.id_product_sku}"/>
+                        <input type="hidden" name="data[id_purchase_product][]" value="{$data.id_purchase_product}"/>
+                    </tr>
+                </foreach>
+                </tbody>
+            </table>
+            <div class="form-actions">
+                <button type="button" class="btn btn-primary js-ajax-submit del" id="save">{:L('保存')}</button>
+                <a class="btn" href="{:U('Onsale/index')}" >{:L('BACK')}</a>
+            </div>
+        </form>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $("#add").live("click",function(){
+        var tr = $(this).parent().parent().clone();
+        tr.find("#add").remove();
+        tr.insertAfter($(this).parent().parent());
+        //新增元素后需要重新绑定input事件
+        var curSearchText = $(this).parent().parent().find(".search-text");
+        console.log(curSearchText);
+        showTips();
+    })
+    $("#del").live("click",function(){
+        var tr = $(this).parent().parent().remove();
+    })
+    $("#save").live("click",function(){
+        flag = true;
+        $(".search-text").each(function(){
+            var a = $(this).val();
+            if(a == 0){
+                alert('货位不能为空');
+                flag = false;
+                return flag;
+            }
+        })
+        var d=0;
+        var data=[];
+        var total=0;
+        $(".text").each(function(){
+            var b = parseInt($(this).val());
+            var data_id = $(this).attr('data-id');
+            var received=$(this).attr('received');
+            if(data[data_id])
+            {
+                total += b;
+            }
+            else{
+                data[data_id] = true;
+                total = b;
+            }
+            if( total == 0 || isNaN(total)){
+                alert('上架数量不能为空');
+                flag = false;
+                return flag;
+            }
+            if(total>received){
+
+                alert('货位上架数量不能大于已收货数量，请做修改！');
+                flag = false;
+                return flag;
+            }
+//            d = parseInt(b) + parseInt(d);
+//            if( b == 0){
+//                alert('上架数量不能为空');
+//                flag = false;
+//                return flag;
+//            }
+        })
+        if(flag)
+            $('#form').submit();
+
+    })
+
+    showTips();
+    function showTips(){
+        $('.search-text').each(function(){
+            $(".tipShow").empty();
+            $(this).live('input', function(){
+                //$(".tipShow").empty();
+                var goods_name = $(this).val();
+                var ali_i = $(this);
+                if(goods_name != null && goods_name != ""){
+                    $.ajax({
+                        url:"{:U('Onsale/search_text')}",
+                        type:"get",
+                        data:{'goods_name':goods_name,'id_warehouse':'<php>echo $datas[0]["id_warehouse"]; </php>'},
+                        dataType:'json',
+                        success: function(data){
+                            if(data=='0' || data == "<ul></ul>"){
+                                ali_i.next().html('');
+                                $(".tipShow").empty();
+                            }
+                            else {
+                                console.log(data);
+                                ali_i.next().html(data).css('display','block');
+                            }
+                        }
+                    })
+                }else{
+                    ali_i.next().html('');
+                    $(".tipShow").empty();
+                }
+            })
+        })
+    }
+    $(".tipShow ul li").live('mouseover',function(){
+        $(this).parent().children().css("background","white");
+        $(this).css("background","#ddd");
+    })
+    $(".tipShow ul li").live('click',function(){
+        console.log($(this)[0].innerText);
+        $(this).parent().parent().prev().val($(this)[0].innerText);
+        $(".tipShow").empty();
+    })
+
+
+</script>
+</body>
+</html>

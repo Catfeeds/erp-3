@@ -1,0 +1,321 @@
+<admintpl file="header" />
+</head>
+<body>
+    <div class="wrap">
+        <form method="post" class="form-horizontal js-ajax-form" action="{:U('Order/Index/edit_order_post',array('id'=>$_GET['id']))}">
+            <fieldset>
+                <div style="width: 30%;float: left">
+                <input type="hidden" name="action" value="ajax">
+                <div class="control-group">
+                    <label class="control-label">姓</label>
+                    <div class="controls">
+                        <input type="text" name="first_name" value="{$order.first_name}">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">名</label>
+                    <div class="controls">
+                        <input type="text" name="last_name" value="{$order.last_name}">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">手机号</label>
+                    <div class="controls">
+                        <input type="text" name="tel" value="{$order.tel}">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">邮箱</label>
+                    <div class="controls">
+                        <input type="text" name="email" value="{$order.email}">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">省/洲</label>
+                    <div class="controls">
+                        <input type="text" name="province" value="{$order.province}" placeholder="台灣">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">城市</label>
+                    <div class="controls">
+                        <input type="text" name="city" value="{$order.city}">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">区域</label>
+                    <div class="controls">
+                        <input type="text" name="area" value="{$order.area}">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">地址</label>
+                    <div class="controls">
+                        <input type="text" name="address" value="{$order.address}">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" style="color:red">是否问题件</label>
+                    <div class="controls">
+                        <input type="checkbox" name="is_question_order" value="1">
+                    </div>
+                </div>
+                </div>
+                <div class="right" style="float:left;width: 70%">
+                    <div class="control-group">
+                        <label class="control-label">价格</label>
+                        <div class="controls">
+                            <input type="text" name="price_total" value="{$order.price_total}">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">订单数</label>
+                        <div class="controls">
+                            <input type="text" name="total_qty_ordered" value="{$order.total_qty_ordered}">
+                        </div>
+                    </div>
+                    <!-- 订单状态为 隐藏菜单 时才显示 -->
+                    <php>if($order['id_order_status'] == 30){</php>
+                    <div class="control-group">
+                        <label class="control-label">订单状态</label>
+                        <div class="controls">
+                        <select name="id_order_status" style="width:100px;" class="control-label">
+                        <option value="0">所有</option>
+                    <php>
+                        $orderStatus = D("Order/OrderStatus")->get_status_label();
+                        if($orderStatus){
+                        foreach($orderStatus as $key=>$status){
+                        $selected = ($order['id_order_status'] == $key)?' selected="selected"':'';
+                        echo '<option value="'.$key.'"'.$selected.'>'.$status.'</option>';
+                        }
+                        }
+                    </php>
+                        </select>
+                        </div>
+                    </div>
+                    <php>}</php>
+                    <!-- 订单状态 -->
+                    <div class="control-group">
+                        <label class="control-label">备注</label>
+                        <div class="controls">
+                            <textarea cols="18" rows="3" name="comment">{$order.comment}</textarea>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">邮编</label>
+                        <div class="controls">
+                            <textarea cols="18" rows="3" name="zipcode">{$order.zipcode}</textarea>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">顾客留言</label>
+                        <div class="controls">
+                            <textarea cols="18" rows="3"  disabled="disabled">{$order.remark}</textarea>
+                        </div>
+                    </div>
+                    <!--<div class="control-group">
+                        <label class="control-label">屏幕深度:</label>
+                        <div class="controls" style="margin-top: 5px">
+                            <php>echo $web_infos['colorDepth']</php>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">是否禁用js:</label>
+                        <div class="controls" style="margin-top: 5px">
+                            <php>echo isset($web_infos['disableJs'])&&$web_infos['disableJs']==0?'否':'是'</php>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">浏览区语言:</label>
+                        <div class="controls" style="margin-top: 5px">
+                            <php>echo $web_infos['browserLan']</php>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">http头:</label>
+                        <div class="controls" style="margin-top: 5px">
+                            <php>
+                                foreach($web_infos['httpHeads'] as $k=>$v) {
+                                echo $k.'：'.$v.'<br>';
+                                }
+                            </php>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">下单页面停留时间:</label>
+                        <div class="controls" style="margin-top: 5px">
+                            <php>echo $web_infos['orderSubmitTimer']?$web_infos['orderSubmitTimer'].'s':'';</php>
+                        </div>
+                    </div>-->
+                </div>
+                <!--<div class="control-group">
+                    <label class="control-label">快递号</label>
+                    <div class="controls">
+                        <span class="trackNumber"> <input type="text" name="track_number[]" value="{$order.track_number}"></span>
+                        <span class="btn btn-small addTrackNumber">增加单号</span>
+                    </div>
+                </div>-->
+                <div class="control-groups" style="clear: both;">
+                    <label class="control-label">{:L('产品列表')}</label>
+                    <div class="controls">
+                        <div style="color:red;">注:属性后面数量改为零将删除对应的属性组合</div>
+                        <table class="table table-hover table-bordered table-list attributesListBox">
+                            <thead>
+                                <tr class="headings">
+                                    <th>ID</th><th>产品</th><th class="hide">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="tbody">
+                            <php>//print_r($products);</php>
+                            <foreach name="products" item="po">                                
+                                <tr>
+                                    <php>//print_r($po);</php>
+                                    <td>{$po.id_product}</td>
+                                    <td>
+                                        {$po.product_title}
+                                        <br>
+                                                                 
+                                <php>if(!empty($po['id_order_items'])){</php>
+                                        <php>if(!in_array($order['id_order_status'],[24,25,26,4,22])){</php>
+                              <php>if(!empty($po['attr_option_value_data'])){</php>     <button class="btn" type="button" onclick="addProduct(this, '{$po.id_product}', <php>echo $_GET['id']</php>)">添加</button><br><br><php>}</php>
+                                        <php>}</php>
+
+                                <table class="table table-hover table-bordered table-list" id="tableProduct{$po.id_product}">
+                                    <tbody>
+                                        <php>
+                                        $aa=$po['attr_option_value_data']?'':'<input type="hidden" name="pro_id[]" value='.$po['id_product'].'>';
+                                        $html = '';                                       
+                                        foreach($po['attr_option_value'] as $attr_key=>$attr_val){
+                                            $html .= $aa.'<input type="hidden" name="order_item_id['.$po['id_product'].'][]" value="'.$po['id_order_items'][$attr_key].'"/>';
+                                            $html .= '<tr class="productAttrRow'.$po[id_product].'">';
+                                            $html.=    '<td>';
+
+                                                if(in_array($order['id_order_status'],[24,25,26,4,22])){
+                                                    foreach($attr_val as $option_key=>$option_val) {
+                                                    $html .= $option_val['title'];
+                                                    $html .= ' <select   name="option_id['.$po['id_product'].']['.$option_val['id_product_option'].'][]" class="noselected" readonly>';
+                                                        foreach($option_val['option_values'] as $kk=>$vv) {
+                                                        $selected = in_array($vv['id_product_option_value'],$po['attrs'][$attr_key]) ?'<option value='.$vv['id_product_option_value'].' >'.$vv['title'].'</option>':""; 
+                                                        $html.=$selected;                                                
+                                                        }
+                                                    $html .= '</select>&nbsp;&nbsp;';
+                                                    }
+                                                    $html.=' <input name="number['.$po['id_product'].'][]" value="'.$po['quantity'][$attr_key].'" type="text" readonly>';
+                                                    $html.='&nbsp;&nbsp;*注意:转寄和未配货，已审核订单的产品不可编辑';
+                                                }else{
+                                                    foreach($attr_val as $option_key=>$option_val) {
+                                                    $html .= $option_val['title'];
+                                                    $html .= ' <select name="option_id['.$po['id_product'].']['.$option_val['id_product_option'].'][]">';
+                                                        foreach($option_val['option_values'] as $kk=>$vv) {
+                                                        $selected = in_array($vv['id_product_option_value'],$po['attrs'][$attr_key]) ? 'selected' : '';
+                                                        $html .= '<option value="'.$vv['id_product_option_value'].'" '.$selected.'>'.$vv['title'].'</option>';
+                                                        }
+                                                        $html .= '</select>&nbsp;&nbsp;';
+                                                    }
+                                                    $html.=' <input name="number['.$po['id_product'].'][]" value="'.$po['quantity'][$attr_key].'" type="text">';
+                                                    $html.='&nbsp;&nbsp;';
+                                                    $html.='<a href="javascript:void(1);" class="deleteOrderAttr" pro_id="'.$po['id_product'].'" attr_id="'.$po['id_order_items'][$attr_key].'">删除</a>';
+                                                }
+                                            $html.='</td>';
+                                            $html.='</tr>';                                     
+                                        }
+                                        echo $html;                                        
+                                        </php>
+                                    </tbody>
+                                </table>
+                                <php>}else{</php>
+                                <input type="hidden" name="order_item_id[{$po.id_product}][]" value="{$po.id_order_item}"/>
+
+                                <input name="qty{$po.id_product}" value="<php>echo $po['quantity'][$po['sku_id']]</php>" type="text" <php>if(in_array($order['id_order_status'],[24,25,26,4,22])){ echo 'readonly';}</php>>
+                                <php>}</php>
+                                </td>
+                                </tr>
+                            </foreach>                         
+                            </tbody>
+                            <tfoot><tr><td colspan="100">
+                                        <button type="button" class="btn hide">保存产品修改</button>
+                                    </td></tr></tfoot>
+                        </table>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="control-group error_div" style="display:none;margin-bottom: 0;color:red">
+                <label class="control-label"></label>
+                <div class="controls">
+                    <span class="error_msg"></span>
+                </div>
+            </div>
+            <div class="form-actions">
+                <input type="hidden" name="id_order" value="{$order.id_order}"/>
+              <!--  只允许对未处理(没有 )、待审核、缺货状态订单（做匹配库存的操作）做编辑
+                未配货，已经审核产品信息不能改，配货之后所有信息不可以改-->
+                <php> if(in_array($order['id_order_status'],[1,2,3,6,4,22,30])){</php>
+               <button type="submit" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</button>
+                <php>}else{</php>
+                *注:只有未处理、待审核、缺货，未配货，已审核,隐藏订单状态订单才可做编辑
+                <php>}</php>
+            </div>
+        </form>
+    </div>
+    <script src="__PUBLIC__/js/common.js"></script>
+    <script>   
+//                                            var products = [];
+                                            function addProduct(obj, id, order_id) {
+                                                $.ajax({
+                                                    url:"{:U('Order/Index/get_attr_html')}",
+                                                    type:'POST',
+                                                    dataType:'html',
+                                                    data:{
+                                                        'id':id,
+                                                        'order_id':order_id
+                                                    },
+                                                    success:function(setHtml){
+                                                        $(obj).parent().find('#tableProduct' + id).append(setHtml);
+                                                        $('.deleteOrderAttr').click(function () {
+                                                            var getAttrCount = $('#tableProduct' + id + ' .productAttrRow' + id).length;
+                                                            console.debug(getAttrCount);
+                                                            if (getAttrCount < 2) {
+        //                                                        alert('请先添加一个属性，再删除，必须有一个属性。');
+                                                                $('.error_div').show();
+                                                                $('.error_msg').html('请先添加一个属性，再删除，必须有一个属性。');
+                                                                return false;
+                                                            }
+                                                            $(this).parent().parent().remove();
+                                                        });
+                                                    }
+                                                });                                                
+                                            }
+                                            function addAttachProduct(obj, id) {
+                                                var key = 'product' + id;
+                                                $(obj).parent().find('#tableProduct' + id).append('<tr><td>' + $('.handserProduct').html() + '</td></tr>');
+                                            }
+                                            $('.addTrackNumber').click(function () {
+                                                var getTrackHtml = '<input type="text" name="track_number[]" value="">';
+                                                $('.trackNumber').append('&nbsp;&nbsp;' + getTrackHtml);
+                                            });
+                                            $('.deleteOrderAttr').click(function () {
+                                                var productId = parseInt($(this).attr('pro_id'));
+                                                var getOrderAttrId = parseInt($(this).attr('attr_id'));
+                                                var getAttrCount = $('#tableProduct' + productId + ' .productAttrRow' + productId).length;
+                                                if (getAttrCount < 2) {
+//                                                    alert('请先添加一个属性，再删除，必须有一个属性。');
+                                                    $('.error_div').show();
+                                                    $('.error_msg').html('请先添加一个属性，再删除，必须有一个属性。');
+                                                    return false;
+                                                }
+
+                                                if (confirm('确定删除？')) {
+                                                    if (getOrderAttrId) {
+                                                        var setObj = {'action': 'delete_attr', 'order_attr_id': getOrderAttrId};
+                                                        $.post("{:U('Order/Index/edit_order_post',array('id'=>$_GET['id']))}", setObj, function (data) {
+                                                            console.debug(data);
+                                                            window.location.reload();
+                                                            $(this).parent().parent().remove();
+                                                        });
+                                                    }                                                        
+                                                }
+                                            });
+    </script>
+</body>
+</html>

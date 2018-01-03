@@ -1,0 +1,509 @@
+<admintpl file="header"/>
+</head>
+<body>
+<style>
+    #search_auto, #search_auto_pro{border:1px solid #dce4ec; position:absolute; display:none;}
+    #search_auto li, #search_auto_pro li{background:#FFF; text-align:left;list-style-type:none;}
+    #search_auto li.cls, #search_auto_pro li.cls{text-align:right;}
+    #search_auto li a, #search_auto_pro li a{display:block; padding:5px 6px; cursor:pointer; color:#666;}
+    #search_auto li a:hover, #search_auto_pro li a:hover{background:#D8D8D8; text-decoration:none; color:#000;}
+    ul{margin: 0 0 10px;}
+</style>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Returns/edit',$id_array)}">创建采购退货单</a></li>
+    </ul>
+    <div class="searchLayer">
+        <form method="post"  class="form-search" style="padding:20px">
+            <table cellspacing="1" class="table-bordered">
+                <tr>
+                    <td class="th">采购单号：</td>
+                    <td>
+                        <input type="hidden" name="id_purchasein" value="{$data.id_purchasein}"/>
+                        <input type="hidden" name="purchase_no" value="{$data.purchase_no}"/>PO#{$data.purchase_no}
+                        <input type="hidden" name="shipping_no" value="{$data.shipping_no}"/>
+                        <input type="hidden" name="id_return" value="{$_GET['id_return']}"/>
+                    </td>
+                    <td class="th">内部采购单号：</td>
+                    <td>
+                        <input type="hidden" name="inner_purchase_no" value="{$data.inner_purchase_no}"/>{$data['inner_purchase_no']}
+                    </td>
+                    <td class="th">采购渠道订单号：</td>
+                    <td>
+                        <input type="hidden" name="alibaba_no" value="{$data.alibaba_no}"/>{$data['alibaba_no']}
+                    </td>
+                    <td class="th">所属仓库：</td>
+                    <td>
+                        <select name="id_warehouse" style="width:99%;height:30px" readonly>
+                            <option value="0">所有</option>
+                            <foreach name="search['warehouses']" item="item">
+                                <option value="{$item.id_warehouse}" <php>echo $data['id_warehouse']==$item['id_warehouse'] ? 'selected' : ''</php>>{$item.title}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="th">所属部门：</td>
+                    <td>
+                        <select name="id_department" style="width:99%;height:30px" readonly>
+                            <option value="0">所有</option>
+                            <foreach name="search['departments']" item="item">
+                                <option value="{$item.id_department}" <php>echo $data['id_department']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <td class="th">采购员：</td>
+                    <td>
+                        <input type="hidden" name="user_nicename" value="{$data.user_nicename}"/>
+                        {$data.user_nicename}
+                    </td>
+                    <td class="th">采购渠道：</td>
+                    <td>
+                        <select title="" class="selectChannel" name="pur_channel" required   disabled="disabled" style="width:90%;height:30px">
+                            <option value="">请选择</option>
+                            <option value="1" <php>echo $data['purchase_channel']==1?'selected="selected"':'';</php>>阿里巴巴</option>
+                            <option value="2" <php>echo $data['purchase_channel']==2?'selected="selected"':'';</php>>淘宝</option>
+                            <option value="3" <php>echo $data['purchase_channel']==3?'selected="selected"':'';</php>>线下</option>
+                        </select>
+                    </td>
+                    <td class="th">供应商：</td>
+                    <td>
+                        <div id="search">
+                            <input name="id_supplier" id="supplier_id" type="hidden" value="{$data.id_supplier}">
+                            <input class="inputtxt1 ui-autocomplete-input" id="supplier" name="supplier_name" type="text" readonly autocomplete="off" value="{$supplier_name.title}" required required style="width:90%;height:30px">
+                            <span class="error-msg"></span>
+                        </div>
+                        <!--<div id="search_auto"></div>-->
+                    </td>
+                </tr>
+                <tr>
+                    <!--<td class="th">单据类型：</td>
+                    <td>
+                        <select name="billtype" style="width:120px;height:30px" require id="billtype">
+                            <option value="2">采购退货</option>
+                        </select>
+                    </td>-->
+                    <td class="th">退货类型：</td>
+                    <td>
+                        <php>if($reGoodsInfo['purchase_status'] == 2)  {
+                            echo $return_type[$reGoodsInfo['return_type']];
+                            </php>
+                             <input type="hidden" value="{$reGoodsInfo['return_type']}" name="return_type">
+                        <php>
+                            }else{</php>
+                            <select name="return_type" id="return_type" style="width:99%;height:30px">
+                                <option value="1"<php> if($reGoodsInfo['return_type'] == 1) echo 'selected="selected"';</php>>库存退货</option>
+                                <option value="2" <php> if($reGoodsInfo['return_type'] == 2) echo 'selected="selected"';</php>>在途退货</option>
+                            </select>
+                        <php>}</php>
+                    </td>
+                    <td colspan="5">
+                        <span style="color: red;">*&nbsp;退货数量不能超过实际可用库存（库存量 - 在单量）<br>&nbsp; 在途退货：退货的数量不能超过采购数量</span>
+                    </td>
+                </tr>
+            </table>
+            <table class="table table-hover table-bordered table-list attributesListBox" style="margin-top:20px">
+                <php>
+                    $status = array(                //需计算的订单状态
+                    Order\Lib\OrderStatus::UNPICKING,     //未配货
+                    Order\Lib\OrderStatus::PICKED,        //已配货
+                    Order\Lib\OrderStatus::APPROVED,      //已审核
+                    );
+
+                    if($product){
+                    $tempData = array();
+                    if($reGoodsInfo['purchase_status'] == 2)
+                    {
+                        $readonly = 'readonly';
+                    }
+                    foreach($product as $key=>$item){
+                    $c_qty = isset($item['c_qty'])?$item['c_qty']:0;
+                    if(!in_array($item['id_product'],$tempData)){
+                    echo '<tr class="productBox' . $item['id_product'] . '"><td colspan="9" style="background-color: #f5f5f5;font-size: 24px;font-weight: 800;padding: 10px;">'.$item['title'].'  </td></tr>';
+                    echo '<tr><th>SKU</th><th>属性</th><th>采购金额</th><th>采购数量</th><th>已入库数量</th><th>库存量</th><th>在单量</th><!--<th>在途量</th>--><!--<th>已申请退货</th>--><th>退货数量</th><th>采购单价</th><!--<th>入库备注</th>--></tr>';
+                    $tempData[] = $item['id_product'];
+                    }
+                    $new_price = $item['received']?round($item['received']*$item['price'],4):round($item['quantity']*$item['price'],4);
+                    echo '<tr><td>'.$item['sku'].'<br/><input type="hidden" class="getSku'.$key.'" name="get_sku" value="'.$item['sku'].'"/></td>
+                    <td>'.$item['option_value'].'</td>
+                    <input type="hidden" value="' . $item['option_value'] . '" name="attr_name[' . $item['id_product'] . '][' . $item['id_product_sku'] . ']"/>
+                    <td><div class="countprice'.$key.'">' . $new_price . '</div>
+                        <span hidden class="singleSkuGet"  data-sku="'.$item['id_product_sku'].'"></span>
+                    </td>
+                    <td>';
+
+                        echo '<input type="hidden" value="' . $item['quantity'] . '" received_true="' . $item['received_true'] . '" name="get_qty[' . $item['id_product'] . '][' . $item['id_product_sku'] . ']"/> <span class="SkuNUmt">'.$item['quantity'].'</span>
+
+                    </td>
+                    <td>' . $item['received_true'] . '
+                        <input type="hidden" name="received_true['. $item['id_product'].']['.$item['id_product_sku'].']" value="'.$item['received_true'].'"/>
+                    </td>
+                    <td>' . $item['reality_quantity'] . '
+                        <input type="hidden" name="reality_quantity['. $item['id_product'].']['.$item['id_product_sku'].']" value="'.$item['reality_quantity'].'"/>
+                    </td>
+                    <td>' . $item['qty_preout'] . '
+                        <input type="hidden" name="available_quantity['. $item['id_product'].']['.$item['id_product_sku'].']" value="'.$item['available_quantity'].'"/>
+                    </td>
+                    <!--<td>' . $item['road_num'] . '
+                        <input type="hidden" name="road_num['. $item['id_product'].']['.$item['id_product_sku'].']" value="'.$item['road_num'].'"/>
+                    </td>-->
+                    <!--<td>
+                        <input type="text" class="apply_qty'.$key.'" name="apply_qty['. $item['id_product'].']['.$item['id_product_sku'].']" value="0" readonly/>
+                    </td>-->
+                    <td>
+                        <input  type="text" class="sqt'.$key.'" value="'.$c_qty.'" name="set_qty[' . $item['id_product'] . '][' . $item['id_product_sku'] . ']" onchange="qty_change('.$key.')" onchange="total_price()" required onkeyup="this.value=this.value.replace(/[^\- \d.]/g,\'\')" placeholder="0" '.$readonly.'/>
+                    </td>
+                    <td><span class="cprice'.$key.'">'.$item['price'].'</span><input type="hidden" name="set_price['. $item['id_product'].']['.$item['id_product_sku'].']" value="'.$item['price'].'"/></td>
+                    <!--<td><input type="text" value="' . $item['remark'] . '" name="set_remark[' . $item['id_product'] . '][' . $item['id_product_sku'] . ']"/></td>-->
+                </tr>';
+                    }
+                    }
+                </php>
+                <input type="hidden" name="total" value="{$data['total']}"/>
+                <input type="hidden" name="id_erp_purchase" value="{$data['id_erp_purchase']}"/>
+            </table>
+            <table class="table-bordered" style="margin-top:20px">
+                <tr>
+                    <td class="th">退货数量：</td>
+                    <td><input type="text" name="return_num" id="return_num" value="<php>echo $reGoodsInfo['total_qty']?$reGoodsInfo['total_qty']:0;</php>" onchange="total_price()" required onkeyup="this.value=this.value.replace(/\D/g,'')" readonly tabindex="-1"/></td>
+                    <td class="th">采购退货金额：</td>
+                    <td><input type="text" name="return_price" id="return_price" value="<php>echo $reGoodsInfo['total_price']?$reGoodsInfo['total_price']:0.0000;</php>" required style="width: 99%" autocomplete="off" onblur="this.v();" onkeyup="this.value=this.value.replace(/[^\- \d.]/g,'');" <php>if($reGoodsInfo['purchase_status'] == 2) echo 'readonly';</php>></td>
+                    <td class="th">退货时间：</td>
+                    <td>
+                        <input type="text" class="js-datetime date" name="return_time"  required value="{$return_time}" style="width: 99%" autocomplete="off" <php>if($reGoodsInfo['purchase_status'] == 2) echo 'readonly';</php>>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td class="th">收件人：</td>
+                    <td><input type="text" name="addressee" id="addressee" value="{$reGoodsInfo.receive_person}" style="width: 99%" autocomplete="off" <php>if($reGoodsInfo['purchase_status'] == 2) echo 'readonly';</php>></td>
+                    <td class="th">电话：</td>
+                    <td><input type="text" name="tel" id="tel" value="{$reGoodsInfo.phone}" style="width: 99%" autocomplete="off"<php>if($reGoodsInfo['purchase_status'] == 2) echo 'readonly';</php>></td>
+                    <td class="th">地址：</td>
+                    <td colspan="2"><input type="text" name="address" id="address" value="{$reGoodsInfo.address}" style="width: 99%" autocomplete="off"<php>if($reGoodsInfo['purchase_status'] == 2) echo 'readonly';</php>></td>
+                </tr>
+                <tr>
+                    <td class="th">退货原因：</td>
+                    <td colspan="4">
+                        <textarea name="return_reson" cols="10" class="form-control" style="width: 90%;height: 100px;"<php>if($reGoodsInfo['purchase_status'] == 2) echo 'readonly';</php>>{$reGoodsInfo.reason}</textarea>
+                    </td>
+                    <!--<td class="th">备注：</td>
+                    <td colspan="5">
+                        <textarea name="remark" cols="10" class="form-control" style="width: 90%;height: 100px;">{$reGoodsInfo.remark_purchase}</textarea>
+                    </td>-->
+                </tr>
+            </table>
+
+            <php>
+                if($reGoodsInfo['warehouse_status']=='2' and $reGoodsInfo['purchase_status'] !='4'){
+            </php>
+                <table class="table-bordered" style="margin-top:20px">
+                    <tr>
+                        <td class="th">退货物流：</td>
+                        <td>{$reGoodsInfo.express_id}</td>
+                        <td class="th">运单号：</td>
+                        <td>{$reGoodsInfo.track_number}</td>
+                        <td class="th">实际退货数量：</td>
+                        <td>{$reGoodsInfo.qty_true}</td>
+                        <td class="th">实际退货金额：</td>
+                        <td><input type="text" name="price_true" value="{$reGoodsInfo.price_true}" id="price"></td>
+                    </tr>
+                    <tr>
+                        <td class="th">备注：</td>
+                        <td>{$reGoodsInfo.remark}</td>
+                        <td class="th">退货运费：</td>
+                        <td>{$reGoodsInfo.price_shipping}</td>
+                        <td class="th">采购退货数量：</td>
+                        <td>{$reGoodsInfo.total_qty}</td>
+                        <td class="th">差异数：</td>
+                        <td><php>echo abs($reGoodsInfo['total_qty'])-abs($reGoodsInfo['qty_true']);</php></td>
+                    </tr>
+                </table>
+            <php>
+                }
+            </php>
+            <div class="form-actions">
+                <php>
+                    if($reGoodsInfo['warehouse_status']=='2' and $reGoodsInfo['purchase_status'] !='4'){
+                </php>
+                    <input type="submit" class="btn btn-primary save_confirm" value="确认退货"/>
+                <php>
+                    }else{
+                </php>
+                    <input type="submit" class="btn btn-primary save_confirm" value="保存"/>
+                <php>}</php>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <!--<button class="btn btn-warning js-ajax-submit tj_sub">提交</button>-->
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="btn" href="{:U('Returns/index')}">{:L('BACK')}</a>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+
+<script type="text/javascript">
+    //表单提交前验证
+    function checkform(){
+//        $(".form-search select").removeAttr("disabled");
+        var flag = true;
+        var message = '';
+        var tipSku = '';
+        var setQty = 0;
+        var getSku = '';
+        var return_num = $('#return_num').val();
+        var return_type = $('#return_type').val();
+        var addressee = $('#addressee').val();//收货人
+        var tel = $('#tel').val();//收货人电话
+        var address = $('#address').val();//收获地址
+        $('input[name^=set_qty]').each(function(index,ele){
+            var quantity = ele.value;
+            if(quantity>0){
+                message = '退货时，数量必须是负数！';
+//                    $(".form-search select").attr("disabled","disabled");
+            }
+        });
+        if(message!=''){
+            alert(message);
+            flag = false;
+            return flag;
+        }
+
+        if(return_num==0){
+            message = '没有退货数量';
+        }
+        //库存退货,根据已入库的去判断[原来的版本]
+        //库存退货，根据实际库存量去判断[更新后]    liuruibin   20171120
+        if(return_type==1){
+            $("input[name^='set_qty']").each(function(index,ele){
+                setQty = Math.abs(ele.value);//退货的数量
+                getSku = $('.getSku' + index).val();//产品sku
+//                    var getApplyQty = $('.apply_qty' + index).val();//获取已经退货的数量
+                $("input[name^='available_quantity']").each(function(index2,ele2){
+                    var rtyQty = ele2.value;//实际库存的数量
+//                        var haveQty = rtyQty-Math.abs(getApplyQty);//实际可退货的数量(实际库存-已申请退货的数量)
+                    if(index==index2){
+                        //退货数量大于实际库存数量的sku，不能创建退货
+                        if(setQty>rtyQty){
+                            tipSku += getSku+' ';
+                        }
+                    }
+                });
+            });
+            if(addressee == ''){
+                alert('请填写收货人');
+                return false;
+            }
+            if(tel == ''){
+                alert('请填写电话');
+                return false;
+            }
+            if(address == ''){
+                alert('请填写地址');
+                return false;
+            }
+            if(tipSku!=''){
+                message = tipSku+'实际库存量不足';
+            }
+            /*else{
+                $("input[name^='set_qty']").each(function(index,ele){
+                    setQty = Math.abs(ele['value']);//退货的数量
+                    getSku = $('.getSku' + index).val();//产品SKU
+//                        var getApplyQty = $('.apply_qty' + index).val();//获取已经退货的数量
+                    $("input[name^='received_true']").each(function(index2,ele2){
+                        var inQty = ele2['value'];//该采购单的已入库数量
+//                            var haveQty = inQty-Math.abs(getApplyQty);//实际可退货的数量(已入库数量-已申请退货的数量)
+                        if(index==index2){
+                            //退货数量大于该采购单已入库的数量，不能创建退货
+                            if(setQty > inQty){
+                                tipSku += getSku+' ';
+                            }
+                        }
+                    });
+                });
+                if(tipSku!=''){
+                    message = tipSku+'不能超出入库量';
+                }
+            }*/
+        }
+        //在途退货，根据采购数量-已入库的数量[原来的]
+        //在途退货，退货数量不能大于采购数量[更新后]
+        if(return_type==2){
+            $("input[name^='set_qty']").each(function(index,ele){
+                setQty = Math.abs(ele['value']);//退货的数量
+                getSku = $('.getSku' + index).val();//产品SKU
+//                        var getApplyQty = $('.apply_qty' + index).val();//获取已经退货的数量
+                $("input[name^='get_qty']").each(function(index2,ele2){
+                    var getQty = ele2['value'];//该采购单的采购数量
+//                            var haveQty = getQty-Math.abs(getApplyQty);//实际可退货的数量(采购数量-已申请退货的数量)
+                    if(index==index2){
+                        //退货数量大于该单采购的数量，不能创建退货
+                        if(setQty > getQty){
+                            tipSku += getSku+' ';
+                        }
+                    }
+                });
+            });
+            if(tipSku!=''){
+                message = tipSku+'不能超出采购数量';
+            }
+            /*else{
+                $("input[name^='set_qty']").each(function(index,ele){
+                    setQty = Math.abs(ele.value);//退货数量
+                    getSku = $('.getSku' + index).val();//产品sku
+//                    var getApplyQty = $('.apply_qty' + index).val();//获取已经退货的数量
+                    $("input[name^='road_num']").each(function(index2,ele2){
+                        var roadNum = ele2.value;//在途量
+//                        var haveQty = roadNum-Math.abs(getApplyQty);//实际可退货的数量(在途量-已申请退货的数量)
+                        if(index==index2){
+                            //退货数量大于在途量
+                            if(setQty>roadNum){
+                                tipSku += getSku+' ';
+                            }
+                        }
+                    });
+                });
+                if(tipSku!=''){
+                    message = tipSku+'在途量不足';
+                }
+            }*/
+        }
+        if($("#return_price").val()>0){
+            message = "退货金额须为负数";
+        }
+        if(message!=''){
+            alert(message);
+            flag = false;
+        }else{
+            if(return_type==1) {
+                flag = upperCase();
+            }
+        }
+        return flag;
+    }
+    $('.save_confirm').click(function(){
+        var flag = checkform();
+        if(flag === true){
+            $('.form-search').attr('action',"{:U('Returns/save_edit')}");
+            $(this).attr('disabled',true);
+            $(this).attr('value','正在保存..');
+            $('.form-search') .submit();
+        }else{
+            return false;
+        }
+    });
+    //算出退货总数和总金额
+    function qty_change(k) {
+        var spr = parseFloat($('.cprice' + k).html());//单价
+        var qty = $('.sqt' + k).val();//退货数量
+        if(qty==''){
+            qty = 0;
+        }
+        var count_price = (spr*qty).toFixed(4);//SKU的总价
+        total_price();
+    }
+
+    function total_price(){
+        var sum = 0;
+        var count = 0;
+        $("input[name^='set_price']").each(function(index,ele){
+            $("input[name^='set_qty']").each(function(index2,ele2){
+                if(index == index2){
+                    if(ele2['value'] == '' || isNaN(ele2['value'])){
+                        ele2['value'] = 0;
+                    }
+                    sum=sum+parseFloat(ele['value']*ele2['value']);
+                    count = count+parseInt(ele2['value']);
+                }
+            })
+        });
+        $("#return_price").val(sum.toFixed(4));
+        $("#return_num").val(count);
+    }
+
+    $('.tj_sub').click(function(){
+        if (confirm('确定要提交？')) {
+            var type = $('#billtype').val();
+            if(type == 0){
+                alert('请选择单据类型');
+                return false;
+            }
+            $('.form-search input[name="hid"]').val("<php>echo $data['id_purchasein']</php>");
+        } else {
+            return false;
+        }
+    });
+
+    //页面初始化，获取每个SKU 的已退货数量
+    $(function(){
+        var return_type = $('#return_type').val();
+        change_input_req(return_type);
+        /*var id_purchasein = $("*[name='id_purchasein']").val();
+        var val = $("#return_type").val();
+        get_c_qty(id_purchasein,val);*/
+    });
+    //选择退货类型，自动更新每个SKU的已退货数量
+    $("#return_type").change(function(){
+        var id_purchasein = $("*[name='id_purchasein']").val();
+        change_input_req(this.value);
+//        get_c_qty(id_purchasein,this.value);
+    });
+
+    // 退货类型为“库存退货”的，收件人信息必填
+    function change_input_req(val){
+        if(val == 2){
+            $("#addressee").removeAttr('required');
+            $("#tel").removeAttr('required');
+            $("#address").removeAttr('required');
+        }else{
+            $("#addressee").attr('required','required');
+            $("#tel").attr('required','required');
+            $("#address").attr('required','required');
+        }
+    }
+    //手机码验证
+    function upperCase()
+    {
+        var phone = $("#tel").val();
+        if(phone != ''){
+            var reg = /^\d{7}/;
+            var regarea = /^(\d{3,4})-(\d{7,8})/;//验证区号-电话号码
+            if(!(reg.test(phone)) && !(regarea.test(phone))){
+                alert("联系方式有误，请重填");
+                return false;
+            }else{
+                return true;
+            }
+        }else{
+            return true;
+        }
+    }
+
+    //异步获取每个SKU已退货的数量
+    /*function get_c_qty(id,val){
+        //先将每个已申请退货的数量初始化为0
+        $("input[name^='apply_qty']").each(function(i,e){
+            e['value'] = 0;
+        });
+        $.ajax({
+            url:"{:U('Purchase/Returns/get_c_qty')}",
+            type:"get",
+            dataType:"json",
+            data:{'id':id,'type':val},
+            success:function(msg){
+                if(msg){
+                    for(var v in msg){
+                        $("input[name^='get_sku']").each(function(index,ele){
+                            $("input[name^='apply_qty']").each(function(index2,ele2){
+                                if(index == index2 && msg[v].sku == ele['value']){
+                                    ele2['value'] = msg[v].c_qty_sum;
+                                }
+                            });
+                        });
+                    }
+                }
+            }
+        });
+    }*/
+</script>
+</body>

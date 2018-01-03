@@ -1,0 +1,133 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="id_department" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="department" item="item">
+                    <option value="{$item.id_department}" <php>echo isset($_GET['id_department']) && $_GET['id_department']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                </foreach>
+            </select>
+            <label class="control-label">物流:</label>
+            <select name="shipping_id" style="width:100px;">
+                <option value="0">所有</option>
+                <php>foreach($shipping as $key=>$title){ </php>
+                <php>if($key>=0){</php>
+                <option value="{$key}" <php>if(isset($_GET['shipping_id'])&& $_GET['shipping_id']==$key){echo 'selected="selected"';}</php>>{$title}</option>
+                <php>}</php>
+                <php>}</php>
+            </select>
+            <label class="control-label">仓库:</label>
+            <select name="id_warehouse" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="warehouse" item="item">
+                    <option value="{$key}" <if condition="$key EQ $_GET['id_warehouse']">selected</if>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">地区:</label>
+            <select name="id_zone" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="zones" item="item">
+                    <option value="{$key}" <if condition="$key EQ $_GET['id_zone']">selected</if>>{$item}</option>
+                </foreach>
+            </select>
+            <!--<label class="control-label">下单时间:</label>-->
+            <!--<input type="text" name="start_time" class="js-datetime" value="<php>echo isset($_GET['start_time'])?str_replace('+',' ',$_GET['start_time']):'';</php>" style="width: 120px;" autocomplete="off">--->
+            <!--<input type="text" class="js-datetime" name="end_time" value="<php>echo isset($_GET['end_time'])?str_replace('+',' ',$_GET['end_time']):'';</php>" style="width: 120px;">-->
+            <label class="control-label">发货时间:</label>
+            <input type="text" name="start_time" class="js-datetime" value="<php>echo isset($_GET['start_time'])?str_replace('+',' ',$_GET['start_time']):'';</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="end_time" value="<php>echo isset($_GET['end_time'])?str_replace('+',' ',$_GET['end_time']):'';</php>" style="width: 120px;">
+
+            <button class="btn btn-primary searchButton">搜索</button>
+            <button class="btn btn-primary exportButton">导出</button>
+
+        </div>
+    </form>
+    <fieldset>
+        <table class="table table-hover table-bordered table-list">
+            <thead>
+            <tr>
+                <th>日期</th>
+                <!--<th>有效单</th>-->
+                <th>发货单</th>
+                <th>0-3天签收率</th><th>4-6天签收率</th><th>7-10天签收率</th><th>超过10天签收率</th>
+
+
+                <php>
+                    $arrayFlip = array_flip($status_list);
+                </php>
+                <th>拒收率</th>
+                <th>退货率</th>
+                <th>签收率</th>
+            </tr>
+            </thead>
+            <tbody>
+            <foreach name="list" item="item">
+                <tr>
+                    <td>{$item.set_date}</td>
+                    <!--<td><php>echo $item['effective'];unset($item['set_date'],$item['effective']);</php></td>-->
+                    <td>{$item.count_all}</td>
+                    <td>{$item.rejected1}</td>  <td>{$item.rejected2}</td>  <td>{$item.rejected3}</td>  <td>{$item.rejected4}</td>
+                    <td>
+                        <php>
+                            $reTitle1 = $arrayFlip['拒收'];
+                            //$reTitle1 = $arrayFlip['拒收(調查處理中)'];
+                            //$reTitle1 = $arrayFlip['暫置營業所保管中'];
+                            //$reTitle1 = $arrayFlip['調查處理中'];
+                            $rejectedTotal = $item[$reTitle1];
+                            if($rejectedTotal>0){
+                            $rejected = ($rejectedTotal/$item['count_all'])*100;
+                            echo number_format($rejected,2).'%';
+                            }
+                        </php>
+                    </td>
+                    <td>
+                        <php>
+                            $reTitle1 = $arrayFlip['退貨完成'];
+                            //$reTitle1 = $arrayFlip['暫置營業所保管中'];
+                            //$reTitle1 = $arrayFlip['調查處理中'];
+                            $rejectedTotal = $item[$reTitle1];
+                            if($rejectedTotal>0){
+                            $Returns = ($rejectedTotal/$item['count_all'])*100;
+                            echo number_format($Returns,2).'%';
+                            }
+                        </php>
+                    </td>
+                    <td>
+                        <php>
+                            $reTitle1 = $arrayFlip['順利送達'];
+                            //$reTitle1 = $arrayFlip['暫置營業所保管中'];
+                            //$reTitle1 = $arrayFlip['調查處理中'];
+                            $rejectedTotal = $item[$reTitle1];
+                            if($rejectedTotal>0){
+                            $Returns = ($rejectedTotal/$item['count_all'])*100;
+                            echo number_format($Returns,2).'%';
+                            }
+                        </php>
+                    </td>
+                </tr>
+            </foreach>
+            </tbody>
+        </table>
+
+        <div class="pagination">{$page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search').attr('action',"{:U('Warehouse/Statistics/status_statistics_time')}");
+    });
+    $('.exportButton').click(function(){
+        $('.form-search input[name=a]').attr('value','export_status_statistics');
+        $('.form-search').attr('action',"{:U('Warehouse/Statistics/export_status_statistics_time')}");
+    });
+</script>
+</body>
+</html>

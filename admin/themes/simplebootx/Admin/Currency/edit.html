@@ -1,0 +1,53 @@
+    <admintpl file="header" />
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('currency/index')}">货币设置</a></li>
+        <li class="active"><a href="{:U('currency/add')}">编辑货币</a></li>
+    </ul>
+    <div class="wrap">
+        <div class="common-form">
+            <form method="post" class="form-horizontal" action="{:U('currency/edit_post')}">
+                <div class="control-group">
+                    <label class="control-label">{:L('CURRRNCY_NAME')} :</label>
+                    <div class="controls">
+                        <input type="text" name="title" value="{$data['title']}"><span class="form-required">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{:L('CURRRNCY_CODE')} :</label>
+                    <div class="controls">
+                        <input type="text" name="code" value="{$data['code']}"><span class="form-required">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{:L('LEFT_SYMBOL')} :</label>
+                    <div class="controls">
+                        <input type="text" name="symbol_left" value="{$data['symbol_left']}"><span class="form-required">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{:L('RIGHT_SYMBOL')} :</label>
+                    <div class="controls">
+                        <input type="text" name="symbol_right" value="{$data['symbol_right']}"><span class="form-required">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{:L('CURRRNCY_VALUE')} :</label>
+                    <div class="controls">
+                        <input type="text" name="value" value="{$data['value']}"><span class="form-required">*</span>
+                    </div>
+                </div>
+                </fieldset>
+                <div class="form-actions">
+                    <input type="hidden" name="id_currency" value="{$data['id_currency']}">
+                    <button type="submit" class="btn btn-primary">{:L('SAVE')}</button>
+                    <a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>

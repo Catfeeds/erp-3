@@ -1,0 +1,80 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Loginmanage/setting_open')}">{:L('登录限制开关')}</a></li>
+        <li><a href="{:U('Loginmanage/system_setting')}">{:L('系统设置开关')}</a></li>
+    </ul>
+    <form class="form-horizontal" action="{:U('Loginmanage/setting_open_save')}" method="post">
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label">限制部门</label>
+                <div class="controls">
+                    <php>if($loginAuthInfo['id_department']) {</php>
+                    <input type="text" name="department_title" value="{$loginAuthInfo.title}"  readonly/>
+                    <input type="hidden" name="id_department" value="{$loginAuthInfo.id_department}" />
+                    <php>}else{</php>
+                    <select name="id_department" id="id_department" aria-invalid="false" >
+                        <option value="0">所有</option>
+                        <foreach name="depart" item="item">
+                            <option value="{$item.id_department}" >{$item.title}</option>
+                        </foreach>
+                    </select>
+                    <php>}</php>
+                    <span class="form-required">*默认所有部门</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">限制用户</label>
+                <div class="controls">
+                    <php>if($userInfo) {</php>
+                    <input type="text" name="user_nicename" value="{$userInfo.user_nicename}"  readonly/>
+                    <input type="hidden" name="id_users" value="{$userInfo.id}"  readonly/>
+                    <php>}else{</php>
+                    <select name="id_users" id="id_users" aria-invalid="false"<php>if($loginAuthInfo['id_users']) echo 'disabled="disabled"';</php>>
+                    <option value="0">所有</option>
+                    </select>
+                    <php>}</php>
+                    <span class="form-required">*默认所有用户</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <input style="margin-top: 0px;" name="is_allow_other" type="checkbox" value="checkbox" >
+                    允许非局域网登录
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</button>
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+    });
+    //异步联动：根据部门选择，关联部门用户选择下拉框
+    $("#id_department").change(function(){
+        var selector = $('#id_users');
+        selector.empty();
+        selector.append("<option value='0'>所有</option>");
+        if(this.value!=0){
+            $.ajax({
+                url:"{:U('User/Loginmanage/get_user')}",
+                type:"get",
+                dataType:'json',
+                data:{'id_department':this.value},
+                success:function(msg){
+                    selector.empty();
+                    selector.append("<option value='0'>所有</option>");
+                    for(var p in msg){
+                        selector.append("<option value='"+msg[p].id+"'>"+msg[p].user_nicename+"</option>");
+                    }
+                }
+            });
+        }
+    });
+</script>
+</body>

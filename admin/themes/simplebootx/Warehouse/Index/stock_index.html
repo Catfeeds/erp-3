@@ -1,0 +1,37 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('index/stock_index')}">仓库库存列表</a></li>
+    </ul>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th width="50">ID</th>
+            <th>仓库名称</th>
+            <th>库存</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="item">
+            <tr>
+                <td width="50">{$item.id_warehouse}</td>
+                <td>{$item.name}</td>
+                <td>{$item.count_qty}</td>                               
+                <td width="130">
+                    <a href="{:U('Warehouse/index/allocation_stock',array(\'id\'=>$item[\'id_warehouse\']))}">查看库存</a>
+                </td>                
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+
+    <!--<div class="pagination">{$page}</div>-->
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

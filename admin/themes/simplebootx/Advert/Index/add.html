@@ -1,0 +1,90 @@
+<admintpl file="header"/>
+</head>
+<body>
+    <div class="wrap js-check-wrap">
+        <ul class="nav nav-tabs">
+            <li><a href="{:U('index/index')}">{:L('数据列表')}</a></li>
+            <li class="active"><a href="{:U('index/add')}">{:L('新增广告数据')}</a></li>
+        </ul>
+        <form class="form-horizontal js-ajax-form" action="{:U('index/add_post')}" method="post">
+            <fieldset>
+<!--                <div class="control-group">
+                    <label class="control-label">{:L('广告名称')}</label>
+                    <div class="controls">
+                        <input type="text" name="id_advert" value="{$data.ad_name}" disabled="disabled"/>
+                        <input type="hidden" name="id_ad" value="{$data.ad_id}">
+                        <span class="form-required">*</span>
+                    </div>
+                </div>-->
+                <div class="control-group">
+                    <label class="control-label">{:L('选择广告优化师')}</label>
+                    <div class="controls">
+                        <select name="id_users">
+                            <option value="0">无</option>
+                            <foreach name="users" item="u">
+                                <option value="{$u.id}">{$u.user_nicename}</option>
+                            </foreach>
+                        </select>
+                        <span class="form-required">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">部门</label>
+                    <div class="controls">
+                        <select name="id_department">
+                            <foreach name="list" item="item">
+                                <option value ="{$item.id_department}">{$item.title}</option>
+                            </foreach>
+                        </select>
+                        <span class="form-required">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{:L('转化量')}</label>
+                    <div class="controls">
+                        <input type="text" name="conversion" value="" />
+                        <span class="form-required">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{:L('转化费')}</label>
+                    <div class="controls">
+                        <input type="text" name="cost" value=""/>
+                        <span class="form-required">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{:L('花费')}</label>
+                    <div class="controls">
+                        <input type="text" name="expense" value=""/>
+                        <span class="form-required">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{:L('CPM')}</label>
+                    <div class="controls">
+                        <input type="text" name="cmp" value=""/>
+                        <span class="form-required">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{:L('点击率')}</label>
+                    <div class="controls">
+                        <input type="text" name="ctr" value=""/>
+                        <span class="form-required">*</span>
+                    </div>
+                </div>
+
+            </fieldset>
+            <div class="form-actions">
+                <!--				<input type="hidden" name="user_id" value="{$advert_product.user_id}"/>
+                                <input type="hidden" name="advert_product_id" value="{$advert_product.advert_product_id}"/>-->
+                <button type="submit" class="btn btn-primary js-ajax-submit">{:L('ADD')}</button>
+                <a class="btn" href="{:U('ad/index/index')}">{:L('BACK')}</a>
+            </div>
+        </form>
+    </div>
+    <script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

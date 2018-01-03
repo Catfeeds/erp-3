@@ -1,0 +1,11 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <p>3月的有效订单分成{$count}个文件提供下载</p>
+    <for start="1" end="$count +1" name="k">
+        <p><span><a href="{:U('warehouse/order/export_mar_order/part/'.$k)}">点击下载文件{$k}</a></span></p>
+    </for>
+</div>
+</body>
+</html>

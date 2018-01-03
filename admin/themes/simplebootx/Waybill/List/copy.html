@@ -1,0 +1,199 @@
+<admintpl file="header" />
+<script src="/public/js/jquery.barcode/jquery-barcode.js"></script>
+<script src="/public/js/jquery.ui/jquery-ui.min.js"></script>
+<script src="/public/js/jquery.ui/uploadPreview.js" type="text/javascript"></script>
+<style>
+    .control-label,.controls{margin-bottom: 10px;}
+    #containment-wrapper { width: 700px; height:200px;padding-top: 10px; border:1px solid #ccc;position: relative;margin: 10px; }
+    #containment-wrapper span{position:absolute;margin: 0 8px;cursor: pointer; border: 1px solid #ddd;padding:6px;}
+    .icon_delete{cursor: pointer;color: red;float: right;}
+</style>
+</head>
+<body>
+<div class="wrap">
+    <form method="post" class="form-horizontal js-ajax-form" action="{:U('Waybill/list/copy_post',array('id'=>$_GET['id']))}">
+        <input type="hidden" name="action" value="ajax">
+        <div class="control-group">
+            <label class="control-label">物流</label>
+            <div class="controls">
+                <select name="id_shipping" required>
+                    <option value="0">-请选择物流-</option>
+                    <php> foreach($shipping as $ship_id=>$ship_title){
+                        $selected = $waybill['id_shipping']==$ship_id?' selected="selected"':'';
+                        echo '<option value="'.$ship_id.'"'.$selected.'>'.$ship_title.'</option>';
+                        }
+                    </php>
+                </select>
+            </div>
+            <label class="control-label">模板名称</label>
+            <div class="controls">
+                <input type="text" name="title" required value="{$waybill.title}" placeholder="模板标题"/>
+            </div>
+            <label class="control-label">模板背景图</label>
+            <div class="controls">
+                <input type="file" id="file0" name="waybill_image" value="{$waybill.waybill_image}"/>
+            </div>
+            <label class="control-label">背景高度</label>
+            <div class="controls">
+                <input type="text" class="background_height" name="height" value="{$waybill.height}" placeholder="高度"/>
+            </div>
+            <label class="control-label">背景宽度</label>
+            <div class="controls">
+                <input type="text" class="background_width" name="width" value="{$waybill.width}" placeholder="宽度"/>
+            </div>
+            <label class="control-label">全局字体大小</label>
+            <div class="controls">
+                <input type="text" name="font_size" value="<php>echo $waybill['font_size']?$waybill['font_size']:12;</php>" placeholder="字体大小"/>
+            </div>
+            <label class="control-label">跟踪号字体大小</label>
+            <div class="controls">
+                <input type="text" name="track_num_font_size" value="<php>echo $waybill['track_num_font_size']?$waybill['track_num_font_size']:12;</php>"/>
+            </div>
+            <label class="control-label">邮编码字体大小</label>
+            <div class="controls">
+                <input type="text" name="zipcode_font_size" value="<php>echo $waybill['zipcode_font_size']?$waybill['zipcode_font_size']:16;</php>"/>
+            </div>
+            <label class="control-label">寄件人字体大小</label>
+            <div class="controls">
+                <input type="text" name="sender_font_size" value="<php>echo $waybill['sender_font_size']?$waybill['sender_font_size']:12;</php>"/>
+            </div>
+            <label class="control-label">总价字体大小</label>
+            <div class="controls">
+                <input type="text" name="price_font_size" value="<php>echo $waybill['price_font_size']?$waybill['price_font_size']:12;</php>"/>
+            </div>
+            <label class="control-label">默认模板</label>
+            <div class="controls">
+                <select name="is_default">
+                    <option value="0" <if condition="$waybill.is_default eq 0"> selected="selected"<else /></if>>否</option>
+                    <option value="1" <if condition="$waybill.is_default eq 1"> selected="selected"<else /></if>>是</option>
+                </select>
+            </div>
+            <label class="control-label">客户代码</label>
+            <div class="controls">
+                <input type="text"  name="customer_code" value="{$waybill.customer_code}" placeholder="客户代码"/>
+            </div>
+            <label class="control-label">物流</label>
+            <div class="controls">
+                <input type="text"  name="shipping_name" value="{$waybill.shipping_name}" placeholder="客户代码"/>
+            </div>
+            <label class="control-label">品名</label>
+            <div class="controls">
+                <input type="text" name="product_title" value="{$waybill.product_title}" placeholder="品名"/>
+            </div>
+            <label class="control-label">每页面单数</label>
+            <div class="controls">
+                <input type="text" name="page_show_number" value="{$waybill.page_show_number}" placeholder="每页面单数"/>
+            </div>
+            <label class="control-label">状态</label>
+            <div class="controls">
+                <select name="status">
+                    <option value="1" <if condition="$waybill.status eq 1"> selected="selected"<else /></if>>开启</option>
+                    <option value="0" <if condition="$waybill.status eq 0"> selected="selected"<else /></if>>关闭</option>
+                </select>
+            </div>
+
+            <div id="containment-wrapper" style="<php>echo $waybill['waybill_image']?'background-image:url('.$waybill['waybill_image'].');
+            background-repeat:no-repeat;background-size: 100% 100%;':'';</php>height: {$waybill.height}px; width: {$waybill.width}px;">
+                <php>
+                    foreach($field as $item){
+                        echo '<span class="'.$item.'" style="'.$css_value[$item].'">
+                        '.$field_label[$item].'
+                            <input name="all_field['.$item.']" class="coordinate" type="hidden" value="'.$all_field[$item].'"  />
+                            <input type="text" class="box_width" maxlength="3" style="width: 30px;" placeholder="宽度" name="box_width['.$item.']" value="'.$box_width[$item].'" />
+                            <em class="icon_delete">x</em>
+                        </span>
+                    ';
+                    }
+                </php>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</button>
+        </div>
+    </form>
+
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    var config = {'set_value':'567567-23-767','set_div':'.test_print','showHRI':true};
+    generateBarcode(config);
+    var config2 = {'set_value':'888888-88','set_div':'.test_print2','barWidth':1,'barHeight':20};
+    generateBarcode(config2);
+    /*var draggable_obj = '.waybill1,.waybill2,.receipt_date1,.receipt_date2,' +
+            '.arrivals1,.arrivals_month,.arrivals_day,.receipt_name1,.receipt_name2,' +
+            '.send_name1,.send_name2,.remark1,.remark2,.product_title1,.product_title2,' +
+            '.increment1,.increment2,.price_total1,.price_total2';*/
+    /*设置拖动 字段 */
+    var draggable_obj = ".<php>echo implode(',.',$field);</php>";
+    $(draggable_obj).draggable({ containment:  "parent", scroll: true,
+        drag: function (event, ui) {
+            var coordinate = event.target.offsetLeft+','+event.target.offsetTop;
+            $(this).find('input').val(coordinate);
+            jQuery('.show_offset').html(coordinate);
+        }
+    });
+    $(draggable_obj).draggable({ containment:  "parent", scroll: true,position:0,
+        drag: function (event, ui) {
+            var coordinate = event.target.offsetLeft+','+event.target.offsetTop;
+            $(this).find('.coordinate').val(coordinate);
+            jQuery('.show_offset').html(coordinate)
+        }
+    });
+
+    /*设置盒子宽度*/
+    function set_box_width(){
+        $('.box_width').each(function(){
+            var get_this_value = parseInt($(this).val());
+            if(get_this_value>0){
+                $(this).parent().css('width',get_this_value+'px');
+            }
+        });
+    }
+    set_box_width();
+    $('.box_width').keyup(function(){
+        set_box_width();
+    });
+    /* 设置页面宽 高度*/
+    function set_barcode_box(){
+        var get_height = parseInt($('.background_height').val());
+        var get_width = parseInt($('.background_width').val());
+        if(get_height>0){
+            $('#containment-wrapper').css('height',get_height+'px');
+        }
+        if(get_width>0){
+            $('#containment-wrapper').css('width',get_width+'px');
+        }
+    }
+    set_barcode_box();
+    $('.background_height,.background_width').keyup(function(){
+        set_barcode_box();
+    });
+
+    /*删除字段内容*/
+    $('.icon_delete').click(function(){
+        if(confirm('确定删除此内容？')){
+            $(this).parent().remove();
+        }
+    });
+    /*上传文件预览*/
+    $("#file0").change(function(){
+        var objUrl = getObjectURL(this.files[0]) ;
+        if (objUrl) {
+            $("#containment-wrapper").css("background-image","url("+objUrl+")").css("background-repeat","no-repeat");
+        }
+    }) ;
+    //建立一個可存取到該file的url
+    function getObjectURL(file) {
+        var url = null ;
+        if (window.createObjectURL!=undefined) { // basic
+            url = window.createObjectURL(file) ;
+        } else if (window.URL!=undefined) { // mozilla(firefox)
+            url = window.URL.createObjectURL(file) ;
+        } else if (window.webkitURL!=undefined) { // webkit or chrome
+            url = window.webkitURL.createObjectURL(file) ;
+        }
+        return url ;
+    }
+</script>
+</body>
+</html>

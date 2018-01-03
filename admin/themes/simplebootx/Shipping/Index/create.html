@@ -1,0 +1,95 @@
+<admintpl file="header" />
+</head>
+<body>
+    <div class="loading" style="display:none;position:absolute; left:0; top:0;width:100%; height:100%;z-index:20000;background-color:gray;opacity:0.5; -moz-opacity:0.5; filter:alpha(opacity=50);">
+        loading...
+    </div>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+            <li><a href="{:U('Index/index')}">物流列表</a></li>
+            <li class="active"><a href="{:U('index/create',array('id'=>$_GET['id_shipping']))}"><php>echo $shipping['id_shipping']?'编辑物流':'建立物流'</php></a></li>
+		</ul>
+		<form method="post" enctype="multipart/form-data" class="form-horizontal js-ajax-form" action="{:U('index/save_post')}">
+			<fieldset>
+                <php>if(isset($shipping['id_shipping'])){</php>
+                 <input type="hidden" name="id" value="<php>echo $shipping['id_shipping'];</php>">
+                <php>}</php>
+				<div class="control-group">
+					<label class="control-label">名称:</label>
+                    <div class="controls">
+                        <input type="text" name="title" value="<php>echo isset($shipping['title'])?$shipping['title']:'';</php>">
+                    </div>
+				</div>
+                <div class="control-group">
+                    <label class="control-label">跟踪地址:</label>
+                    <div class="controls">
+                        <input type="text" name="track_url" value="<php>echo isset($shipping['track_url'])?$shipping['track_url']:'';</php>">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">公司地址:</label>
+                    <div class="controls">
+                        <input type="text" name="address" value="<php>echo isset($shipping['address'])?$shipping['address']:'';</php>">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">联系电话:</label>
+                    <div class="controls">
+                        <input type="text" name="tel" value="<php>echo isset($shipping['tel'])?$shipping['tel']:'';</php>">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">网络渠道:</label>
+                    <div class="controls">
+                        <input type="text" name="channels" value="<php>echo isset($shipping['channels'])?$shipping['channels']:'';</php>">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">在物流注册账号:</label>
+                    <div class="controls">
+                        <input type="text" name="account" value="<php>echo isset($shipping['account'])?$shipping['account']:'';</php>">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">首重(kg):</label>
+                    <div class="controls">
+                        <input type="text" name="first_weight" value="<php>echo isset($shipping['first_weight'])?$shipping['first_weight']:'';</php>">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">续重(kg):</label>
+                    <div class="controls">
+                        <input type="text" name="continued_weight" value="<php>echo isset($shipping['continued_weight'])?$shipping['continued_weight']:'';</php>">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">首重费用:</label>
+                    <div class="controls">
+                        <input type="text" name="first_weight_price" value="<php>echo isset($shipping['first_weight_price'])?$shipping['first_weight_price']:'';</php>">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">续重费用:</label>
+                    <div class="controls">
+                        <input type="text" name="continued_weight_price" value="<php>echo isset($shipping['continued_weight_price'])?$shipping['continued_weight_price']:'';</php>">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">状态:</label>
+                    <div class="controls">
+                        <select name="status">
+                            <option value="1" <php>echo $shipping['status']==1?'selected="selected"':'';</php>>开启</option>
+                            <option value="0" <php>echo $shipping['status']==0 && isset($shipping['id_shipping'])?'selected="selected"':'';</php>>关闭</option>
+                        </select>
+                    </div>
+                </div>
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">保存</button>
+				<a class="btn" href="{:U('index/index')}">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

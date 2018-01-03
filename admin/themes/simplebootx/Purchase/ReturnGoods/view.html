@@ -1,0 +1,122 @@
+<admintpl file="header" />
+<title>退货单</title>
+</head>
+<body>
+<style>
+    .form-horizontal .controls {
+        line-height: 29px;
+        margin-left: 138px;
+    }
+    .form-horizontal .control-group {
+        margin-bottom: 5px;
+    }
+    .form-horizontal .control-label {
+        width: 130px
+    }
+</style>
+<div class="wrap">
+    <div class="form-horizontal">
+        <h2 style="text-align: center">采购退货单</h2>
+
+        <div class="control-group">
+            <label class="control-label">采购单号：</label>
+            <div class="controls" style="width: 30%;float: left;    margin-left: 20px;">
+                {$data.purchase_no}
+            </div>
+            <label class="control-label">收货仓库：</label>
+            <div class="controls" >
+                {$warehouses[$data['id_warehouse']]}
+            </div>
+
+        </div>
+        <div class="control-group">
+
+
+            <label class="control-label">退货时间：</label>
+            <div class="controls" style="width: 30%;float: left;    margin-left: 20px;">
+                {$data['created_at']}
+
+            </div>
+            <label class="control-label">供应商：</label>
+            <div class="controls">
+                {$suppliers[$data['id_supplier']]}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">入库单号：</label>
+            <div class="controls" style="width: 30%;float: left;    margin-left: 20px;">
+                {$data.inner_purchase_no}
+            </div>
+            <label class="control-label">地址：</label>
+            <div class="controls">
+                {$data['address']}
+            </div>
+        </div>
+
+        <table class="table table-hover table-bordered table-list" border="1" style="border-collapse:collapse;">
+            <thead>
+                <tr>
+                    <th style="text-align:center">序号</th>
+                    <th style="text-align:center">业务部</th>
+                    <th style="text-align:center">产品SKU</th>
+                    <th style="text-align:center">货品条码</th>
+                    <th style="text-align:center">内部名称</th>
+                    <th style="text-align:center">属性</th>
+                    <th style="text-align:center">单位</th>
+                    <th style="text-align:center">采购数量</th>
+                    <th style="text-align:center">采购退货数量</th>
+                    <th style="text-align:center">仓库退货数量</th>
+                    <th style="text-align:center">备注</th>
+                </tr>
+            </thead>
+            <tbody>
+                <foreach name="product" item="item" key="key">
+                    <tr>
+                        <td style="text-align:center"><php>echo $key+1</php></td>
+                        <td style="text-align:center">{$departments[$data['id_department']]}</td>
+                        <td style="text-align:center">{$item.sku}</td>
+                        <td style="text-align:center">{$item.barcode}</td>
+                        <td style="text-align:center">{$item.inner_name}</td>
+                        <td style="text-align:center">{$item.option_value}</td>
+                        <td style="text-align:center">--</td>
+                        <td style="text-align:center">{$item.quantity}</td>
+                        <td style="text-align:center">{$item.c_qty}</td>
+                        <td style="text-align:center">{$item.c_qty_true}</td>
+<!--                        <td style="text-align:center"><php>echo $item['price']*$item['quantity']</php></td>-->
+
+                        <td style="text-align:center">{$item.remark}</td>
+                    </tr>
+                </foreach>
+            </tbody>
+        </table>
+        <div class="control-group">
+            <label class="control-label">退货人:</label>
+            <div class="controls" style="width: 40%;float: left;    margin-left: 20px;">
+             ___________
+            </div>
+            <label class="control-label">总计：</label>
+            <div class="controls">
+                {$data['totalreturn']}
+            </div>
+        </div>
+
+    </div>
+</div>
+<!--<input type='hidden' name='session_value' id='add' value="">-->
+<script src="__PUBLIC__/js/common.js"></script>
+<script src='__PUBLIC__/js/jQuery.print.js'></script>
+<script src='__PUBLIC__/js/jquery.barcode/jquery-barcode.js'></script>
+<script src="/public/js/jquery.ui/jquery-ui.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        HideWeekMonth()
+
+    })
+    function HideWeekMonth()
+    {
+        $("#think_page_trace_open").hide();
+    }
+
+</script>
+</body>
+</html>

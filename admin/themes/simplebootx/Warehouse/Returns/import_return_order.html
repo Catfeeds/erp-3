@@ -1,0 +1,61 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('Warehouse/Returns/order_return_list')}">退货订单</a></li>
+        <li><a href="{:U('Warehouse/Returns/create_order_return')}">创建退货订单</a></li>
+        <li  class="active"><a href="{:U('Warehouse/Returns/import_return_order')}">批量生成退货单</a></li>
+    </ul>
+    <fieldset>
+        <form method="post" action="{:U('Warehouse/Returns/import_return_order')}" enctype="multipart/form-data"  class="form-horizontal">
+
+            <div class="control-group" style="line-height: 36px;">
+                <div class="control-group">
+                    <div class="controls">
+                        <p style="color:red;">生成退货单</p>
+                        <p>直接从Excel复制一列:运单号</p>
+                        <textarea name="data" style="width:300px;height:300px;">{$data}</textarea>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">退货原因:</label>
+                    <div class="controls">
+                        <textarea placeholder="备注" style="width: 28%; height: 100px;" required name="remark">{$post['remark']}</textarea>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">是否再次配货:</label>
+                    <div class="controls">
+                        <select name="isagain" required style="height: 30px;width: 130px;">
+                            <foreach name="isAgain" item="val">
+                                <option value="{$key}" <php>echo $post['isagain']==$key ? 'selected' : ''</php> >{$val}</option>
+                            </foreach>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">{:L('导入')}</button>
+                <a class="btn" href="{:U('Warehouse/Returns/order_return_list')}">{:L('BACK')}</a>
+            </div>
+        </form>
+    </fieldset>
+    <present name="Think.post.data">
+        <div>共更新:{$total} 失败:{$infor.error|count} 成功:{$infor.success|count}</div>
+    </present>
+    <foreach name="infor.error" item="err">
+        <div style="color:red;">{$err}</div>
+    </foreach>
+    <foreach name="infor.warning" item="warning">
+        <div style="color:yellowgreen;">{$warning}</div>
+    </foreach>
+    <foreach name="infor.success" item="success">
+        <div style="color:green;">{$success}</div>
+    </foreach>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+</script>
+</body>
+</html>

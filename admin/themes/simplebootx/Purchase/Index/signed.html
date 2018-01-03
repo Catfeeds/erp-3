@@ -1,0 +1,87 @@
+<admintpl file="header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Index/signed',array('id'=>$_GET['id']))}">确认收货</a></li>
+    </ul>
+    <form class="form-horizontal" method="post">
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label"></label>
+                <div class="controls">
+                    PO#{$data.purchase_no}
+                </div>
+            </div>
+            <div class="control-group attributesValueList">
+                <label class="control-label">属性库存:</label>
+                <div class="controls">
+                    <table class="table table-hover table-bordered table-list attributesListBox">
+                        {$attr_row}
+                    </table>
+                </div>
+            </div>
+            <div class="control-group error_div" style="display:none;margin-bottom: 0;color:red">
+                <label class="control-label"></label>
+                <div class="controls">
+                    <span class="error_msg"></span>
+                </div>
+            </div>
+            <!--<div class="control-group">
+                <label class="control-label">状态</label>
+                <div class="controls">
+                    <select name="status">
+                        <option value="-1">-请选择-</option>
+                        <option value="0">未收货</option>
+                        <option value="1"<php>echo $data['status']==1?' selected="selected"':'';</php>>已收货</option>
+                    </select>
+                </div>
+            </div>-->
+        </fieldset>
+        <div class="form-actions">
+            <input type="hidden" name="id" value="{$data.id_purchase}"/>
+            <button type="submit" class="btn btn-primary  js-ajax-submit">{:L('SAVE')}</button>
+            <a class="btn" href="{:U('Index/purchase_list')}">{:L('BACK')}</a>
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.js-ajax-submit').click(function(){
+        var getOrderId = $(this).attr('orderid');
+        var flag = true;
+        $('.entryQty').each(function(e){
+//            console.log(e);
+            var getNumber = parseInt($(this).parent().parent().parent().find('.countQty'+e).text());            
+            var rowNumber = parseInt($(this).parent().parent().find('.rowQty'+e).text());
+            var getEntryQty  = $(this).val();
+//            console.log(getNumber);
+//            console.log(Number(getEntryQty)+rowNumber);
+//            if(Number(getEntryQty) > getNumber || (getNumber === rowNumber && Number(getEntryQty) > 0) || (Number(getEntryQty)+rowNumber) > getNumber){
+////                alert('输入的数量大于总采购数');
+//                $('.error_div').show();
+//                $('.error_msg').html('输入的数量大于总采购数');
+//                $(this).focus();
+//                flag = false;
+//            }
+        });
+        if(flag){
+            var getData = $('.form-horizontal').serializeArray();
+            $.post("{:U('Index/save_stock')}",getData,function(data){
+                var result = $.parseJSON(data);
+                if(result.status){
+                    window.location.reload();
+                }else{
+                    alert(getData.message);
+                }
+            });
+        }
+        return false;
+    });
+    $('.addOtherAttr').click(function(){
+        var getCurAttrClass = $(this).attr('attr');
+        $('.'+getCurAttrClass).show();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<admintpl file="header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Position/add')}">{:L('批量关联货位SKU')}</a></li>
+    </ul>
+    <form method="get" action=""  class="well form-search getSearchForm">
+        <input type="hidden" name="g" value="Admin">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="id_department" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="department" item="item">
+                    <option value="{$key}" <if condition="$key EQ $_GET['id_department']">selected</if>>{$item}</option>
+                </foreach>
+            </select>
+            <button class="btn btn-primary searchButton">搜索</button>
+        </div>
+    </form>
+    <form class="form-horizontal js-ajax-form" action="{:U('Goodssku/add')}" method="post">
+        <fieldset>
+            <table class="table table-hover table-bordered table-list order-table">
+                <thead>
+                <tr>
+                    <th>产品图片</th>
+                    <th>内部名称</th>
+                    <th>SKU</th>
+                    <th>属性</th>
+                    <th>货位</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <foreach name="proList" item="item" key='key'>
+                    <tr style="font-weight: bold;background:#f5f5f5;">
+                        <td>
+                            <notempty name="item['img']['photo']">
+                                <img id="photo-{$key}-preview" src="{:sp_get_image_preview_url($item['img']['photo'][0]['url'])}" style="height:36px;width: 36px;">
+                            </notempty>
+                        </td>
+                        <td>{$item.inner_name}</td>
+                        <td>{$item.sku}</td><td>{$item.value}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </foreach>
+                </tbody>
+            </table>
+        </fieldset>
+        <div class="form-actions">
+            <button type="button" class="btn btn-primary js-ajax-submit" id="add_btn">{:L('SAVE')}</button>
+            <a class="btn" href="{:U('Goodssku/index')}">{:L('BACK')}</a>
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('#id_warehouse').change(function(){
+        $('#id_goods_area').empty();
+        var id_warehouse = $('#id_warehouse option:selected').val();
+        if(id_warehouse!=0){
+            $.ajax({
+                url:"{:U('Position/select_by_warehoues')}",
+                type:'get',
+                dataType:'json',
+                data:{'id_warehouse':id_warehouse},
+                success:function(data){
+                    if(data['flag']!=1)
+                    {
+                        $.each(data,function(index,elem){
+                            $('#id_goods_area').removeAttr("disabled");
+                            $('#id_goods_area').append('<option value="'+elem['id_goods_area']+'" >'+elem['title']+'</option>');
+                        });
+                    }else
+                    {
+                        alert(data.msg);
+                        $('#id_goods_area').attr("disabled","disabled");
+                    }
+
+                }
+            });
+        }
+    });
+    $("#add_btn").click(function(){
+        var id_warehouse = $('#id_warehouse option:selected').val();
+        var id_goods_area = $('#id_goods_area option:selected').val();
+        var goods_name = $('#goods_name').val();
+        var reg = /^([A-Za-z])(-)(\d{2})(-)(\d{2})(-)(\d{2})$/;
+        var a =  goods_name.match(reg);
+
+        if(id_warehouse=='0')
+        {
+            alert('请选择仓库');
+            return false;
+        }
+        if(id_goods_area==null)
+        {
+            alert('没有货位区域名称，不能提交');
+        }
+        if(goods_name==null)
+        {
+            alert('没有货位名称，不能提交');
+        }
+        if(a==null)
+        {
+            alert('货位名称有误，请重新输入');
+            return false;
+        }
+        if(id_warehouse&&id_goods_area&&goods_name){
+            var flag = true;
+            $.ajax({
+                url:"{:U('Position/select_find')}",
+                type:'get',
+                dataType:'json',
+                data:{'id_goods_area':id_goods_area,'goods_name':goods_name,'id_warehouse':id_warehouse},
+                success:function(data){
+                    if(data.flag==0){
+                        console.log(data);
+                        $('form').submit();
+                    }else{
+                        console.log(data);
+                        alert(data.msg);
+                         flag = false;
+                    }
+                }
+            });
+            return flag;
+        }else
+          return false;
+    })
+</script>
+</body>
+</html>

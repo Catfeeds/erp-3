@@ -1,0 +1,499 @@
+<admintpl file="header" />
+</head>
+<body>
+
+<style>
+.fixedlayer {
+    position: fixed;
+    top: 0px;
+    height: 90px;
+    left: 20px;
+    right: 20px;
+    padding-top: 20px;
+    background-color: #fff;
+    z-index: 10;
+}
+.buttonLayer {margin-bottom: 10px;  background-color: #fff;}
+
+.customerlayer {height: 100%; padding-top: 120px; }
+.customerlayer .pagination { margin-top: 10px; margin-bottom: 0px; }
+.searchLayer {border: solid 1px #ddd; padding:5px; }
+.searchLayer table {width: 100%; background-color: #fff; border-spacing: 1px !important; border-collapse: separate; font-family: "宋体"; table-layout: fixed; }
+.searchLayer table td {padding: 5px; margin: 1px; width: auto; }
+.searchLayer table td.th {background: #f1f1f1; width: 80px; }
+.searchLayer input[type="text"] {margin-bottom: 0px; border: none; box-shadow: none; border-bottom: solid 1px #ddd; border-radius: 0px; outline: 0px; width: 90%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+.searchLayer select {margin-bottom: 0px; border-radius: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; outline: 0px; height: 20px; line-height: 20px;}
+
+.tableLayer {width: 100%; overflow: scroll; height: 300px; }
+.tableLayer table th {border: solid 1px #ddd; padding: 10px; font-weight: bold; background: #f1f1f1; }
+.tableLayer table td {border: solid 1px #ddd; padding: 10px; }
+.ctab-panel {width: 100%; position: relative; margin-bottom: 10px; }
+.ctab-head {height: 40px; }
+.ctab-head > a {display: inline-block; color: #333; padding: 0px 10px; line-height: 40px; }
+.ctab-head > a.active {border: solid 1px #ddd; border-bottom: none; background-color: #fff; border-top: solid 2px #3daae9; }
+.ctab-body {border: solid 1px #ddd; padding: 10px; }
+
+#search_auto_pro{border:1px solid #dce4ec; position:absolute; display:none;}
+#search_auto_pro li{background:#FFF; text-align:left;list-style-type:none;}
+#search_auto_pro li.cls{text-align:right;}
+#search_auto_pro li a{display:block; padding:5px 6px; cursor:pointer; color:#666;}
+#search_auto_pro li a:hover{background:#D8D8D8; text-decoration:none; color:#000;}
+input{min-height:30px;}
+
+</style>
+
+<div class="loading" style="display:none;position:absolute; left:0; top:0;width:100%; height:100%;z-index:20000;background-color:gray;opacity:0.5; -moz-opacity:0.5; filter:alpha(opacity=50);">
+        loading...
+    </div>
+
+<div class="fixedlayer">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="<php>echo !empty($transfer)?U('Transfer/add', array('id'=>$id)):U('Transfer/add'); </php>">调拨单生产</a></li>
+    </ul>
+    
+    <div class="buttonLayer">
+    		<php>if(empty($transfer)||(!empty($transfer)&&'1'==$transfer['status'])){</php>
+        <button class="btn btn-primary js-ajax-submit tj_sub" id="save_transfer">保存</button>
+        <php>}</php>
+        <php>if((!empty($transfer)&&'1'==$transfer['status'])){</php>
+        <button class="btn btn-primary js-ajax-submit tj_sub" id="sub">提交</button>
+        <php>}</php>
+        <button class="btn btn-primary js-ajax-submit tj_sub" onclick="javascript:window.location.href='{:U('Transfer/producting')}';">{:L('BACK')}</button>
+    </div>
+    
+    
+</div>
+<div class="wrap" style='padding-top:0px;'>
+
+	
+    <div class="customerlayer">
+    	
+    	<form method="post" action="<php>echo !empty($transfer)?U('Transfer/edit_post'):U('Transfer/add_post'); </php>" id="save_transfer_form" name="save_transfer_form">
+			<input type='hidden' name='transfer_id' value='<php>echo !empty($transfer)?$id:0;</php>' />
+    	<div class="searchLayer">
+            <table cellspacing="1">
+                <tr>
+                    <td class="th">单据编号：</td>
+                    <td>
+                    
+                    	<input type="text" name="docno" value="<php>echo !empty($transfer)?$transfer['docno']:'【系统自动生成】';</php>" readonly="readonly" />
+                    	<span class="form-required" style="color:red">*</span>
+                      <span class="error-msg-pro"></span>
+                    </td>
+                    <td class="th">物流公司：</td>
+                    <td>
+                    	<input type="text" name="logistics" value="<php>echo !empty($transfer)?$transfer['logistics']:'';</php>" >
+                    </td>
+                    <td class="th">物流单号：</td>
+                    <td>
+                    	<input type="text" name="logistics_docno" value="<php>echo !empty($transfer)?$transfer['logistics_docno']:'';</php>" >
+                    </td>
+                </tr>
+                <tr>                		
+                    <td class="th">发货仓库：</td>
+                    <td>
+                    	<select name="c_orig_id" style="width:130px;height:30px;line-height:30px;">
+					                <option value="0">全部</option>
+					                <php> 
+					                	foreach($warehouses as $warehouse){ 
+					                	$selected = (!empty($transfer)&&$transfer['c_orig_id']==$warehouse['id_warehouse'])?' selected="selected"':'';
+					                </php>
+					                    <option value="{$warehouse['id_warehouse']}" <php> echo $selected; </php>>{$warehouse['title']}</option>
+					                <php> } </php>
+					            </select>	
+					            <span class="form-required" style="color:red">*</span>
+                      <span class="error-msg-pro"></span>
+                    </td>
+                    <td class="th">收货仓库：</td>
+                    <td>
+                    	<select name="c_dest_id" style="width:130px;height:30px;line-height:30px;">
+					                <option value="0">全部</option>
+					                <php>
+					                	foreach($warehouses as $warehouse2){ 
+					                	$selected = (!empty($transfer)&&$transfer['c_dest_id']==$warehouse2['id_warehouse'])?' selected="selected"':'';
+					                </php>
+					                    <option value="{$warehouse2['id_warehouse']}" <php> echo $selected; </php>>{$warehouse2['title']}</option>
+					                <php> } </php>
+					            </select>
+					            <span class="form-required" style="color:red">*</span>
+                      <span class="error-msg-pro"></span>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="th">调拨单备注：</td>
+                    <td>
+                    	<input type="text" name="description" value="<php>echo !empty($transfer)?$transfer['description']:'';</php>" >
+                    </td>
+                    <td class="th">物流备注：</td>
+                    <td>
+                    	<input type="text" name="description_shipping" value="<php>echo !empty($transfer)?$transfer['description_shipping']:'';</php>" >
+                    </td>
+                </tr>
+                
+            </table>
+        </div>
+        
+        <php>if(!empty($transfer)){ </php>
+                <div class="pagination">{$page}<input type="text" value="{$pcount}" name="pcount" id="pcount2" placeholder="输入每页显示数">
+                    <input type="button" id="page_search" class="btn btn-small submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">
+                </div>
+                <php>}</php>
+    	
+        <!--  -->
+        <div class="ctab-panel"  <php>echo !empty($transfer)?'':'style="display:none;"';</php>>
+            <div class="ctab-head">
+                <a id="items" href="#" class="active" onclick="javascript:window.location.reload();">明细</a>
+                <php>if(!empty($transfer)&&'1'==$transfer['status']){ </php>
+                <a href="#">导入SKU</a>
+                <input type='hidden' id='transfer_id' value="{$transfer['id']}" />
+                <php>}</php>
+            </div>
+            <div class="ctab-body">
+                <div class="tableLayer">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" value="" id="all" class="checkAllbox js-check-all" style="margin:0">&nbsp;序号</th>
+                                <th>产品名称</th>
+                                <th>SKU</th>
+                                <th>调拨数量</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <php>foreach($list as $k=>$v){ $k++; </php>
+                                <tr>
+                                    <td><input class="ids js-check" type="checkbox" value="{$v.id}" style="margin:0"></if>&nbsp{$k}</td>
+                                    <td>{$v.s_inner_name}</td>
+                                    <td>{$v.s_sku}</td>
+                                    <td><input type="text" name="set_qty[{$v.id}]" value="{$v.qty}" ></td>
+                                </tr>
+                            <php>}</php>
+                        </tbody>
+                    </table>
+                </div>
+                
+            </div>
+            
+            <div class="ctab-body" style='display:none;'>
+                <div class="tableLayer">
+                    <div class="controls">
+                        <p>直接从Excel复制二列:SKU,调拨数量</p><br />
+                        <textarea id="data" style="width:600px;height:400px;"></textarea>
+                        &nbsp;&nbsp;
+                        <input type="button" id="import" class="btn btn-small submitDisplayRow" style="height: 30px;margin-top:-9px;" value="导入">
+                    </div>
+                </div>
+                
+            </div>
+            
+        </div>
+      	</form>
+        
+        <form method="post" action="{:U('Transfer/add_transfer_item')}" id="save_transfer_item_form" name="save_transfer_item_form">
+        <input type='hidden' name='transfer_id' value='<php>echo !empty($transfer)?$id:0;</php>' />
+        <input type='hidden' name='warehouse_id' value='0' />
+        <div class="searchLayer"  <php>echo !empty($transfer)&&'1'==$transfer['status']?'':'style="display:none;"';</php>>
+            <!--<table cellspacing="1">                
+                <tr>                		
+                    <td class="th">产品：</td>
+                    <td>
+                    	<div id="search_pro">
+                            <input name="product_id" id="product_id" type="hidden" value="">
+                            <input id="inner" type="text" autocomplete="off" value="">
+                            <span class="form-required" style="color:red">*</span>
+                            <span class="error-msg-pro" id="error-msg-pro2"></span>
+                        </div>
+                        <div id="search_auto_pro"></div>
+                    </td>
+                </tr>
+                
+                <tr>                		
+                    <td class="th">属性库存：</td>
+                    <td>
+                    	<div class="controls attributesValueList" style="display: none;">
+                        <table class="table table-hover table-bordered table-list attributesListBox">
+
+                        </table>
+                    	</div>
+                    </td>
+                </tr>
+            </table>-->
+            产品SKU：<input type="text" id="sku_name" name="sku_name" class="p_sku" readonly style="color: #000;width:200px;"/>
+                            <a href="javascript:;" class="btn btn-primary search_sku">搜索</a>
+                            调拨数量：<input type="text" name="sku_qty" id="sku_qty" class="p_qty" value="1" style="margin-bottom: 10px;width:200px;">
+        </div>
+      	</form>
+				<div class="buttonLayer"  <php>echo !empty($transfer)&&'1'==$transfer['status']?'':'style="display:none;"';</php>>
+		        <button class="btn btn-primary js-ajax-submit tj_sub" id="save_transfer_item2">保存行</button>
+		        <button class="btn btn-primary js-ajax-submit tj_sub" id="del_transfer_item">删除选中行</button>
+		    </div>
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/iframeTools.source.js"></script>
+<script type="text/javascript">
+		var doClose = function() {
+        if (null != dialog) {
+            dialog.close();
+        }
+    };
+    var dialog = null;
+    var onSelectStore = function(sid) {
+        if (sid) {
+            $.ajax({
+                type:'POST',
+                cache:false,
+                dataType: 'json',
+                url:"{:U('Transfer/ajax_get_sku')}",
+                data:{'id':sid},
+                success:function(name){
+                    $('#sku_name').val(name);
+                }
+            })
+        }
+    };
+    $(function(){
+		    
+		  /*搜索提示产品内部名*/
+            $('#search_auto_pro').css({'width':'220px','background':'white','height':'180px','overflow':'auto'});
+            $('#search_pro input#inner').keyup(function(){
+                var inputText= $.trim(this.value);
+                if(inputText!=""){
+                    $.post("{:U('Transfer/get_product_title')}",{'value':$(this).val(),'c_orig_id':$('select[name="c_orig_id"]').val()},function(data){
+                        if(data=='0') {
+                            $('#search_auto_pro').html('').css('display','none');
+                            $('#error-msg-pro2').html('没有找到产品').css({'color':'red'});
+                            
+                        }else {                            
+                            $('#search_auto_pro').html(data).css('display','block');
+                        }
+                    });
+                } else {
+                    $('#error-msg-pro2').html('');
+                    $('#search_auto_pro').html('').css('display','none');
+                }
+            });  	    
+       /*保存*/
+       $('#save_transfer').click(function(){
+       	
+       			var qty_check = false;
+       			$("input[name^='set_qty']").each(function(){
+       				var qty_v = parseInt($(this).val());	
+       				if(isNaN(qty_v)||qty_v<0)
+       				{
+       					qty_check = true;
+       					return false;
+       				}
+       			});
+       			if(qty_check){alert('填写数量不正确，请重新输入');return false;}
+       	
+            if (confirm('确定要保存？')) {
+            	
+            	var c_orig_id = parseInt($('#save_transfer_form select[name="c_orig_id"]').val());
+            	if(c_orig_id<=0){alert('请选择发货仓库');return false;}
+            	var c_dest_id = parseInt($('#save_transfer_form select[name="c_dest_id"]').val());
+            	if(c_dest_id<=0){alert('请选择收货仓库');return false;}
+            	if(c_orig_id==c_dest_id){alert('发货仓库与收货仓库不能相同，请重新选择');return false;}
+   
+              $('#save_transfer_form').submit();
+            } else {
+                return false;
+            }            
+        }); 
+        /*保存行*/
+       $('#save_transfer_item').click(function(){
+       			if(!qty_change_status){alert('调拨数量不能大于可用库存，请修改');return false;}
+       			
+       			var qty_check = false;
+       			$("input[name^='set_qty']").each(function(){
+       				var qty_v = parseInt($(this).val());	
+       				if(isNaN(qty_v)||qty_v<0)
+       				{
+       					qty_check = true;
+       					return false;
+       				}
+       			});
+       			if(qty_check){alert('填写数量不正确，请重新输入');return false;}
+       			
+            if (confirm('确定要保存行？')) {
+            	
+            	var product_id = parseInt($('#save_transfer_item_form #product_id').val());
+            	if(product_id<=0){alert('请选择产品');return false;}
+   
+              $('#save_transfer_item_form').submit();
+            } else {
+                return false;
+            }            
+        });    
+        $('#save_transfer_item2').click(function(){
+       			
+       			var c_orig_id = parseInt($('#save_transfer_form select[name="c_orig_id"]').val());
+		    		if(c_orig_id<=0){alert('请选择发货仓库');return false;}
+		    		$('#save_transfer_item_form input[name="warehouse_id"]').val(c_orig_id);
+       			var sku_name = $.trim($('#sku_name').val());         
+       			if(!sku_name){alert('请选择产品SKU');return false;}
+       			var sku_qty = parseInt($('#sku_qty').val());         
+       			if(isNaN(sku_qty)||sku_qty<=0){alert('请填写调拨数量');return false;}
+       			$('#save_transfer_item_form').submit();
+        });    
+        
+        /*显示条数*/
+    		$("#page_search").click(function(){
+    			var pcount = parseInt($('input[name="pcount"]').val());
+    			if(pcount<0){alert('请输入每页显示条数');return false;}
+ 
+    			<php>if(!empty($transfer)){</php>
+    			$('#save_transfer_form').attr('action', "<php>echo U('Transfer/add',array('id'=>$transfer['id'])); </php>");
+    			$('#save_transfer_form').attr('method', 'get');
+    			$('#save_transfer_form').submit();
+    			<php>}</php>
+    		});
+    		
+    		/*全选/全不选*/
+    		$("#all").click(function(){
+		        if(this.checked){
+		            $("td :checkbox").prop("checked", true);
+		        }else{
+		            $("td :checkbox").prop("checked", false);
+		        }
+		    }); 
+       
+       /*删除选中行*/
+		    $('#del_transfer_item').click(function(){
+	        var ids = [];
+	        $("input[class*='ids']:checked").each(function(){            
+	            ids.push($(this).attr('value'));
+	        }); 
+	        if(ids.length==0){alert('请选择序号');return false;}
+	        if (confirm('确定要删除选中行？')) {
+	            $.ajax({
+	                url:"{:U('Transfer/del_transfer_item')}",
+	                type:'POST',
+	                dataType:'json',
+	                data:{'ids':ids},
+	                success:function(data){
+	                    if(data.status == 1) {
+                        alert(data.message);
+                        window.location.reload();
+                    	}
+	                }
+	            });
+	        }
+	      });
+	      
+	      /*菜单切换*/
+	      $('.ctab-head a').click(function(){
+	      	var idx = $(this).index($('.ctab-head a'));	
+	      	$('.ctab-head a').removeClass('active');
+	      	$(this).addClass('active');
+	      	$('.ctab-body').hide();
+	      	$('.ctab-body').eq(idx).show();
+	      });
+	      
+	      /*导入*/
+		    $('#import').click(function(){
+		    	
+		    	var c_orig_id = parseInt($('#save_transfer_form select[name="c_orig_id"]').val());
+		    	if(c_orig_id<=0){alert('请选择发货仓库');return false;}
+		    	var skus = $('#data').val();
+		    	if(!skus){alert('请填写导入信息');return false;}
+		    	var transfer_id = parseInt($('#transfer_id').val());
+		    	
+		    	
+	        if (confirm('确定要导入么？')&&transfer_id>0) {
+	            $.ajax({
+	                url:"{:U('Transfer/import')}",
+	                type:'POST',
+	                dataType:'json',
+	                data:{'transfer_id':transfer_id, 'warehouse_id':c_orig_id, 'data':skus},
+	                success:function(data){
+	                    alert(data.message);
+	                    $('#items').trigger('click');
+	                }
+	            });
+	        }
+	      });
+	      
+	      /*提交调拨单*/
+		    $('#sub').click(function(){
+	        var transfer_id = [];
+	        var transfer_id2 = parseInt($('#transfer_id').val());
+	        transfer_id.push(transfer_id2);
+	        if (confirm('确定要提交？')) {
+	            $.ajax({
+	                url:"{:U('Transfer/submit2')}",
+	                type:'POST',
+	                dataType:'json',
+	                data:{'transfer_id':transfer_id},
+	                success:function(data){
+	                    alert(data.message);
+	                    if((data.message).indexOf('成功')>0)
+	                    {
+	                    	window.location.href="{:U('Transfer/producting')}";	
+	                    }	                    
+	                }
+	            });
+	        }
+	      });
+	      $('.search_sku').click(function() {
+            dialog = art.dialog.open("{:U('Transfer/search_sku')}", {'id': 'selectmember', title: '搜索SKU', width: '900px', height: '670px', lock: true});
+        });
+       
+    });
+    
+    /*产品选择*/
+    function get_pro_param(j) {
+      var name = $('.pro'+j).text();
+      var id_pro = j;
+      $('#product_id').val(id_pro);
+      $('#inner').val(name);
+      $('#search_auto_pro').html('').css('display','none');
+      get_pro_attr(id_pro);
+      $('.sub').removeAttr("disabled");
+      $('.tj_sub').removeAttr("disabled");
+    }
+    /*产品属性*/
+    function get_pro_attr(id){
+            var getProId = id;
+            if (getProId == 0) {
+                return false;
+            }
+            if ($('.productBox' + getProId).text()) {
+                alert('已经存在');
+                return false;
+            }
+            
+            $('.loading').show();
+            var transfer_id = parseInt($('input[name="transfer_id"]').val());
+            $.post("{:U('Transfer/get_attr')}", {'transfer_id': transfer_id,'product_id': getProId,'warehouse_id':$('select[name="c_orig_id"]').val()}, function (data) {
+                $('.loading').hide();
+                var resultData = $.parseJSON(data);
+                if (resultData.status) {
+                    $('.attributesValueList').show();
+                    $('.attributesListBox').html(resultData.row);
+                }
+            });
+        }
+    var qty_change_status = 1;    
+    /*调拨数量修改*/
+    function qty_change(o)
+    {
+    	var qty2 = parseInt($(o).val()),qty = parseInt($(o).parent().next().text());	
+    	
+    	if(qty2>qty)
+    	{
+    		qty_change_status = 0;
+    		alert('调拨数量不能大于可用库存，请修改');
+    		return false;	
+    	}
+    	else
+    	{
+    		qty_change_status = 1;	
+    	}
+    }
+    
+</script>
+</body>
+</html>

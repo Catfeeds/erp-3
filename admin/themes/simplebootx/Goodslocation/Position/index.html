@@ -1,0 +1,158 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Position/index')}">货位列表</a></li>
+        <li><a href="{:U('Position/import_position')}">导入货位</a></li>
+    </ul>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">仓库:</label>
+            <select name="id_warehouse" style="width:100px;" id="id_warehouse">
+                <option value="0">所有</option>
+                <foreach name="warehouse" item="item">
+                    <option value="{$key}" <if condition="$key EQ $_GET['id_warehouse']">selected</if>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">货位区域名称:</label>
+            <select name="area_title" style="width:100px;" id="title"></select>
+            <label class="control-label">货位名称:</label>
+            <input type="text" name="goods_name" value="{$_GET['goods_name']}"/>
+            <label class="control-label">SKU或条形码:</label>
+            <input type="text" name="sku" value="{$_GET['sku']}" />
+            <label class="control-label">产品名:</label>
+            <input type="text" name="title" value="{$_GET['title']}"/>
+            <label class="control-label">内部名:</label>
+            <input type="text" name="inner_name" value="{$_GET['inner_name']}"/>
+
+            <label class="control-label">部门:</label>
+            <select name="id_department" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="department" item="item">
+                    <option value="{$key}" <if condition="$key EQ $_GET['id_department']">selected</if>>{$item}</option>
+                </foreach>
+            </select>
+
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="btn btn-primary searchButton" id="searchBtn">搜索</button>
+            <a href="{:U('Position/add')}" class="btn btn-primary searchButton">添加货位</a>
+            <button class="btn btn-primary exportButton" id="exportBtn">导出货位</button>
+            <!--<a href="{:U('Position/import_position')}" class="btn btn-primary searchButton">导入货位</a>-->
+        </div>
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list order-table">
+        <thead>
+        <tr>
+            <th>所属仓库</th>
+            <th>部门</th>
+            <th>货位区域名称</th>
+            <th>货位名称</th>
+            <th>SKU</th>
+            <th>条形码</th>
+            <th>内部名</th>
+            <th>产品名</th>
+            <th>属性</th>
+            <th>可用库存</th>
+      <!--      <th>实际库存</th>-->
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+            <foreach name="add_goods_list" item="goods">
+                <tr style="<php>
+                switch($order['blacklist_level']){
+                    case 1:case 2:
+                    case 3:
+                        echo 'background:rgba(255, 229, 0, 0.3);';
+                    case 4:
+                    case 10:
+                        echo 'background:rgba(244, 54, 54, 0.5);';
+                    break;
+                }
+                echo $order['order_repeat']>0?'color:red;':'';
+                </php>">
+                    <td>{$warehouse[$goods['id_warehouse']]}</td>
+                    <td>{$department[$goods['id_department']]}</td>
+                    <td>{$area_list[$goods['id_goods_area']]}</td>
+                    <td>{$goods.goods_name}</td>
+                    <td>{$goods.sku}</td>
+                    <td>{$goods.barcode}</td>
+                    <td>{$goods.inner_name}</td>
+                    <td>{$goods.title}</td>
+                    <td>{$goods.pktitle}</td>
+                    <td>{$goods.quantity}</td>
+                   <!-- <td>{$goods.actual_quantity}</td>-->
+
+                    <td><a href="{:U('Position/edit',array('id_warehouse_allocation'=>$goods['id_warehouse_allocation'],'id'=>$goods['id']))}" class="btn btn-primary">编辑</a></td>
+                </tr>
+            </foreach>
+        </tbody>
+    </table>
+        <div class="pagination">{$Page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.submitDisplayRow').click(function(){
+        var getRow = $(this).parent().find('input[name=displayRow]').val();
+        if(getRow){
+            $.post("{:U('Ordercheck/setpagerow')}",{'row':getRow},function(data){
+                window.location.reload();
+            });
+        }
+    });
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('Goodslocation/Position/index')}");
+    });
+    $('.exportButton').click(function(){
+        $('.form-search input[name=a]').attr('value','export');
+        $('.form-search').attr('action',"{:U('Goodslocation/Position/export')}");
+    });
+
+    $('#id_warehouse').change(function(){
+        $('#title').empty();
+        var id_warehouse = $('#id_warehouse option:selected').val();
+            $.ajax({
+                url:"{:U('Position/select_by_warehoues')}",
+                type:'get',
+                dataType:'json',
+                data:{'id_warehouse':id_warehouse},
+                success:function(data){
+                    if(data['flag']!=1)
+                    {
+                        $.each(data,function(index,elem){
+                            $('#title').removeAttr("disabled");
+                            $('#title').append('<option value="'+elem['title']+'" >'+elem['title']+'</option>');
+                            if(elem['title']=='<?php echo $_GET["area_title"]; ?>')
+                            {
+                                $("#title [value='"+elem['title']+"']").attr("selected","selected");
+                            }
+                        });
+                    }else
+                    {
+                        if(id_warehouse!=0){
+                            alert(data.msg);
+                            $('#title').attr("disabled","disabled");
+                        }else{
+                            $('#title').removeAttr("disabled");
+                            $('#title').append('<option value="0">所有</option>');
+                        }
+
+                    }
+
+                }
+            });
+
+    });
+    $(function(){
+        $('#id_warehouse').change();
+    })
+</script>
+</body>
+</html>

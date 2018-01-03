@@ -1,0 +1,152 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="fixedlayer" style="height: 40px;">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Shipping/Index/status_statistics')}">物流状态统计</a></li>
+    </ul>
+</div>
+
+<div class="wrap">
+    <div class="customerlayer" style="margin-top: -60px;">
+        <form method="get" action=""  class="well form-search">
+            <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+            <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+            <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+            <div class="buttonLayer" style="width: 70px;height: 30px;" >
+                <button class="btn btn-primary searchButton">搜索</button>
+            </div>
+            <div class="searchLayer" style="padding-bottom: -10px;">
+                <table cellspacing="1">
+                    <tr>
+                        <td class="th">部门：</td>
+                        <td>
+                            <select name="id_department" style="width:200px;height:30px">
+                                <option value="">全部</option>
+                                <php> foreach($department_id as $dep_id){
+                                    if(empty($department[$dep_id])) continue;
+                                    $selected = $_GET['id_department']==$dep_id?' selected="selected"':'';
+                                    echo '<option value="'.$dep_id.'" '.$selected.'>'.$department[$dep_id].'</option>';
+                                    }
+                                </php>
+                            </select>
+                        </td>
+                        <td class="th">物流：</td>
+                        <td>
+                            <select name="shipping_id" style="width:200px;height:30px">
+                                <option value="0">所有</option>
+                                <php>foreach($shipping as $key=>$title){ </php>
+                                <php>if($key>=0){</php>
+                                <option value="{$key}" <php>if(isset($_GET['shipping_id'])&& $_GET['shipping_id']==$key){echo 'selected="selected"';}</php>>{$title}</option>
+                                <php>}</php>
+                                <php>}</php>
+                            </select>
+                        </td>
+                        </td>
+                        <td class="th">起始时间：</td>
+                        <td>
+                            <input type="text" name="start_time" class="js-datetime" value="<php>echo isset($_GET['start_time'])?str_replace('+',' ',$_GET['start_time']):'';</php>" style="width: 133px;" autocomplete="off">-
+                            <input type="text" class="js-datetime" name="end_time" value="<php>echo isset($_GET['end_time'])?str_replace('+',' ',$_GET['end_time']):'';</php>" style="width: 133px;">
+                            <input type="hidden" id = "start_time" value="{$start_time}">
+                            <input type="hidden" id = "end_time" value="{$end_time}">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+        <div class="ctab-panel">
+            <div class="ctab-head" style="height: 30px;">
+                <div class="pagination">{$page}</div>
+            </div>
+            <div class="ctab-body">
+                <div class="tableLayer" style="height: 600px;">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>有效单</th>
+                            <th>发货单</th>
+                            <php>
+                                $arrayFlip = array_flip($status_list);
+                                foreach($status_list as $key=>$statusTitle){
+                                echo '<th>'.$statusTitle.'</th>';
+                                }
+                            </php>
+                            <th>拒收率</th>
+                            <th>退货率</th>
+                            <th>签收率</th>
+                        </tr>
+                        </thead>
+                        <foreach name="list" item="item">
+                            <tr>
+                                <td>{$item.set_date}</td>
+                                <td><php>echo $item['effective'];unset($item['set_date'],$item['effective']);</php></td>
+                                <php>
+                                    foreach($item as $tag){
+                                    echo '<td>'.$tag.'</td>';
+                                    }
+                                </php>
+                                <td>
+                                    <php>
+                                        $reTitle1 = $arrayFlip['拒收']?$arrayFlip['拒收']:$arrayFlip['拒收(調查處理中)'];
+                                        //$reTitle1 = $arrayFlip['暫置營業所保管中'];
+                                        //$reTitle1 = $arrayFlip['調查處理中'];
+                                        $rejectedTotal = $item[$reTitle1];
+                                        if($rejectedTotal>0){
+                                        $rejected = ($rejectedTotal/$item['count_all'])*100;
+                                        echo number_format($rejected,2).'%';
+                                        }
+                                    </php>
+                                </td>
+                                <td>
+                                    <php>
+                                        $reTitle1 = $arrayFlip['退貨完成'];
+                                        //$reTitle1 = $arrayFlip['暫置營業所保管中'];
+                                        //$reTitle1 = $arrayFlip['調查處理中'];
+                                        $rejectedTotal = $item[$reTitle1];
+                                        if($rejectedTotal>0){
+                                        $Returns = ($rejectedTotal/$item['count_all'])*100;
+                                        echo number_format($Returns,2).'%';
+                                        }
+                                    </php>
+                                </td>
+                                <td>
+                                    <php>
+                                        $reTitle1 = $arrayFlip['順利送達'];
+                                        //$reTitle1 = $arrayFlip['暫置營業所保管中'];
+                                        //$reTitle1 = $arrayFlip['調查處理中'];
+                                        $rejectedTotal = $item[$reTitle1];
+                                        if($rejectedTotal>0){
+                                        $Returns = ($rejectedTotal/$item['count_all'])*100;
+                                        echo number_format($Returns,2).'%';
+                                        }
+                                    </php>
+                                </td>
+                            </tr>
+                        </foreach>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/jquery.stickytableheaders.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".tableLayer table").stickyTableHeaders({scrollableArea: $('.tableLayer')});
+    });
+    var start_time = $('input[name=start_time]').val();
+    var end_time = $('input[name=end_time]').val();
+    if(!start_time && !end_time)
+    {
+        var start = $("#start_time").val();
+        var end = $("#end_time").val();
+        $('input[name=start_time]').val(start);
+        $('input[name=end_time]').val(end);
+    }
+
+</script>
+</body>
+</html>

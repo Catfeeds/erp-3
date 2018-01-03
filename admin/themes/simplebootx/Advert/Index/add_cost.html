@@ -1,0 +1,110 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('Advert/Index/all_cost')}">费用列表</a></li>
+        <li  class="active"><a href="{:U('Advert/Index/add_cost')}">添加费用</a></li>
+    </ul>
+    <form method="get" action=""  class="well form-search ">
+        <!--<label class="control-label">投放日期:</label>-->
+        <!--<input type="text" name="start_time" class="js-datetime" value="{:I('request.start_time/s','')}" style="width: 120px;" autocomplete="off">--->
+        <!--<input autocomplete="off" type="text" class="js-datetime" name="end_time" value="{:I('request.end_time/s','')}" style="width: 120px;">-->
+        <label class="control-label">广告专员:</label>
+        <select name="id_user">
+            <option value="0">无</option>
+            <foreach name="users" item="user" >
+                <option value="{$key}" <if condition="$_GET['id_user'] EQ $key">selected</if>>{$user}</option>
+            </foreach>
+        </select>
+        <label class="control-label">域名:</label>
+        <select name="id_domain" id="id_domain">
+            <option value="0">无</option>
+            <foreach name="domain" item="item" >
+                <option value="{$key}" <if condition="$_GET['id_domain'] EQ $key">selected</if>>{$item}</option>
+            </foreach>
+        </select>
+        <button class="btn btn-primary searchButton">搜索</button>
+    </form>
+    <fieldset class="well">
+            选择地区：
+            <select title="" name="zones" style="margin-bottom: 0;" id="zones">
+                <option value="0">请选择</option>
+                <foreach name="zones" item="zone">
+                    <option value="{$key}" >{$zone}</option>
+                </foreach>
+            </select>
+    </fieldset>
+    <fieldset>
+        <form class="form-horizontal js-ajax-form" action="{:U('index/add_cost')}" method="post">
+            <table class="table table-hover table-bordered table-list order-table">
+                <thead>
+                <tr>
+                    <th>投放日期</th>
+                    <th>姓名</th>
+                    <th>域名</th>
+                    <th>广告名</th>
+                    <th>链接</th>
+                    <th>转化量</th>
+                    <th>转化日期</th>
+                    <!--<th>单次转化费</th>-->
+                    <th>总费用</th>
+                    <!--<th>CPM</th>-->
+                    <!--<th>CTR</th>-->
+                </tr>
+                </thead>
+                <tbody>
+                <input type="hidden" name="zone_temp" id="zone_temp" value=""/>
+                <foreach name="adverts" item="advert">
+                    <tr id="tr_{$key}">
+                        <input type="hidden" name="data[{$key}][advert_id]" value="{$advert.advert_id}"/>
+                        <td>{$advert.post_at}</td>
+                        <td>{$users[$advert['id_users']]}</td>
+                        <td>{$domain[$advert['id_domain']]}</td>
+                        <td>{$advert.advert_name}</td>
+                        <td>{$advert.url}</td>
+                        <td><input type="text" name="data[{$key}][conversion]" value="" style="width: 100px" /></td>
+                        <td><input type="text" name="data[{$key}][conversion_at]" class="js-datetime" value="<php>echo date('Y-m-d',strtotime('-1 day'))</php>" style="width: 120px;"  autocomplete="off"></td>
+                        <!--<td> <input type="text" name="data[{$key}][cost]" value="" style="width: 100px" /></td>-->
+                        <td> <input type="text" name="data[{$key}][expense]" value="" style="width: 100px" /></td>
+                        <!--<td> <input type="text" name="data[{$key}][cmp]" value="" style="width: 100px"/></td>-->
+                        <!--<td> <input type="text" name="data[{$key}][ctr]" value="" style="width: 100px" /></td>-->
+                        <td> <input type="button" style="width: 100px" value="删除" onclick="deleteLine({$key})" class="btn"/></td>
+
+                    </tr>
+                </foreach>
+                </tbody>
+            </table>
+            <div class="pagination">{$Page}</div>
+            <div class="form-actions">
+                <!--				<input type="hidden" name="user_id" value=""/>
+                                <input type="hidden" name="advert_product_id" value=""/>-->
+                <button type="submit" class="btn btn-primary js-ajax-submit" id="add_btn">添加</button>
+                <a class="btn" href="/Advert/Index/all_cost">返回</a>
+            </div>
+        </form>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    function deleteLine(indexNum){
+        var tr_id = "#tr_"+indexNum;
+        //$(tr_id).hide();
+        $(tr_id).remove();
+    }
+
+    $('#add_btn').on('click',function(){
+        var zones = $('#zones').val();
+            if(zones == 0){
+                alert('请选择地区');
+                return false;
+            }else{
+                $('#zone_temp').val(zones);
+            }
+
+    })
+
+</script>
+
+</body>
+</html>

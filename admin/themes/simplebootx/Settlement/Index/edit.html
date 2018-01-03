@@ -1,0 +1,76 @@
+<admintpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+		<form method="post" class="form-horizontal js-ajax-submit" action="{:U('Index/edit',array('id'=>$_GET['id']))}">
+			<fieldset>
+                <!--<input type="hidden" name="action" value="ajax">-->
+				<div class="control-group">
+					<label class="control-label">总金额</label>
+					<div class="controls">
+						<input type="text" name="amount_total" value="{$order.amount_total}" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">已结算金额</label>
+					<div class="controls">
+                        <input type="text" name="amount_settlement" value="{$order.amount_settlement}">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">状态</label>
+					<div class="controls">
+                        <select name="status">
+                            <option value="">--所有--</option>
+                            <option value="0"<if condition="$order.status eq 0"> selected="selected"</if>>未结款</option>
+                            <option value="1"<if condition="$order.status eq 1"> selected="selected"</if>>部分结款</option>
+                            <option value="2"<if condition="$order.status eq 2"> selected="selected"</if>>已结款</option>
+                        </select>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">订单状态</label>
+					<div class="controls">
+						<select name="order_status">
+							<option value="">--所有--</option>
+							<option value="8"<if condition="$order_res.id_order_status eq 8"> selected="selected"</if>>配送中</option>
+							<option value="9"<if condition="$order_res.id_order_status eq 9"> selected="selected"</if>>已签收</option>
+							<option value="19"<if condition="$order_res.id_order_status eq 19"> selected="selected"</if>>理赔</option>
+						</select>
+					</div>
+				</div>
+<!--                <div class="control-group">
+                    <label class="control-label">签收日期</label>
+                    <div class="controls">
+                        <input type="text" name="delivery_date" class="js-datetime" value="{$order.delivery_date}" style="" autocomplete="off">
+                    </div>
+                </div>-->
+				<div class="control-group">
+					<label class="control-label">结款日期</label>
+					<div class="controls">
+						<input type="text" name="date_settlement" class="js-datetime" value="{$order.date_settlement}" style="" autocomplete="off">
+					</div>
+				</div>
+                <div class="control-group">
+                    <label class="control-label">备注</label>
+                    <div class="controls">
+                        <textarea cols="18" rows="3" name="remark" class="orderRemarkText js-ajax-submit" placeholder="请填写备注信息" style="width:210px;height:200px;">{$order.remark}</textarea>
+                    </div>
+                </div>
+<!--				<div class="control-group">
+					<label class="control-label">备注</label>
+					<div class="controls">
+						<textarea name="remark">{$order.remark}</textarea>
+					</div>
+				</div>-->
+			</fieldset>
+
+			<div class="form-actions">
+                <input type="hidden" name="id" value="{$order.id_order_settlement}"/>
+				<button type="submit" class="btn btn-primary">{:L('SAVE')}</button>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

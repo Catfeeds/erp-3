@@ -1,0 +1,38 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('zone/index')}">地区设置</a></li>
+        <li><a href="{:U('zone/add',array('id'=>$vo['id_country']))}">添加地区</a></li>
+    </ul>
+    <table class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th width="50">ID</th>
+            <th width="150">{:L('COUNTRY')}</th>
+            <th width="150">{:L('ZONE_NAME')}</th>
+            <th width="160">{:L('code')}</th>
+            <th width="100">{:L('ACTIONS')}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="data" item="vo">
+            <tr>
+                <td>{$vo.id_zone}</td>
+                <td>{$vo.title}</td>
+                <td>{$vo.title2}</td>
+                <!--<td>{$vo.iso_code2}&emsp;{$vo.code}</td>-->
+                <td>{$vo.code}</td>
+                <td>
+                    <a href="{:U('zone/edit',array('id'=>$vo['id_zone']))}">{:L('EDIT')}</a>|
+                    <!--<a class="js-ajax-delete" href="{:U('zone/delete',array('id'=>$vo['id_zone']))}">{:L('DELETE')}</a>-->
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

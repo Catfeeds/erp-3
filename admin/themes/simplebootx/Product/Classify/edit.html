@@ -1,0 +1,27 @@
+<admintpl file="header"/>
+</head>
+<body>
+    <div class="wrap js-check-wrap">
+        <ul class="nav nav-tabs">
+            <li><a href="{:U('Product/classify/index')}">产品属性列表</a></li>
+            <li class="active"><a href="{:U('Product/classify/edit',array('id'=>$_GET['id']))}">编辑产品属性</a></li>
+        </ul>
+        <form class="form-horizontal js-ajax-form" action="{:U('classify/edit_post')}" method="post">
+            <fieldset>
+                <div class="control-group">
+                    <label class="control-label">属性名称</label>
+                    <div class="controls">
+                        <input type="hidden" name="id_classify" value="{$list.id_classify}"/>
+                        <input type="text" name="name" value="{$list.name}" />
+                        <span class="form-required">*</span>
+                    </div>
+                </div>                
+            </fieldset>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary js-ajax-submit">保存</button>
+                <a class="btn" href="{:U('classify/index')}">返回</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

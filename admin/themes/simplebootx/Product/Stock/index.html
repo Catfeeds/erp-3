@@ -1,0 +1,56 @@
+<admintpl file="header" />
+</head>
+<body>
+    <div class="wrap">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="{:U('stock/index')}">部门仓库库存列表</a></li>
+        </ul>
+        <fieldset>
+            <form method="get" action=""  class="well form-search">
+                <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+                <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+                <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+                <input type="hidden" name="id_warehouse" value="<php>echo $data['id_warehouse'];</php>">
+                <div class="control-group" style="line-height: 36px;">
+                    <label class="control-label">部门:</label>
+                    <select name="id_department" style="width:100px;">
+                        <option value="">全部</option>
+                        <php> foreach($department_id as $dep_id){
+                            if(empty($department[$dep_id])) continue;
+                            $selected = $_GET['id_department']==$dep_id?' selected="selected"':'';
+                            echo '<option value="'.$dep_id.'" '.$selected.'>'.$department[$dep_id].'</option>';
+                            }
+                        </php>
+                    </select>          
+                    <button class="btn btn-primary searchButton">搜索</button>
+                </div>
+            </form>
+            <table class="table table-hover table-bordered table-list">
+                <thead>
+                    <tr>
+                        <th width="50">部门</th>
+                        <th>仓库名称</th>
+                        <th>库存</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                <foreach name="list" item="item">
+                    <tr>
+                        <td width="50">{$item.department}</td>
+                        <td>{$item.name}</td>
+                        <td>{$item.count_qty}</td>                               
+                        <td width="130">
+                            <a href="{:U('stock/check_view',array('id_warehouse'=>$item['id_warehouse'],'department_id'=>$item['id_department']))}">查看</a>
+                        </td>                
+                    </tr>
+                </foreach>
+                </tbody>
+            </table>
+
+            <!--<div class="pagination">{$page}</div>-->
+        </fieldset>
+    </div>
+    <script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

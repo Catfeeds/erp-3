@@ -1,0 +1,147 @@
+﻿<admintpl file="header" />
+</head>
+<body>
+
+<style>
+.fixedlayer {
+    position: fixed;
+    top: 0px;
+    height: 90px;
+    left: 20px;
+    right: 20px;
+    padding-top: 20px;
+    background-color: #fff;
+    z-index: 10;
+}
+.buttonLayer {margin-bottom: 10px;  background-color: #fff;}
+
+.customerlayer {height: 100%; padding-top: 120px; }
+.customerlayer .pagination { margin-top: 10px; margin-bottom: 0px; }
+.searchLayer {border: solid 1px #ddd; margin-bottom: 10px; }
+.searchLayer table {width: 100%; background-color: #fff; border-spacing: 1px !important; border-collapse: separate; font-family: "宋体"; table-layout: fixed; }
+.searchLayer table td {padding: 5px; margin: 1px; width: auto; }
+.searchLayer table td.th {background: #f1f1f1; width: 80px; }
+.searchLayer input[type="text"] {margin-bottom: 0px; border: none; box-shadow: none; border-bottom: solid 1px #ddd; border-radius: 0px; outline: 0px; width: 90%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+.searchLayer select {margin-bottom: 0px; border-radius: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; outline: 0px; height: 20px; line-height: 20px;}
+
+.tableLayer {width: 100%; overflow: scroll; height: 300px; }
+.tableLayer table th {border: solid 1px #ddd; padding: 10px; font-weight: bold; background: #f1f1f1; }
+.tableLayer table td {border: solid 1px #ddd; padding: 10px; }
+.ctab-panel {width: 100%; position: relative; margin-bottom: 10px; }
+.ctab-head {height: 40px; }
+.ctab-head > a {display: inline-block; color: #333; padding: 0px 10px; line-height: 40px; }
+.ctab-head > a.active {border: solid 1px #ddd; border-bottom: none; background-color: #fff; border-top: solid 2px #3daae9; }
+.ctab-body {border: solid 1px #ddd; padding: 10px; }
+
+#search_auto_pro{border:1px solid #dce4ec; position:absolute; display:none;}
+#search_auto_pro li{background:#FFF; text-align:left;list-style-type:none;}
+#search_auto_pro li.cls{text-align:right;}
+#search_auto_pro li a{display:block; padding:5px 6px; cursor:pointer; color:#666;}
+#search_auto_pro li a:hover{background:#D8D8D8; text-decoration:none; color:#000;}
+input{min-height:30px;}
+
+</style>
+
+<div class="loading" style="display:none;position:absolute; left:0; top:0;width:100%; height:100%;z-index:20000;background-color:gray;opacity:0.5; -moz-opacity:0.5; filter:alpha(opacity=50);">
+        loading...
+    </div>
+
+<div class="fixedlayer">
+    <ul class="nav nav-tabs">
+        <li class="active"><a id="loc" href="U('index/period_list')" onclick="javascript:window.location.href=this.href;">仓库月结</a></li>
+    </ul>
+    <div class="buttonLayer">
+        <button class="btn btn-primary js-ajax-submit tj_sub" id="save_transfer">保存</button>
+		<input type='hidden' id='id' class='id' value="{$list.id}" />
+        <button class="btn btn-primary js-ajax-submit tj_sub" onclick="javascript:window.location.href='{:U('index/period_list')}';">{:L('BACK')}</button>
+    </div>
+    
+    
+</div>
+<div class="wrap" style='padding-top:0px;'>
+
+	
+    <div class="customerlayer">
+    	
+    	<div class="searchLayer">
+            <table cellspacing="1">
+                                
+                <tr>
+                    <td class="th">仓库编号：</td>
+					<td>
+						<input type="text" id="wtitle" value="{$list.wtitle}" readonly>
+					</td>
+					<td class="th">月结年月：</td>
+					<td>
+						<input type="text" id="yearmonth" value="{$list.yearmonth}" readonly>
+					</td>
+					<td class="th">制单人：</td>
+					<td>
+						<input type="text"  value="{$user[$list['ownerid']]}" readonly>
+					</td>
+                </tr>
+				<tr>
+					<td class="th">财务开始日期：</td>
+					<td>
+						<input type="text" id="datebegin" name="datebegin" class="js-datetime" value="{$list.datebegin}" style="width: 100%;" autocomplete="off">
+						<!--<input type="text" id="datebegin" value="{$list.datebegin}" readonly>-->
+					</td>
+					<td class="th">财务结束日期：</td>
+					<td>
+						<input type="text" id="dateend" name="dateend" class="js-datetime" value="{$list.dateend}" style="width: 100%;" autocomplete="off">
+						<!--<input type="text" id="dateend" value="{$list.dateend}" readonly>-->
+					</td>
+					<td class="th">提交人：</td>
+					<td>
+						<input type="text"  value="{$user[$list['statusid']]}" readonly>
+					</td>
+				</tr>
+				<tr>
+					<td class="th">是否封账：</td>
+					<td>
+						<input type="text" id="isendaccount" value="{$list.isendaccount}" readonly>
+					</td>
+					<td class="th">是否月结：</td>
+					<td>
+						<input type="text" id="ismonthsum" value="{$list.ismonthsum}" readonly>
+					</td>
+
+				</tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $(function(){
+		  /*保存*/
+       $('#save_transfer').click(function(){
+            if (confirm('确定要保存？')) {
+				var datebegin = $('#datebegin').val();
+				var dateend = $('#dateend').val();
+				var id = parseInt($('#id').val());
+				$.ajax({
+					url:"{:U('index/period_detail')}",
+					type:'POST',
+					dataType:'json',
+					data:{'id':id, 'datebegin':datebegin,'dateend':dateend},
+					success:function(data){
+						alert(data.message);
+						if(data.status)
+						{
+							$('input.id').val(data.id);
+							$('#loc').attr('href', ($('#loc').attr('href')+'/id/'+data.id));
+						}
+						$('#loc').trigger('click');
+					}
+				});
+            } else {
+                return false;
+            }            
+        });
+    });
+        
+</script>
+</body>
+</html>

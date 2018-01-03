@@ -1,0 +1,36 @@
+<admintpl file="header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('lable/index')}">{:L('调整面单')}</a></li>
+    </ul>
+    <form class="form-horizontal js-ajax-form" action="{:U('Shipping/Lable/index')}" method="post">
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label">{:L('面单名称')}</label>
+                <div class="controls">
+                    <select name="id">
+                        <foreach name="temp" item="value">
+                            <option value="{$key}">{$value}</option>
+                        </foreach>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('all_field')}</label>
+                <div class="controls">
+                    <input type="text" name="all_field" value=""/>
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{:L('SAVE')}</button>
+            <!--<a class="btn" href="{:U('shipping_list')}">{:L('BACK')}</a>-->
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

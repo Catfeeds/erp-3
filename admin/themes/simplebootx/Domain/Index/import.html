@@ -1,0 +1,61 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Domain/Index/import')}">域名导入</a></li>
+    </ul>
+    <fieldset>
+        <form method="post" action="{:U('Domain/Index/import')}" enctype="multipart/form-data"  class="form-horizontal" onsubmit="return formCheck()" >
+            
+            <div class="control-group">
+                    <label class="control-label">部门</label>
+                    <div class="controls">
+                        <select name="id_department" id="id_department">
+                            <foreach name="list" item="item">
+                                <option value ="{$item.id_department}">{$item.title}</option>
+                            </foreach>
+                        </select>
+                    </div>
+                </div>
+            
+            <div class="control-group" style="line-height: 36px;">
+                <div class="control-group">
+                    <div class="controls">
+                        <p>直接从Excel复制两列:域名、SMTP用户</p>
+                        <textarea name="data" style="width:600px;height:300px;">{$data}</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">{:L('导入')}</button>
+            </div>
+        </form>
+    </fieldset>
+    <present name="Think.post.data">
+        <div>共更新:{$total} 失败:{$infor.error|count} 成功:{$infor.success|count}</div>
+    </present>
+    <foreach name="infor.error" item="err">
+        <div style="color:red;">{$err}</div>
+    </foreach>
+    <foreach name="infor.warning" item="warning">
+        <div style="color:yellowgreen;">{$warning}</div>
+    </foreach>
+    <foreach name="infor.success" item="success">
+        <div style="color:green;">{$success}</div>
+    </foreach>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<!-- 提交表单前提示信息 -->
+<script>
+    function formCheck(){
+        var id_department = "确认是否为 "+$("#id_department").find("option:selected").text()+" 导入域名?";
+        if(confirm(id_department)){
+            
+        }else{
+            return false;
+        }
+    }
+</script>
+</body>
+</html>

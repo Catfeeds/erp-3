@@ -1,0 +1,110 @@
+<admintpl file="header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('index/edit_advert_data')}">{:L('编辑费用')}</a></li>
+    </ul>
+    <form class="form-horizontal js-ajax-form" action="{:U('index/edit_advert_data')}" method="post">
+        <fieldset>
+            <!--                <div class="control-group">
+                                <label class="control-label">{:L('广告名称')}</label>
+                                <div class="controls">
+                                    <input type="text" name="id_advert" value="{$data.ad_name}" disabled="disabled"/>
+                                    <input type="hidden" name="id_ad" value="{$data.ad_id}">
+                                    <span class="form-required">*</span>
+                                </div>
+                            </div>-->
+            <div class="control-group">
+                <label class="control-label">{:L('域名')}</label>
+                <div class="controls">
+                    <input type="text" name="name" value="{$advert.name}" readonly/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">广告名</label>
+                <div class="controls">
+                    <input type="text" name="advert_name" value="{$advert.advert_name}" readonly/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('链接')}</label>
+                <div class="controls">
+                    <input type="text" name="url" value="{$advert.url}"/>
+
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('转化日期')}</label>
+                <div class="controls">
+                    <input autocomplete="off" type="text" class="js-datetime" name="conversion_at"  value="{$advert.conversion_at}" style="width: 120px;">
+
+                </div>
+            </div>
+
+            <div class="control-group" hidden>
+                <label class="control-label" >{:L('转化量')}</label>
+                <div class="controls">
+                    <input type="text" name="conversion" value="{$advert.conversion}"/>
+
+                </div>
+            </div>
+            <div class="control-group" 类型>
+                <label class="control-label" >{:L('类型')}</label>
+                <div class="controls">
+                    <input type="text" name="type" value="{$advert.type}"/>
+
+                </div>
+            </div>
+            <div class="control-group" >
+                <label class="control-label">{:L('总费用')}</label>
+                <div class="controls">
+                    <input type="text" name="expense" value="{$advert.expense}"/>
+
+                </div>
+            </div>
+    <!--        <div class="control-group" >
+                <label class="control-label">{:L('地区')}</label>
+                <div class="controls">
+                <select title="" name="id_zone" >
+                    <foreach name="zones" item="zone">
+                        <option value="{$key}" <if condition="$advert.id_zone EQ $key">selected</if> >{$zone}</option>
+                    </foreach>
+                </select>
+                </div>
+            </div>-->
+            <div class="control-group" hidden>
+                <label class="control-label">{:L('单次转化费')}</label>
+                <div class="controls">
+                    <input type="text" name="cost" value="{$advert.cost}"/>
+
+                </div>
+            </div>
+            <div class="control-group" hidden>
+                <label class="control-label">{:L('CPM')}</label>
+                <div class="controls">
+                    <input type="text" name="cmp" value="{$advert.cmp}"/>
+
+                </div>
+            </div>
+            <div class="control-group" hidden>
+                <label class="control-label">{:L('CTR')}</label>
+                <div class="controls">
+                    <input type="text" name="ctr" value="{$advert.ctr}"/>
+
+                </div>
+            </div>
+
+        </fieldset>
+        <div class="form-actions">
+            <input type="hidden" name="advert_id" value="{$advert.advert_id}"/>
+            <input type="hidden" name="id_advert_data" value="{$advert.id_advert_data}"/>
+            <button type="submit" class="btn btn-primary js-ajax-submit">{:L('EDIT')}</button>
+            <a class="btn" href="{:U('all_cost')}">{:L('BACK')}</a>
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

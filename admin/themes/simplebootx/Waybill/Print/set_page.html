@@ -1,0 +1,12 @@
+<admintpl file="header" />
+<form method="get" action=""  class="well form-search">
+    <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+    <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+    <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+    <div class="control-group" style="line-height: 36px;">
+        <label class="control-label">每页数:</label>
+        <input type="text" name="page_size"  value="{$page_size}">
+        <button class="btn btn-primary searchButton">设置</button>
+    </div>
+    打印页面：{$a_link}
+</form>

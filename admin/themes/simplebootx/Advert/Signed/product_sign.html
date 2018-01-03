@@ -1,0 +1,114 @@
+<admintpl file="header" />
+</head>
+<body>
+<php>$sort = isset($_GET['sort']) && $_GET['sort']=='desc'?'asc':'desc';</php>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search"  id="form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="id_department" style="width:100px">
+                <option value="">全部</option>
+                <php> foreach($department_id as $dep_id){
+                    if(empty($department[$dep_id])) continue;
+                    $selected = $_GET['id_department']==$dep_id?' selected="selected"':'';
+                    echo '<option value="'.$dep_id.'" '.$selected.'>'.$department[$dep_id].'</option>';
+                    }
+                </php>
+            </select>
+            <label class="control-label">排序:</label>
+            <select  style="width:100px" name="order_by">
+                <option value="">默认</option>
+                <option value="total" <if condition="$order_by eq 'total'"> selected </if> >总订单</option>
+                <option value="effective" <if condition="$order_by eq 'effective'"> selected </if> >有效单</option>
+                <option value="delivery" <if condition="$order_by eq 'delivery'"> selected </if> >已发货</option>
+                <option value="smooth_delivery" <if condition="$order_by eq 'smooth_delivery'"> selected </if> >已签收</option>
+                <option value="refused_to_sign" <if condition="$order_by eq 'refused_to_sign'"> selected </if> >已拒签</option>
+                <option value="rejection_rate" <if condition="$order_by eq 'rejection_rate'"> selected </if> >拒签率</option>
+
+            </select>
+            <label class="control-label">产品名:</label>
+            <input type="text" name="title" style="width: 200px;" value="{:I('request.title/s','')}" placeholder="请输入产品名...">
+            <label class="control-label">内部名:</label>
+            <input type="text" name="inner_name" style="width: 200px;" value="{:I('request.inner_name/s','')}" placeholder="请输入内部名...">
+            <label class="control-label">产品sku:</label>
+            <input type="text" name="sku" style="width: 200px;" value="{:I('request.sku/s','')}" placeholder="请输入sku...">
+            <label class="control-label">物流:</label>
+            <select  style="width:100px" name="id_shipping">
+                <option value="">--选择--</option>
+                <foreach name="shipList" item="ship" key='key'>
+                        <option value="{$key}" <if condition="$_GET['id_shipping'] eq $key"> selected </if> >{$ship}</option>
+                </foreach>
+
+            </select>   
+            <br/>       
+            <label class="control-label">建立日期:</label>
+            <input type="text" name="start_time" class="js-datetime" value="<php>echo $_GET['start_time'];</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="end_time" value="<php>echo $_GET['end_time'];</php>" style="width: 120px;">
+            <label class="control-label">发货日期:</label>
+            <input type="text" name="start_date_delivery" class="js-datetime" value="<php>echo $_GET['start_date_delivery'];</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="end_date_delivery" value="<php>echo $_GET['end_date_delivery'];</php>" style="width: 120px;"><br/>
+            <label class="control-label">业务员:</label>
+            <select name="id_users" style="width:100px">
+                <option value="">全部</option>
+                <foreach name="username" item="usena">
+                <option value="{$usena.id}" <if condition="$_GET['id_users'] eq $usena['id']"> selected  </if> >{$usena.user_nicename}</option>
+                </foreach>
+            </select>
+            <button class="btn btn-primary searchButton">搜索</button>
+            <button class="btn btn-primary exportButton">导出</button>
+        </div>
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th>产品名</th>
+            <th>内部名</th>
+            <th>产品sku</th>
+            <th>总订单</th>
+            <th>有效单</th>
+            <th>已发货</th>
+            <th>已签收</th>
+            <th>已拒签</th>
+            <th>签收率</th>
+            <th>拒签率</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="item">
+            <tr>
+                <td>{$item.title}</td><!-- 产品名 -->
+                <td>{$item.inner_name}</td><!-- 内部名 -->
+                <td>{$item.model}</td><!-- 产品sku -->
+                <td>{$item.total}</td><!-- 总订单 -->
+                <td>{$item.effective}</td><!-- 有效单 -->
+                <td>{$item.delivery}</td><!-- 已发货 -->
+                <td>{$item.smooth_delivery}</td><!-- 已签收 -->
+                <td>{$item.refused_to_sign}</td><!-- 已拒签 -->
+                <td><php>$probability2 = $item['smooth_delivery']/($item['refused_to_sign']+$item['smooth_delivery'])*100; echo number_format($probability2);</php>%</td><!-- 签收率 -->
+                <td><php>$probability = $item['refused_to_sign']/($item['refused_to_sign']+$item['smooth_delivery'])*100; echo number_format($probability);</php>%</td><!-- 拒签率 -->
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+
+        <div class="pagination">{$page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+
+    $('.exportButton').on('click',function(){
+        $('#form-search').attr('action',"{:U('Advert/Signed/exportProduct_sign')}");
+        $('#form-search').trigger('submit');        
+    });
+    $('.searchButton').on('click',function(){
+        $('#form-search').attr('action',"{:U('Advert/Signed/product_sign')}");
+        $('#form-search').trigger('submit');        
+    });    
+</script>
+</body>
+</html>

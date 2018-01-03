@@ -1,0 +1,51 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li <if condition = "$type eq 1" > class="active" </if> ><a href="{:U('import/unsetSettlement',array('type'=>1))}">重置结算款</a></li>
+        <li <if condition = "$type eq 2" > class="active" </if> ><a href="{:U('import/unsetSettlement',array('type'=>2))}">重置运费</a></li>
+        <li <if condition = "$type eq 3" > class="active" </if> ><a href="{:U('import/unsetSettlement',array('type'=>3))}">重置手续费</a></li>
+    </ul>
+    <fieldset>
+        <form method="post" action="{:U('import/unsetSettlement')}" enctype="multipart/form-data"  class="form-horizontal">
+            <input type= "hidden" name="type" id="type" value="{$type}">
+            <div class="control-group" style="line-height: 36px;">
+                <div class="control-group">
+                    <div class="controls">
+                        <if condition = "$type eq 1" >
+                            <p style="color:red;">重置结算款为0,更新结算状态为未结款</p>
+                        <elseif condition="$type eq 2"/>
+                            <p style="color:red;">重置运费为0</p>
+                        <elseif condition="$type eq 3"/>
+                            <p style="color:red;">重置所有手续费为0</p>
+                        <else />
+                            <p style="color:red;">重置结算款为0,更新结算状态为未结款</p>
+                        </if>
+                        <p>直接从Excel复制运单号</p>
+                        <br />
+                        <textarea name="data" style="width:300px;height:300px;">{$data}</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">{:L('导入')}</button>
+            </div>
+        </form>
+    </fieldset>
+    <present name="Think.post.data">
+        <div>共更新:{$total} 失败:{$infor.error|count} 成功:{$infor.success|count}</div>
+    </present>
+    <foreach name="infor.error" item="err">
+        <div style="color:red;">{$err}</div>
+    </foreach>
+    <foreach name="infor.warning" item="warning">
+        <div style="color:yellowgreen;">{$warning}</div>
+    </foreach>
+    <foreach name="infor.success" item="success">
+        <div style="color:green;">{$success}</div>
+    </foreach>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<admintpl file="header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('index/edit_shipping')}">{:L('编辑物流')}</a></li>
+    </ul>
+    <form class="form-horizontal js-ajax-form" action="{:U('index/edit_shipping')}" method="post">
+        <fieldset>
+
+            <div class="control-group">
+                <label class="control-label">{:L('名称')}</label>
+                <div class="controls">
+                    <input type="text" name="title" value="{$shipping.title}"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('跟踪地址')}</label>
+                <div class="controls">
+                    <input type="text" name="track_url" value="{$shipping.track_url}"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('公司地址')}</label>
+                <div class="controls">
+                    <input type="text" name="address" value="{$shipping.address}" />
+
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('联系电话')}</label>
+                <div class="controls">
+                    <input type="text" name="tel" value="{$shipping.tel}" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('网络渠道')}</label>
+                <div class="controls">
+                    <input type="text" name="channels" value="{$shipping.channels}" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('在物流注册账号')}</label>
+                <div class="controls">
+                    <input type="text" name="register_account" value="{$shipping.register_account}" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('首重')}</label>
+                <div class="controls">
+                    <input type="text" name="first_weight" value="{$shipping.first_weight}" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('首重费用')}</label>
+                <div class="controls">
+                    <input type="text" name="first_weight_price" value="{$shipping.first_weight_price}" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('续重')}</label>
+                <div class="controls">
+                    <input type="text" name="continued_weight" value="{$shipping.continued_weight}" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('续重费用')}</label>
+                <div class="controls">
+                    <input type="text" name="continued_weight_price" value="{$shipping.continued_weight_price}" />
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">{:L('状态')}</label>
+                <div class="controls">
+                    <select name="status" aria-invalid="false">
+                        <option value="1" <if condition="$shipping['status']==1">  selected</if>>开启</option>
+                        <option value="0" <if condition="$shipping['status']==0">  selected</if>>关闭</option>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('是否需要发送运单')}</label>
+                <div class="controls">
+                    <select name="need_send_order" aria-invalid="false">
+                        <option value="1" <if condition="$shipping['need_send_order']==1">  selected</if>>开启</option>
+                        <option value="0" <if condition="$shipping['need_send_order']==0">  selected</if>>关闭</option>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('是否需要预先导入运单号')}</label>
+                <div class="controls">
+                    <select name="need_track_num" aria-invalid="false">
+                        <option value="1" <if condition="$shipping['need_track_num']==1">  selected</if>>开启</option>
+                        <option value="0" <if condition="$shipping['need_track_num']==0">  selected</if>>关闭</option>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('是否需要运单类型')}</label>
+                <div class="controls">
+                    <select name="need_shipping_type" aria-invalid="false">
+                        <option value="1" <if condition="$shipping['need_shipping_type']==1">  selected</if>>开启</option>
+                        <option value="0" <if condition="$shipping['need_shipping_type']==0">  selected</if>>关闭</option>
+                    </select>
+                </div>
+            </div>
+
+        </fieldset>
+        <div class="form-actions">
+        	<input type="hidden" name="id_shipping" value="{$_GET['id_shipping']}"/>
+            <button type="submit" class="btn btn-primary js-ajax-submit">{:L('EDIT')}</button>
+            <a class="btn" href="{:U('shipping_list')}">{:L('BACK')}</a>
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,118 @@
+<admintpl file="header" />
+<link rel="stylesheet" type="text/css" href="__PUBLIC__/js/jquery.ui/jquery-ui-1.9.2.custom.min.css">
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#">上架</a></li>
+    </ul>
+    <form method="get" action=""  class="well form-search">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">所属仓库: </label>&nbsp;&nbsp;&nbsp;{$purchase_info.warehouse_name}<br>
+            <label class="control-label">采购单:   </label>&nbsp;&nbsp;&nbsp;{$purchase_info.purchase_no}
+        </div>
+    </form>
+    <fieldset>
+        <form method="post" action="{:U('Onsale/save')}" class="well form-search  form-horizontal " id="form">
+            <table class="table table-hover table-bordered table-list order-table"  >
+                <thead>
+                <tr>
+                    <th>SKU</th>
+                    <th>产品名</th>
+                    <th>采购数量</th>
+                    <th>已收货数量</th>
+                    <th>已上架数量</th>
+                    <th>货位</th>
+                    <th>上架数量</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <foreach name="product_info" item="data">
+                    <tr>
+                        <td>{$data.sku}</td>
+                        <td>{$data.product_name}</td>
+                        <td>{$data.quantity}</td>
+                        <td>{$data.received}</td>
+                        <td>{$data.quantity_on_sale}</td>
+                        <td>
+                            <div >
+                                <input type="text" class="warehouse_allocation"/>
+                                <input type="hidden" class="id_warehouse_allocation" name="id_warehouse_allocation[]" value=""/>
+                            </div>
+                        </td>
+                        <td>
+                            <input type="text" name="num[]" value="0" class="text"/>
+                            <input type="hidden" class="id_product_sku" name="id_product_sku[]" value="{$data.id_product_sku}"/>
+                            <input type="hidden" class="id_product" name="id_product[]" value="{$data.id_product}"/>
+                        </td>
+                        <td>
+                            <a class="btn add">新增</a>
+                            <a class="btn remove">删除</a>
+                        </td>
+                    </tr>
+                </foreach>
+                </tbody>
+            </table>
+            <div class="form-actions">
+                <input type="hidden" name="id_purchase" value="{$purchase_info.id_purchase}">
+                <button type="submit" class="btn btn-primary js-ajax-submit" id="save">{:L('保存')}</button>
+                <a class="btn" href="{:U('Onsale/index')}" >{:L('BACK')}</a>
+            </div>
+        </form>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/jquery.ui/jquery-ui-1.9.2.autocomplete.min.js"></script>
+<script type="text/javascript">
+
+    var new_line = '<tr>' +
+        '<td></td><td></td><td></td><td></td><td></td>' +
+            '<td>' +
+                '<div>' +
+                '<input type="text" class="warehouse_allocation"/>' +
+                '<input type="hidden" class="id_warehouse_allocation" name="id_warehouse_allocation[]"/>' +
+                '</div>' +
+            '</td>' +
+        '<td>' +
+            '<input type="text" name="num[]" value="0" class="text"/>' +
+            '<input type="hidden" name="id_product_sku[]" value="#id_product_sku"/>' +
+        '</td>' +
+        '<td>' +
+            '<a class="btn remove">删除</a>' +
+        '</td>'  +
+        '</tr>';
+
+    var warehouse_allocation = <php>echo $warehouse_allocations</php>;
+
+    $(function () {
+        $( ".warehouse_allocation" ).autocomplete({
+            source: warehouse_allocation,
+            select: function( event, ui ) {
+                event.target.value = ui.item.label;
+                $(event.target).parent().find('.id_warehouse_allocation').val(ui.item.value);
+                event.preventDefault();
+            }
+        });
+
+        $('.add').live('click', function(){
+            var main = $(this).parent().parent();
+            main.after(new_line.replace('#id_product_sku', main.find('.id_product_sku').val()));
+            $( ".warehouse_allocation" ).autocomplete({
+                source: warehouse_allocation,
+                select: function( event, ui ) {
+                    event.target.value = ui.item.label;
+                    $(event.target).parent().find('.id_warehouse_allocation').val(ui.item.value);
+                    event.preventDefault();
+                }
+            });
+        });
+
+        $('.remove').live('click', function(){
+            $(this).parent().parent().remove();
+        });
+    });
+
+</script>
+</body>
+</html>

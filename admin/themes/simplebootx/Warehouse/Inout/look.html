@@ -1,0 +1,76 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="fixedlayer">
+    <ul class="nav nav-tabs">
+        <li class="active"><if condition="$case eq 0"><a href="{:U('warehouse/inout/indexofin')}">上架<else/><a href="{:U('warehouse/inout/indexofout')}">下架</if>单列表</a></li>
+    </ul>
+
+    <div class="buttonLayer">
+        <if condition="$case eq 0"><a class="btn" href="{:U('warehouse/inout/indexofin')}"><else/><a class="btn"  href="{:U('warehouse/inout/indexofout')}"></if>
+       <!-- <a  href="#" onClick="javascript :history.back(-1);">-->
+            {:L('BACK')}</a>
+    </div>
+</div>
+
+<div class="wrap">
+    <div class="customerlayer">
+
+        <div class="ctab-panel">
+            <div class="ctab-head">
+                <a href="#" class="active"><if condition="$case eq 0">上架<else/>下架</if>单明细列表</a>
+            </div>
+
+            <div class="ctab-body">
+                <div class="tableLayer" style="height: 300px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th><if condition="$case eq 0">上架<else/>下架</if>日期</th>
+                                <!--<th>所属仓库</th>-->
+                                <th>制单人</th>
+                                <th>产品</th>
+                                <th>内部名</th>
+                                <th>产品 sku</th>
+                                <th>仓库名称</th>
+                                <th>货位编码</th>
+                                <th><if condition="$case eq 0">上架<else/>下架</if>数量</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <foreach name="list" item="vlist">
+                                <tr>
+                                    <td>{$vlist['id']}</td>
+                                    <td>{$vlist['created_at']}</td>
+                                <!--    <td>{$warehouse[$vlist['id_warehouse']]}</td>-->
+                                    <td>{$vlist['user_nicename']}</td>
+                                    <td>{$vlist['title']}</td>
+                                    <td>{$vlist['inner_name']}</td>
+                                    <td>{$vlist['sku']}</td>
+                                    <td>{$warehouse[$vlist['id_warehouse']]}</td>
+                                    <td>{$vlist['goods_name']}</td>
+                                    <td>{$vlist['qty']}</td>
+                                </tr>
+                            </foreach>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">{$Page}</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('warehouse/inout/indexofin')}");
+        $('.form-search') .submit();
+    });
+
+</script>
+</body>
+</html>

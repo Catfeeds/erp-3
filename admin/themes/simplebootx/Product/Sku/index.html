@@ -1,0 +1,136 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Product/Sku/index')}">SKU列表</a></li>
+    </ul>
+    <form method="get" action=""  class="well form-search getSearchForm">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="id_department">
+                <option value="">全部</option>
+                <php> foreach($department_id as $dep_id){
+                    if(empty($department[$dep_id])) continue;
+                        $selected = $_GET['id_department']==$dep_id?' selected="selected"':'';
+                    echo '<option value="'.$dep_id.'" '.$selected.'>'.$department[$dep_id].'</option>';
+                    }
+                </php>
+            </select>
+            <label class="control-label">内部名称:</label>
+            <input type="text" name="inner_name" style="width: 200px;" value="{$_GET.inner_name}" placeholder="请输入内部名称...">
+            <label class="control-label">SKU或条码:</label>
+            <input type="text" name="sku" style="width: 200px;" value="{$_GET.sku}" placeholder="请输入SKU或条码...">
+
+            <br/>
+            <button class="btn btn-primary searchButton">搜索</button>
+            <button class="btn btn-primary exportSearchButton">导出</button>
+            <button class="btn btn-primary exportPDFButton">打印条码</button>
+        </div>
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+            <tr style="font-weight: bold;background:#f5f5f5;">
+                <td><input type="checkbox" value="" id="all">产品图片</td><td>部门</td>
+                <td>内部名称</td><td>条形码（SKU）</td><td>属性</td><td>采购价</td>
+                <td>重量(kg)</td>
+                <td>操作</td>
+            </tr>
+        </thead>
+        <tbody>
+        <foreach name="proList" item="item" key='key'>
+            <tr style="font-weight: bold;background:#f5f5f5;">
+                <td><input name="sku_no[]" class="single" type="checkbox" value="{$item['id_product_sku']}">
+                    <notempty name="item['img']['photo']">
+                        <img id="photo-{$key}-preview" src="{:sp_get_image_preview_url($item['img']['photo'][0]['url'])}" style="height:36px;width: 36px;">
+                    </notempty>
+                </td>
+                <td>{$department[$item['id_department']]}</td>
+                <td>{$item.inner_name}</td>
+                <td>{$item.sku}</td><td>{$item.value}</td><td>{$item.purchase_price}</td><td>{$item.weight}</td>
+                <td>
+                <a  target="_blank" class="btn btn-small" href="{:U('Pdf/page_print',array('skuid'=>$item['id_product_sku']))}">打印条码</a>
+                <a target="_blank" class="btn btn-small"  href="http://shopadmin.msiela.com/info.php?pid={$item.id_product}" target="_blank">详情</a>
+                </td></tr>
+        </foreach>
+        </tbody>
+    </table>
+
+    <div class="pagination">{$page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('sku/index')}");
+        $('.form-search').submit();
+        //window.location.href = "{:U('Stock/exportList')}";
+    });
+    $('.exportSearchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','export_list');
+        $('.form-search').attr('action',"{:U('sku/export_list')}");
+        $('.form-search').submit();
+        //window.location.href = "{:U('Stock/exportList')}";
+    });
+    $('.exportPDFButton').click(function(){
+        var sku_no = '';
+        $('input:checkbox[class=single]:checked').each(function(i,item){
+            sku_no+= (item['value']+",");
+        });
+        length = sku_no.length;
+        if(!length){
+            alert('未选择要打印的条码');
+            return false;
+        }
+        sku_no = sku_no.substring(0,length-1);
+        //console.log("{:U('Pdf/page_print/skuid')}/"+sku_no);
+        var url = "{:U('Pdf/page_print')}?skuid="+sku_no;
+        window.open(url);
+        return false;
+    });
+
+    $('.setChildSkuQty').click(function(){
+        var curObj = $(this);
+        var getTagName = $(this).attr('id');
+        var getAction  = $(this).text();
+        if(getAction=='显示库存'){
+            $(this).html('隐藏');
+            $('.'+getTagName).show();
+        }else{
+            $(this).html('显示库存');$('.'+getTagName).hide();
+        }
+        $('.setChildSkuQty').each(function(i){
+            var getClassN = $(this).attr('id');
+           if(getClassN!=getTagName){
+               $('.'+getClassN).hide();
+               $(this).html('显示库存');
+           }
+        });
+    });
+    $('.submitStockForm').click(function(){
+        var getFormId = $(this).attr('getid');
+        var getSerialize  =  $('.'+getFormId).serializeArray();
+        var getProductId  = $('.'+getFormId).find('input[name=product_id]').val();
+        $.post("{:U('Stock/savePost')}",getSerialize,function(data){
+            var getJsonData =  $.parseJSON(data);
+            if(getJsonData.status){
+                if(getJsonData.total)$('.totalQtySpan'+getProductId).html(getJsonData.total);
+                alert('设置库存成功');
+            }
+        });
+    });
+    $("#all").click(function(){
+        if(this.checked){
+            $("td :checkbox").prop("checked", true);
+        }else{
+            $("td :checkbox").prop("checked", false);
+        }
+    });
+</script>
+</body>
+</html>

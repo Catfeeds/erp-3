@@ -1,0 +1,62 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('Shipping/import/batch_import_track')}">批量导入运单号库</a></li>
+        <li class="active"><a href="{:U('Shipping/import/interval_import_track')}">区间导入运单号库</a></li>
+    </ul>
+
+    <fieldset>
+        <form method="post" action="{:U('Shipping/import/interval_import_track')}" enctype="multipart/form-data"  class="form-horizontal">
+
+            <div class="control-group" style="line-height: 36px;margin-top: 30px;">
+                <div class="control-group">
+                    <div class="controls" style="width:200px;float:left">
+                        <p style="color:red;">请选择物流</p>
+                        <label >物流:</label>
+                        <select name="id_shipping" style="width:200px" id="id_shipping">
+                            <php> foreach($shippings as $shipping){
+                                $selected = $_GET['id_shipping']==$shipping['id_shipping']?' selected="selected"':'';
+                                echo '<option value="'.$shipping['id_shipping'].'" '.$selected.'>'.$shipping['title'].'</option>';
+                                }
+                            </php>
+                        </select>
+                    </div>
+                    <div class="controls" style="width:100px;float:left">
+                        <p style="color:red;">请选择类型</p>
+                        <label >类型:</label>
+                        <select name="type" style="width:100px" id="type">
+                            <option value="2">普货</option>
+                            <option value="1">特货</option>
+
+                        </select>
+                    </div>
+                    <div class="controls" style="width:200px;clear:both">
+                        <p>请输入区间运单号</p>
+                        <input type="text" name="start_track" value="{$_POST['start_track']}"  placeholder="开始运单号" />——<input type="text" name="end_track" value="{$_POST['end_track']}" placeholder="结束运单号"/>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">{:L('导入')}</button>
+            </div>
+        </form>
+    </fieldset>
+    
+    <present name="Think.post.data">
+        <div>共更新:{$total} 失败:{$infor.error|count} 成功:{$infor.success|count}</div>
+    </present>
+    <foreach name="infor.error" item="err">
+        <div style="color:red;">{$err}</div>
+    </foreach>
+    <foreach name="infor.warning" item="warning">
+        <div style="color:yellowgreen;">{$warning}</div>
+    </foreach>
+    <foreach name="infor.success" item="success">
+        <div style="color:green;">{$success}</div>
+    </foreach>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

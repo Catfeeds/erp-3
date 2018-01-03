@@ -1,0 +1,349 @@
+<admintpl file="header" />
+</head>
+<body>
+
+<style>
+.fixedlayer {
+    position: fixed;
+    top: 0px;
+    height: 210px;
+    left: 20px;
+    right: 20px;
+    padding-top: 20px;
+    background-color: #fff;
+    z-index: 10;
+}
+.buttonLayer {margin-bottom: 10px;  background-color: #fff;}
+
+.customerlayer {height: 100%; padding-top: 210px; }
+.searchLayer .pagination { margin-top: 10px; margin-bottom: 0px; }
+.searchLayer {border: solid 1px #ddd; margin-bottom: 10px; }
+#id_warehouse{height: 30px;}
+.searchLayer input,.searchLayer select{height: 30px;}
+.searchLayer table {width: 100%; background-color: #fff; border-spacing: 1px !important; border-collapse: separate; font-family: "宋体"; table-layout: fixed; }
+.searchLayer table td {padding: 5px; margin: 1px; width: auto; }
+.searchLayer table td.th {background: #f1f1f1; width: 80px; }
+.searchLayer input[type="text"] {margin-bottom: 0px; border: none; box-shadow: none; border-bottom: solid 1px #ddd; border-radius: 0px; outline: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+.searchLayer select {margin-bottom: 0px; border-radius: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; outline: 0px;  line-height: 20px;}
+
+.tableLayer {width: 100%; overflow: scroll; height: 480px; }
+.tableLayer table{width: 100%}
+.tableLayer table th {border: solid 1px #ddd; padding: 10px; font-weight: bold; background: #f1f1f1; }
+.tableLayer table td {border: solid 1px #ddd; padding: 10px; }
+.ctab-panel {width: 100%; position: relative; margin-bottom: 10px; }
+.ctab-head {height: 40px; }
+.ctab-head > a {display: inline-block; color: #333; padding: 0px 10px; line-height: 40px; }
+.ctab-head > a.active {border: solid 1px #ddd; border-bottom: none; background-color: #fff; border-top: solid 2px #3daae9; }
+.ctab-body {border: solid 1px #ddd; padding: 10px; }
+.btn a{color: white;text-decoration: none;}
+.hidden{display: none;}
+</style>
+
+<div class="fixedlayer">
+    <ul class="nav nav-tabs">
+        <li class=""><a href="{:U('Settlement/Import/payment')}?paymenttype={$pmtype}">{$pmtypestr}导入列表</a></li>
+        <li class="active"><a href="{:U('Import/payment_import')}?paymenttype={$pmtype}">导入{$pmtypestr}</a></li>      
+    </ul>
+    <div class="buttonLayer">
+        <span class="btn btn-primary  saveButton  {$claimsMaster['status']==2?'hidden':''}" >保存</span>
+        <span class="btn btn-primary  submitButton  {$claimsMaster['status']==2?'hidden':''}" >提交</span>        
+        <span class="btn btn-primary  deleteButton  {$claimsMaster['status']==2?'hidden':''}" >作废</span>  
+    </div>
+    <div class="searchLayer">
+        
+        <input type="hidden" name="page" value="">
+        <table cellspacing="1">
+            <tr>
+                <td class="th">单据编号：</td>
+                <td>
+                    <input type="text" name="docno" class="" disabled="disabled" value="{$claimsMaster['docno']}" >                    
+                </td>
+                <td class="th">单据日期：<span class="form-required" style="color:red">*</span</td>
+                <td><input type="text" name="billdate" class="" value="{$claimsMaster['billdate']}" ></td>                  
+                <td class="th">描述：</td>
+                <td colspan="7">
+                <input type="text" name="description" class="" value="{$claimsMaster['description']}"  placeholder="备注"> 
+                </td>    
+            </tr>
+        </table>
+        
+    </div>    
+    <form method="get" action="{:U('Import/payment_detail')}"  id="form-search">
+        <div class="pagination">{$page}
+            <input type="text" value="{$getData['displayRow']}" name="displayRow" placeholder="输入每页显示{$getdata['displayRow']}数">
+            <input type="button" class="btn btn-small submitDisplayRow searchButton" style="height: 30px;margin-top:-9px;" value="确定">
+            <input type="hidden" name="csid" value="{$csid}">
+            <input type="hidden" name="track_number" class="" value="{$getData['track_number']}" >             
+        </div>
+    </form>          
+</div>
+
+<div class="wrap">
+
+    <div class="customerlayer">
+        <div class="ctab-panel">
+            <div class="ctab-head">
+                
+                <a href="#"   class="active">{$pmtypestr}明细</a>
+                <a href="#">导入{$pmtypestr}</a>
+                 
+            </div>        
+            <div class="ctab-body">
+                <div >
+                <input type="text" id="track_number" class="" value="{$getData['track_number']}"   placeholder="快递单搜索">   <input style="margin-bottom: 10px;" type='button' class="btn btn-primary searchButton "" value="查询"> 
+                    <div class="tableLayer">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" class="allChecked" > </th>
+                                    <th>序号</th>
+                                    <th>订单号</th>
+                                    <th>快递单号</th>
+                                    <th>{$pmtypestr}金额</th>
+                                    <if condition="$pmtype eq 1  ">
+                                    <th>备注</th>
+                                    </if>
+                                </tr>
+                            </thead>
+                            <form id="detaildata" >
+                            <tbody >
+                            <foreach name="detailList" item="detail" key='key'>
+                                <tr>
+                                    <td><input type="checkbox" class="{$claims['status']==2?'nocheked':''} checkItem"  value="{$detail.id}"  {$claims['status']==2?"disabled":''}> </td>
+                                    <td>{$key+1}</td>
+                                    <td><a target="_blank"  href="{:U('/Settlement/index/order_info')}?id={$detail['id_order']}">{$detail['id_increment']}</a></td>
+                                    <td>{$detail['track_number']}<input type="hidden" name="{$detail['id']}%track_number" value="{$detail['track_number']}"></td>
+                                    <td><input {$claimsMaster['status']==2?'readonly="true"':''} type="text"  name="{$detail['id']}%amount" {$detail['status']==2?'readonly="true"':''}  class="amout"  value="{$detail['amount']}"></td>
+                                    <if condition="$pmtype eq 1  ">
+                                    <td><input {$claimsMaster['status']==2?'readonly="true"':''} type="text" name="{$detail['id']}%remark"  {$detail['status']==2?'readonly="true"':''}  class="remark"  value="{$detail['remark']}"></td>  
+                                    </if>
+                                </tr>
+                            </foreach>                               
+      
+                            </tbody>
+                            </form>
+                        </table>
+                    </div>
+                </div>            
+                <div  class="hide">
+                    <div class="control-group">
+                        <div class="controls">
+                        <textarea id="import_data" placeholder="直接从Excel复制三列:运单号、金额{$pmtype==1?'、备注':''}" style="width: 25%; height: 200px;"></textarea>
+                        <a id="import_btn" class="btn isimport">导入</a>
+                        <div id="warning"></div>
+                        </div>
+                    </div>   
+
+                </div>
+
+
+            </div>
+        </div>
+
+    
+    </div>
+
+</div>
+
+
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+    var csid={$csid};
+    var pmtype={$pmtype};  
+    var checkdetail=function(){
+       var detaildata= $('#detaildata').serializeArray();
+       // var amouts=[];
+       // var re = /^([1-9]\d*|[0]{1,})$/ ;  
+       //  $('.amout').each(function(){
+       //      realnums.push($(this).val());
+       //  }); 
+       //  for(var i in realnums){
+       //      if(!re.test(realnums[i])){
+       //          alert('盘点值请填写正整数！');
+       //          return false;
+       //      } 
+       //  }     
+
+    };
+
+    $('.ctab-head a').on('click',function(){
+        $(this).addClass("active").siblings().removeClass("active");
+        var index = $(this).index();
+        $(".ctab-body>div").eq(index).removeClass("hide").siblings().addClass("hide");
+    });
+
+   $('.allChecked').on('click',function(){
+        if($(this).is(':checked')){
+            $('.tableLayer tbody').find('input[type=checkbox]').attr('checked',true);
+        }else{
+            $('.tableLayer tbody').find('input[type=checkbox]').attr('checked',false);
+        }
+    });
+    $('.checkItem').on('click',function(){
+        if(!$(this).is(':checked')){
+            $(this).attr('checked',false);
+        }else{
+            $(this).attr('checked',true);
+        }      
+    });    
+
+    $('.deleteButton').on('click',function(){
+        var  checkedIds=[];
+        $('.checkItem[checked] ').each(function(){
+            checkedIds.push($(this).val());
+        });
+        if(checkedIds.length==0){alert('请至少选择一个明细单据');return false;}
+        if (confirm('确定要删除明细单据？')) {
+            $.ajax({
+                url:"{:U('Import/deleteItem')}",
+                type:'POST',
+                dataType:'json',
+                data:{'itemids':checkedIds},
+                success:function(data){
+                    if(data.status == 1) {                        
+                        $('.checkItem[checked] ').each(function(){
+                            $(this).attr('checked',false);
+                        });  
+                        alert(data.message);                                                                 
+                        window.location.reload();
+                    }else{
+                        alert(data.message); 
+                    }
+                }
+            });
+        }        
+    });       
+
+    $('.saveButton').on('click',function(){
+        checkdetail();
+        var  match=/^\d+(\.\d+)?$/;  
+        var checkres=0;
+        $('.amout').each(function(){
+            if(!match.test($(this).val())){
+                alert('请填写正确的金额数！');
+                checkres=1;
+            }
+        }); 
+        if(checkres==1){
+            return false; 
+        }      
+        var detaildata= $('#detaildata').serializeArray();
+        $.ajax({
+            url:"{:U('Import/updateById')}",
+            type:'POST',
+            dataType:'json',
+            data:{"detaildata":detaildata,'pmtype':pmtype},
+            success:function(data){
+                if(data.status == 1) {
+                    alert('修改成功！');
+                    window.location.reload(); 
+                }else{
+                    alert(data.message);
+                }                
+            }
+        }); 
+    });
+
+    $('.submitButton').on('click',function(){
+        checkdetail();
+        var  match=/^\d+(\.\d+)?$/; 
+        var checkres=0; 
+        $('.amout').each(function(){
+            if(!match.test($(this).val())){
+                alert('请填写正确的金额数！');
+                checkres=1;
+                return false;
+            }
+        });    
+        if(checkres==1){
+            return false; 
+        }              
+        var  claimsIds=[];
+        claimsIds.push(csid);        
+        var detaildata= $('#detaildata').serializeArray();
+        $.ajax({
+            url:"{:U('Import/updateById')}",
+            type:'POST',
+            dataType:'json',
+            data:{"detaildata":detaildata,'pmtype':pmtype},
+            success:function(data){
+                if(data.status == 1) {
+                    $.ajax({
+                        url:"{:U('Import/submitPayment')}",
+                        type:'POST',
+                        dataType:'json',
+                        data:{'claimsIds':claimsIds},
+                        success:function(data){
+                            if(data.status == 1) {
+                                alert('提交成功！');                                            
+                                window.location.reload();
+                            }else{
+                                alert(data.message);
+                            }
+                        }
+                    });                
+                }else{
+                    alert(data.message);
+                }                
+            }
+        });         
+    });
+
+    $('.searchButton').on('click',function(){
+        $('#form-search').trigger('submit');
+    });
+
+    $('#track_number').on('change',function(){
+        $('input[name=track_number]').val($(this).val());
+    })     
+
+    $('#import_btn').on('click', function(){ 
+        var claimsdata=[];
+        var data = $('#import_data').val().split("\n");
+        var  tmp = [];
+        var  match=/^\d+(\.\d+)?$/;
+        for(var i in data){
+            if(data[i].trim() === ''){
+                continue;
+            }
+            var itemobj={};
+            tmp = data[i].split("\t");
+            if(!match.test(tmp[1])){
+                alert('请填写正确的金额数！');
+                return false;
+            }               
+            itemobj.track_number=tmp[0];
+            itemobj.amount=tmp[1];
+            itemobj.remark=tmp[2];
+                      
+            claimsdata.push(itemobj);              
+        }
+        if(claimsdata.length==0){
+            alert('请填写导入信息！');
+            return false;
+        }
+        var billdate=$('input[name=billdate]').val();
+        var description=$('input[name=description]').val();
+        if(billdate==''){
+            alert('请选择单据时间！');
+            return false;            
+        }
+        $.ajax({
+            url:"{:U('Import/updatePayment')}",
+            type:'POST',
+            dataType:'json',
+            data:{'claimsdata':claimsdata,'csid':csid,'pmtype':pmtype},
+            success:function(data){
+                if(data.status == 1) {                    
+                    window.location.href="{:U('Import/payment_detail')}?csid="+data.csid;
+                }else{
+                    alert(data.message);
+                }
+            }
+        });        
+
+    });    
+</script>
+</body>
+</html>

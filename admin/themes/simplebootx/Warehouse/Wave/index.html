@@ -1,0 +1,199 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">配货状态:</label>
+            <select name="status" style="width:100px;">
+                <option value="0">所有</option>
+                <option value="1"<php>if($_GET['status']=='1'){echo ' selected="selected"';}</php>>已完成</option>
+                <option value="2"<php>if($_GET['status']=='2'){echo ' selected="selected"';}</php>>配货中</option>
+            </select>
+            <label class="control-label">部门:</label>
+            <select name="id_department" style="width:100px">
+                <option value="0">所有</option>
+                <foreach name="department" item="item" key="key">
+                    <option value="{$key}" <php>echo isset($_GET['id_department']) && $_GET['id_department']==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">物流:</label>
+            <select name="id_shipping" style="width:100px">
+                <option value="0">所有</option>
+                <foreach name="shipping" item="item">
+                    <option value="{$item.id_shipping}" <php>echo isset($_GET['id_shipping']) && $_GET['id_shipping']==$item['id_shipping'] ? 'selected' : ''</php>>{$item.title}</option>
+                </foreach>
+            </select>
+            <label class="control-label">关键词:</label>
+            <input type="text" name="keyword" style="width: 200px;" value="{:I('request.keyword/s','')}" placeholder="请输入关键字...">
+            <label class="control-label">生成时间:</label>
+            <input type="text" name="start_time" class="js-datetime" value="{:I('request.start_time/s','')}" style="width: 120px;" autocomplete="off">-
+            <input autocomplete="off" type="text" class="js-datetime" name="end_time" value="{:I('request.end_time/s','')}" style="width: 120px;">
+            <button class="btn btn-primary searchButton">搜索</button>
+        </div>
+    </form>
+    <div class="well">
+        物流模板:
+        <select name="id_template" class="temps" style="width:200px;margin-bottom: 0">
+            <option value="0">所有</option>
+            <foreach name="template" item="item">
+                <php>$shipping_name = M('Shipping')->where(array('id_shipping'=>$item['id_shipping']))->getField('title');</php>
+                <option value="{$item.id}" shipping="{$item.id_shipping}" <php>echo isset($_GET['id_template']) && $_GET['id_template']==$item['id'] ? 'selected' : ''</php>><php>echo $shipping_name.' -- '.$item['title']</php></option>
+            </foreach>
+        </select>
+        匹配的物流:
+        <select name="id_wave_shipping" id="id_wave_shipping" style="width:130px;margin-bottom: 0">
+            <option value="0">所有</option>
+            <foreach name="shipping" item="item">
+                <option value="{$item.id_shipping}" <php>echo isset($_GET['id_wave_shipping']) && $_GET['id_wave_shipping']==$item['id_shipping'] ? 'selected' : ''</php>>{$item.title}</option>
+            </foreach>
+        </select>
+        <span class="att"></span>
+    </div>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th>序号</th>
+            <th>部门</th>
+            <th>波次单号</th>
+            <th>物流</th>
+            <th>订单数</th>
+            <th>产品数</th>
+            <th>配货状态</th>
+            <th>生成时间</th>
+            <th>打印配货单次数</th>
+            <th>打印运单次数</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="item" key="key">
+            <tr>
+                <td>{$key+1}</td>
+                <td>{$item.department}</td>
+                <td>{$item.wave_number}</td>
+                <td>{$item.shipping_name}</td>
+                <td>{$item.order_count}</td>
+                <td>{$item.quantity}</td>                
+                <td>
+                    <if condition="$item.status eq 1">已完成</if>
+                    <if condition="$item.status eq 2">配货中</if>
+                </td>
+                <td>{$item.created_at}</td>
+                <td>{$item.print_picking_num}</td>
+                <td>{$item.print_waybill_num}</td>
+                <td>
+                    <a target="_blank" class="btn btn-small" href="{:U('warehouse/wave/picking',array('num'=>$item['wave_number']))}">预览配货单</a>
+                    <a class="btn btn-small pdf_dy" data-shipp="{$item.id_shipping}" num="{$item.wave_number}" href="javascript:;">PDF打印面单</a>
+                    <if condition="$item.id_shipping eq ''">
+                        <a class="btn btn-small pp_shipp" wavenum="{$item.wave_number}" href="javascript:;">匹配物流</a>
+                    </if>
+                    <a class="btn btn-small" href="{:U('wave/info_list',array('num'=>$item['wave_number']))}">查看</a>
+                    <a class="btn btn-small del" href="javascript:;" data-num="{$item.wave_number}">删除</a>
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+
+    <div class="pagination" style="margin-top: 20px;margin-bottom: 40px">{$page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.del').click(function(){
+        if(confirm('确定要删除吗？')){
+            var wave_num = $(this).attr('data-num');
+            $.ajax({
+                url:"{:U('wave/delete_wave')}",
+                type:"POST",
+                dataType:'json',
+                data:{'wave_num':wave_num},
+                success:(function(data){
+                    if(data.status==1) {
+                        alert(data.message);
+                        window.location.reload();
+                    }
+                })
+            });
+        }
+    });
+    
+    $('.pdf_dy').click(function(){
+        var template_id = $('.temps').val();
+        var shipping_id = $(".temps").find("option:selected").attr("shipping");;//物流模板的物流Id
+        var id_shipping = $(this).attr('data-shipp');//当前物流Id
+        var wave_num = $(this).attr('num');
+        if(id_shipping != '') {
+            if(template_id <= 0) {
+                alert('请选择运单模板');
+            } else {
+                if(id_shipping == shipping_id) {
+                    if(shipping_id == 33 || shipping_id == 39) {
+                        alert('嘉里物流要发送订单才能进行打印,请到查看页面发送订单并进行打印');
+                        return false;
+                    } else {
+                        var url="{:U('waybill/Pdf/page_print')}/num/"+wave_num+"?template_id="+template_id;
+                        window.open(url);
+                    }
+                } else {
+                    alert('请选择对应物流的运单模板');
+                }
+            }
+        } else {
+            alert('该波次单还未匹配物流，无法进行打印');
+        }
+    });
+    
+    $('#id_wave_shipping').change(function(){
+        var shipping_id = $(this).val();
+        $.ajax({
+            url:"{:U('wave/get_shipping_attr')}",
+            data:{shipping_id:shipping_id},
+            type:'post',
+            dataType:'html',
+            success:function(shtml){
+                $('.att').html(shtml);
+            }
+        });
+    });
+    
+    $('.pp_shipp').click(function(){       
+       var shipping_id = $('#id_wave_shipping').val(); 
+       var attr_id = $('.selectAttr').val();
+       var number = $(this).attr('wavenum');
+
+       if(shipping_id <= 0) {
+           alert('请选择物流');
+           return false;
+       }
+       if(attr_id <= 0 && (shipping_id == 33 || shipping_id == 39 || shipping_id == 58 || shipping_id == 64 || shipping_id == 66)) {
+           alert('请选择订单产品类型');
+           return false;
+       }
+       $(this).html('Loading...');
+       $.ajax({
+            url:"{:U('wave/match_shipping')}",
+            type:'post',
+            dataType:'json',
+            data:{'shipping_id':shipping_id,'number':number,'attr_id':attr_id},
+            success:function(data){
+                if(data.status==1) {
+                    //$('.span_erg').html(data.message);
+                    alert(data.message);
+                    window.location.reload();
+                } else {
+                    alert(data.message);
+                    window.location.reload();
+                }
+            }
+       });
+       $(this).html('匹配物流');
+    });
+</script>
+</body>
+</html>

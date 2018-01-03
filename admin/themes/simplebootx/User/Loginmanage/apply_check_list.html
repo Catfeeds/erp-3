@@ -1,0 +1,177 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="fixedlayer" style="height: 40px;">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Loginmanage/apply_check_list')}">{:L('申请审核列表')}</a></li>
+    </ul>
+</div>
+<div class="wrap">
+    <div class="customerlayer" style="height: 300px;">
+        <form action="" method="get" class="well form-search" style="margin-top: -80px;">
+            <div class="searchLayer" style="padding:20px;background-color: #ecf0f1;">
+                <table cellspacing="1">
+                    <tbody>
+                        <tr>
+                            <td class="th">部门：</td>
+                            <td>
+                                <select name="depart_id" style="height:30px">
+                                    <option value="0">所有</option>
+                                    <foreach name="depart" item="item">
+                                        <option value="{$item.id_department}" <php>echo isset($_GET['depart_id']) && $_GET['depart_id']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                                    </foreach>
+                                </select>
+                            </td>
+                            <td class="th">申请人：</td>
+                            <td>
+                                <input type="text" name="user_nicename" value="{$_GET['user_nicename']}"/>
+                            </td>
+                            <td class="th">申请时间：</td>
+                            <td colspan="3" style="white-space:nowrap;">
+                                <input type="text" name="start_time" class="js-datetime" value="<php>echo $_GET['start_time'];</php>" style="width: 150px;" autocomplete="off">-
+                                <input type="text" class="js-datetime" name="end_time" value="<php>echo $_GET['end_time'];</php>" style="width: 150px;">
+                            </td>
+                            <td class="th">审核状态：</td>
+                            <td>
+                                <select name="status" style="height:30px">
+                                    <option value="0">所有</option>
+                                    <foreach name="select_status" item="item">
+                                        <option value="{$item.id_status}" <php>echo isset($_GET['status'])&&$_GET['status'] == $item['id_status']?'selected':'';</php>>{$item.name_status}</option>
+                                    </foreach>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br>
+                <button class="btn btn-primary searchButton">搜索</button>&nbsp &nbsp
+            </div>
+            <div class="control-group" style="line-height: 36px;">
+                <select name="check" id="check">
+                    <option value="0">请选择</option>
+                    <option value="pass">审核通过</option>
+                    <option value="refuse">拒绝</option>
+                </select>
+                <button class="btn btn-primary checkButton">确定</button>
+            </div>
+        </form>
+        <div class="ctab-body">
+            <div class="tableLayer" style="height: 450px;">
+                <table style="padding: 0;">
+                    <thead class="tableFloatingHeaderOriginal">
+                        <tr>
+                            <!--<th><input type="checkbox" class="allChecked"></th>-->
+                            <th><input type="checkbox" value="" id="all">&nbsp&nbspID</th>
+                            <th>部门</th>
+                            <th>申请人</th>
+                            <th>申请时间</th>
+                            <th>申请使用时间</th>
+                            <th>原因</th>
+                            <th>主管审核状态</th>
+                            <if condition="$is_technology">
+                            <th>研发审核状态</th>
+                            </if>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <foreach name="lists" item="list">
+                            <tr>
+                                <td>
+                                    <php>
+                                        if($list['director_status'] == 1 or ($is_technology !== false && $list['director_status'] == 2 && $list['developing_status'] == 1)){
+                                    </php>
+                                    <input name="id_apply[]" class="single" type="checkbox" value="{$list['id_apply']}">
+                                    <php>}</php>
+                                    {$list.id_apply}
+                                </td>
+                                <td>{$list.title}</td>
+                                <td>{$list.user_nicename}</td>
+                                <td><php>echo date('Y-m-d H:s:i',$list['create_time']);</php></td>
+                                <td>
+                                    <php>echo date('Y-m-d H:s:i',$list['use_start_time']);</php>-
+                                    <php>echo date('Y-m-d H:s:i',$list['use_end_time']);</php>
+                                </td>
+                                <td>{$list.apply_reson}</td>
+                                <td><php>echo $status[$list['director_status']]</php></td>
+                                <if condition="$is_technology">
+                                <td><php>echo $status[$list['developing_status']]</php></td>
+                                </if>
+                            </tr>
+                        </foreach>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="pagination" style="line-height: 30px;">{$Page}
+        </div>
+    </div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    //搜索事件
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('User/Loginmanage/apply_check_list')}");
+        $('.form-search').submit();
+    });
+
+    //全选按钮
+    $("#all").click(function () {
+       if (this.checked){
+           $("td :checkbox").prop("checked",true);
+       } else{
+           $("td :checkbox").prop("checked",false);
+       }
+    });
+    //审核拒绝，显示拒绝原因输入框
+    $('#check').change(function(){
+        var select = $('#check').val();
+        if(select == 'refuse'){
+            $('#check').after(' <input type="text" placeholder="请输入拒绝的原因" name="reason"/>')
+        }
+        if(select == 'pass'||select ==0){
+            $('#check').siblings().remove('input');
+        }
+    });
+    //批量审核
+    $(".checkButton").click(function(){
+        var check = $('#check').val();
+        if($("input:checked").length == 0){
+            alert("没有选中申请单");
+            return;
+        }
+        if(check != 0){
+            var reason = $('input[name=reason]').val();
+            if(check == 'refuse'){
+                if(reason == ''){
+                    alert('需要填写拒绝原因');
+                    return;
+                }else{
+                    window.confirm('确定拒绝？');
+                }
+                var reason = $('input[name=reason]').val();
+            }
+            var id_apply = '';
+            $('input:checkbox[class=single]:checked').each(function(i,item){
+                id_apply += (item['value']+",");
+            });
+            length = id_apply.length;
+            id_apply = id_apply.substring(0,length-1);
+            $.ajax({
+                url:"{:U('User/Loginmanage/apply_approval')}",
+                type:"post",
+                dataType:'json',
+                data:{'id_apply':id_apply,'check':check,'reason':reason},
+                success:function(data){
+                    alert(data.msg);
+                    $('.searchButton').click();
+                    return false;
+                }
+            });
+        }else{
+            alert('请选择审批意见');
+        }
+        return false;
+    });
+</script>
+</body>

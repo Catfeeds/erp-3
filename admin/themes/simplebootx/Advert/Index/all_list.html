@@ -1,0 +1,50 @@
+<admintpl file="header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('index/index')}">{:L('数据列表')}</a></li>
+                        <!--<li><a href="{:U('index/add')}">{:L('新增广告数据')}</a></li>-->
+<!--			<li class="active"><a href="{:U('advert/stats_list')}">{:L('查看广告数据')}</a></li>
+			<li><a href="{:U('advert/stats')}">{:L('查看数据统计')}</a></li>-->
+		</ul>
+		<!--<form action="{:U('advert/listorders')}" method="post">-->
+			<table class="table table-hover table-bordered">
+				<thead>
+					<tr>
+						<th width="30">ID</th>
+                                                <th align="left">{:L('优化师')}</th>
+						<th align="left">{:L('转化量')}</th>
+						<th align="left">{:L('转化费用')}</th>
+						<th align="left">{:L('花费')}</th>
+						<th align="left">{:L('CPM')}</th>
+						<th align="left">{:L('CTR')}</th>
+						<th width="120">{:L('ACTIONS')}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<foreach name="adverts" item="vo">
+					<tr>
+						<td>{$vo.id_advert_data}</td>
+                                                <td>{$vo.user_nicename}</td>
+						<td>{$vo.conversion}</td>
+						<td>{$vo.cost}</td>
+						<td>{$vo.expense}</td>
+						<td>{$vo.cmp}</td>
+						<td>{$vo.ctr}</td>
+						<td>
+							<!-- <a href="javascript:open_iframe_dialog('{:U('advert/member',array('id'=>$vo['id']))}','成员管理');">成员管理</a>| -->
+							<a href="{:U('index/edit',array('id'=>$vo['id_advert_data']))}">{:L('EDIT')}</a>|
+							<a class="js-ajax-delete" href="{:U('index/delete',array('id'=>$vo['id_advert_data']))}">{:L('DELETE')}</a>
+
+						</td>
+					</tr>
+					</foreach>
+				</tbody>
+			</table>
+            <div class="pagination">{$Page}</div>
+		<!--</form>-->
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

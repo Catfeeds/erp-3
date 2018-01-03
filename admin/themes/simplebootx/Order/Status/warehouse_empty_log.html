@@ -1,0 +1,123 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('Order/Status/pending')}">审核列表</a></li>
+        <li class="active"><a href="{:U('Order/Status/warehouse_empty_log')}">仓库无SKU</a></li>
+    </ul>
+    <div class="tableLayer" style="height: 800px;">
+    <table class="table table-hover table-bordered table-list order-table">
+        <thead>
+        <tr>
+            <th width="100">订单号</th>
+            <th>域名</th><th>地区</th><th width="50">订单状态</th>
+            <th width="70">姓名</th>
+            <th>电话</th>
+            <th>邮箱</th>
+            <th>总价</th>
+            <th width="200">产品名</th>
+            <th width="100">送货地址</th>
+            <!--<th>支付状态</th>-->
+            <!--<th>配送费</th>-->
+            <!--<th>邮编</th>-->
+            <th>留言</th><th>后台备注</th><th>下单时间</th>
+            <th>重复数</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="order_list" item="order">
+            <tr  style="<php>
+            switch($order['blacklist_level']){
+                case 1:case 2:
+                case 3:
+                    echo 'background:rgba(255, 229, 0, 0.3);';
+                case 4:
+                case 10:
+                    echo 'background:rgba(244, 54, 54, 0.5);';
+                break;
+            }
+            echo $order['order_repeat']>0?'color:red;':'';
+            </php>"  shippingid="{$defaultShippingId}">
+                <td width="50" id_order="{$order.id_order}">
+                     {$order.id_increment}<br />{$order.ip_address}</br>
+                 <php>
+                    $date = date('Y-m-d');
+                    $select = D("Common/orderInfo")->alias('oi')->field('COUNT(oi.ip) AS ip_total')
+                                ->where(array('oi.ip'=>$order['ip'],'oi.created_at'=>array('EGT', $date)))->find();
+                    echo '<br/>当天IP购买数量'.'('.$order['ip'].')：'.$select['ip_total'];
+                    echo $order['blacklist_level']>0?'<br />黑名单等级：'.$order['blacklist_level'].' (字段:'.$order['blacklist_field'].')':'';
+                    echo '<br/>';
+                </php>
+                </td>
+                <td><php>$domain = $form_data['domain'];echo $domain[$order['id_domain']];
+                    echo '<br/>'.$advertiser[$order['id_users']];</php></td>
+                <td><php>echo $all_zone[$order['id_zone']];</php></td>
+                <td><php>echo $status_list[$order['id_order_status']];</php></td>
+                <td>{$order.first_name} {$order.last_name}</td>
+                <td>{$order.tel}</td>
+                <td>{$order.email}</td>                
+                <td>{$order.total_price}</td>
+                <td>
+                    <php>
+                        $tempProHtml = array();
+                        $get_html = array();
+                        $empty_flag = false;
+                        $temp_is_exit = false;
+                        foreach($order['products'] as $vp){
+                            $proId = $vp['id_product'];
+                            if(empty($vp['id_product_sku']) or empty($proId)){
+                                $empty_flag = true;
+                            }
+                            $parameter = array('id_zone'=>$order['id_zone'],'sku_title'=>$vp['sku_title'],'product_title'=>$vp['product_title']);
+                            $get_is_exit = D('Warehouse/Warehouse')->is_exist_warehouse($proId,$vp['id_product_sku'],$parameter);
+                            if($get_is_exit){
+                                $temp_is_exit .= $get_is_exit;
+                            }
+                            $tempProHtml[$proId]['title']  = $vp['product_title'];
+                            $tempProHtml[$proId]['qty']    = $vp['quantity'];
+                            $getAttr = $vp['sku_title']?$vp['sku_title'].'<span style="color:red;"> x </span>'.$vp['quantity'].'<br />':'';
+                            $get_html[$proId]['html'][] = $vp['sku_title']?'':'<span style="color:red;"> x </span>'.$vp['quantity'];
+                            $tempProHtml[$proId]['attr'][] = '<div style="padding-left:5px;">'.$getAttr.'</div>';
+                        }
+                        foreach($tempProHtml as $proId=>$product){
+                            $title = $tempProHtml[$proId]['title'];
+                            $qty = $tempProHtml[$proId]['qty'];
+                            $attrHtml = $tempProHtml[$proId]['attr']?implode('',$tempProHtml[$proId]['attr']):'';
+                            $tempQty = $attrHtml?'':'<span style="color:red;"> x </span>'.$qty;
+                            $num_html = $get_html[$proId]['html']?implode('',$get_html[$proId]['html']):'';
+                            $num_qty = $num_html ? '<span style="color:red;"> x </span>'.$qty : '';
+                            echo '<div>'.$tempProHtml[$proId]['title'].$tempQty.$num_qty.'
+                            <hr style="margin:2px 0;color:green;border: 1px solid;"/>'.$attrHtml.'</div><br />';
+                        }
+                        if($empty_flag){
+                            echo '<br /><br /><b><span style="color:red;">产品信息不完整</span></b>';
+                            if($temp_is_exit){
+                                echo '<br /><b><span style="color:#57fb06;" class="warehouse_no_log">'.$temp_is_exit.' 不存在仓库</span></b>';
+                            }
+                        }
+                    </php>
+                </td>
+                <td>{$order.province}  {$order.city} {$order.area} {$order.address}</td>
+                <!--<td>{$order.payment_status}</td>-->
+                <!--<td>{$order.shipping_price}</td>-->
+                <!--<td>{$order.zip_code}</td>-->
+                <td>{$order.remark}</td>
+                <td style="<php>echo $order['comment']?'background:#e6ffe6;':''</php>">{$order.comment}</td>
+                <td>{$order.created_at}</td>
+                <td><php>echo $order['order_repeat'];</php></td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+   </div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/jquery.stickytableheaders.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".tableLayer table").stickyTableHeaders({scrollableArea: $('.tableLayer')});
+    });
+</script>
+</body>
+</html>

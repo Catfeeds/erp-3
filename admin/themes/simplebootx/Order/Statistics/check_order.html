@@ -1,0 +1,184 @@
+<admintpl file="header" />
+</head>
+<body style="overflow: hidden;">
+
+<style>
+.fixedlayer {
+    position: fixed;
+    top: 0px;
+    left: 20px;
+    right: 20px;
+    height: 150px;
+    padding-top: 20px;
+    background-color: #fff;
+    z-index: 10;
+}
+.buttonLayer {margin-bottom: 10px;  background-color: #fff;}
+
+.customerlayer {height: 100%; padding-top: 200px; }
+.fixedlayer .pagination { margin-top: -6px; margin-bottom: 0px; }
+.searchLayer {border: solid 1px #ddd; margin-bottom: 10px; }
+#id_warehouse{height: 30px;}
+.searchLayer input,.searchLayer select{height: 30px;}
+.searchLayer table {width: 100%; background-color: #fff; border-spacing: 1px !important; border-collapse: separate; font-family: "宋体"; table-layout: fixed; }
+.searchLayer table td {padding: 5px; margin: 1px; width: auto; }
+.searchLayer table td.th {background: #f1f1f1; width: 80px; }
+.searchLayer input[type="text"] {margin-bottom: 0px; border: none; box-shadow: none; border-bottom: solid 1px #ddd; border-radius: 0px; outline: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+.searchLayer select {margin-bottom: 0px; border-radius: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; outline: 0px;  line-height: 20px;}
+
+.tableLayer {width: 100%; overflow: scroll; height: 480px; }
+.tableLayer table{width: 100%}
+.tableLayer table th {border: solid 1px #ddd; padding: 10px; font-weight: bold; background: #f1f1f1; }
+.tableLayer table td {border: solid 1px #ddd; padding: 10px;word-break:break-all;white-space: normal; }
+.ctab-panel {width: 100%; position: relative; margin-bottom: 10px; }
+.ctab-head {height: 40px; }
+.ctab-head > a {display: inline-block; color: #333; padding: 0px 10px; line-height: 40px; }
+.ctab-head > a.active {border: solid 1px #ddd; border-bottom: none; background-color: #fff; border-top: solid 2px #3daae9; }
+.ctab-body {border: solid 1px #ddd; padding: 10px; }
+.btn a{color: white;text-decoration: none;}
+</style>
+<form method="get" action=""  id="form-search">
+<div class="fixedlayer">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#">查询条件</a></li>
+    </ul>
+    <div class="searchLayer">        
+        <input type="hidden" name="page" value="">
+        <table cellspacing="1">
+            <tr>
+                <td class="th"  >客服:</td>
+                <td >
+                    <select name="userid" id="userid">
+                    <option value="">--选择--</option>
+                    <foreach name="userNames" item="useritem" key="id" >      
+                    <option value="{$id}" {$id==$getData['userid']?'selected':''}>{$useritem}</option>      
+                    </foreach>            
+                    </select>
+                </td> 
+                <td class="th"  >审核日期:</td>
+                <td><input class="js-date date" name="start_time" value="{$getData['start_time']}" style="width: 160px;" autocomplete="off" type="text">
+                -
+                <input class="js-date date" name="end_time" value="{$getData['end_time']}" style="width:160px;" type="text" autocomplete="off">          </td>
+                        <td>
+        <button class="btn btn-primary searchButton" >查询</button>
+        <span class="btn btn-primary exportButton" >导出</span>
+                        </td>           
+                                       
+            </tr>
+   
+  
+        </table>
+        
+    </div> 
+    
+    <div class="pagination">{$page}<input type="text" value="" name="displayRow" placeholder="输入每页显示{$getData['displayRow']}数">
+        <input type="button" class="btn btn-small searchButton submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">
+    </div>                     
+</div>
+</form>
+
+<div class="wrap">
+
+    <div class="customerlayer">
+        <div class="ctab-panel">
+
+            <div class="ctab-body">
+                <div class="tableLayer">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>日期</th>                                
+                                <th>客服</th>  
+                                <th>初审单数</th>                                
+                                <th>初审有效单</th>
+                                <th>初审有效单比例</th>
+                                <th>终审单数</th>
+                                <th>终审有效单</th>
+                                <th>终审有效单比例</th>
+                                <th>修改单数</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <foreach name="list" item="item" key='key'>
+                                <tr>
+                     
+                                    <td> {$item['created_at']}</td>
+                                    <td> {$userNames[$item['id_users']]}</td>
+                                    <td> {$item['first_trial']}</td>                                    
+                                    <td> {$item['first_valid']}</td>                                    
+                                    <td> {$item['first_rate']}%</td>                                    
+                                    <td> {$item['last_trial']}</td>                                    
+                                    <td> {$item['last_valid']}</td>                                    
+                                    <td> {$item['last_rate']}%</td>                                    
+                                    <td> {$item['update_cnt']}</td>  
+                                    </td>
+
+                                </tr>
+                            </foreach>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    
+    </div>
+
+</div>
+
+
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/jquery.stickytableheaders.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        var top=$('.fixedlayer').height();
+        var height_screen=document.body.clientHeight ;
+        $('.tableLayer').height(height_screen-top-120);
+        $('.customerlayer').css('padding-top',top);
+        $(".tableLayer table").stickyTableHeaders({scrollableArea: $('.tableLayer')});
+    });
+
+    $('.searchButton').on('click',function(){
+        $('#form-search').attr('action',"{:U('/Order/Statistics/check_order')}");        
+        $('#form-search').trigger('submit');
+        
+    });
+  
+
+    $('.handleApply').on('click',function(){
+        var orderobj={};
+        orderobj.poid=$(this).siblings('.poid').val();
+        orderobj.handle_remark=$(this).siblings('.handle_remark').val();
+        orderobj.result=$(this).siblings('.result').val();
+        $.ajax({
+            url:"{:U('ProblemShipment/handleApply')}",
+            type:'POST',
+            dataType:'json',
+            data:{'orderdata':orderobj},
+            success:function(data){
+                if(data.status == 1) {                               
+                    alert(data.message);                                                                 
+                    window.location.reload();
+                }else{
+                    alert(data.message); 
+                }
+            }
+        });          
+    });
+
+
+
+    $('.exportButton').on('click',function(){
+        $('#form-search').attr('action',"{:U('Order/Statistics/check_order_export')}");
+        $('#form-search').trigger('submit');        
+    });
+ 
+
+
+
+
+</script>
+</body>
+</html>

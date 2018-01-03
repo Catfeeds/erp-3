@@ -1,0 +1,294 @@
+<admintpl file="header" />
+</head>
+<body style="overflow: hidden;">
+
+<style>
+.fixedlayer {
+    position: fixed;
+    top: 0px;
+    left: 20px;
+    right: 20px;
+    height: 130px;
+    padding-top: 20px;
+    background-color: #fff;
+    z-index: 10;
+}
+.buttonLayer {margin-bottom: 10px;  background-color: #fff;}
+
+.customerlayer {height: 100%; padding-top: 240px; }
+.fixedlayer .pagination { margin-top: 10px; margin-bottom: 0px; }
+.searchLayer {border: solid 1px #ddd; margin-bottom: 10px; }
+#id_warehouse{height: 30px;}
+.searchLayer input,.searchLayer select{height: 30px;}
+.searchLayer table {width: 100%; background-color: #fff; border-spacing: 1px !important; border-collapse: separate; font-family: "宋体"; table-layout: fixed; }
+.searchLayer table td {padding: 5px; margin: 1px; width: auto; }
+.searchLayer table td.th {background: #f1f1f1; width: 80px; }
+.searchLayer input[type="text"] {margin-bottom: 0px; border: none; box-shadow: none; border-bottom: solid 1px #ddd; border-radius: 0px; outline: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+.searchLayer select {margin-bottom: 0px; border-radius: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; outline: 0px;  line-height: 20px;}
+
+.tableLayer {width: 100%; overflow: scroll; height: 480px; }
+.tableLayer table{width: 100%}
+.tableLayer table th {border: solid 1px #ddd; padding: 10px; font-weight: bold; background: #f1f1f1; }
+.tableLayer table td {border: solid 1px #ddd; padding: 10px;word-break:break-all;white-space: normal; }
+.ctab-panel {width: 100%; position: relative; margin-bottom: 10px; }
+.ctab-head {height: 40px; }
+.ctab-head > a {display: inline-block; color: #333; padding: 0px 10px; line-height: 40px; }
+.ctab-head > a.active {border: solid 1px #ddd; border-bottom: none; background-color: #fff; border-top: solid 2px #3daae9; }
+.ctab-body {border: solid 1px #ddd; padding: 10px; }
+.btn a{color: white;text-decoration: none;}
+</style>
+<form method="get" action=""  id="form-search">
+<div class="fixedlayer">
+    <div class="searchLayer">        
+        <input type="hidden" name="page" value="">
+        <table cellspacing="1">
+            <tr>
+                <td class="th"  >订单号:</td>
+                <td ><input type="text"  name="id_increment" value="{$getData['id_increment']?$getData['id_increment']:''}"></td>
+                <td class="th"  >运单号:</td>
+                <td ><input type="text" name="track_number" value="{$getData['track_number']?$getData['track_number']:''}"></td>                
+       
+                <td class="th"  style="width: 80px;">地区：</td>
+                <td   style="width: 180px;" >
+                    <select name="id_zone" id="id_zone">
+                    <option value="">--选择--</option>
+                    <foreach name="zoneList" item="zone" key="id" >      
+                    <option value="{$id}" {$id==$getData['id_zone']?'selected':''}>{$zone}</option>      
+                    </foreach>            
+                    </select>
+                </td>                             
+                
+                <td class="th"  >业务部门:</td>
+                <td >
+                    <select name="department" id="department">
+                    <option value="">--选择--</option>
+                    <foreach name="departmentList" item="department" key="id" >      
+                    <option value="{$id}" {$id==$getData['department']?'selected':''}>{$department}</option>      
+                    </foreach>            
+                    </select>
+
+                </td>   
+
+            </tr>
+
+            <tr>
+                <td class="th"  style="width: 60px;">物流：</td>
+                <td     >
+                    <select   name="id_shipping">
+                        <option value="">--选择--</option>
+                        <foreach name="shipList" item="ship" key='key'>
+                                <option value="{$key}" <if condition="$getData['id_shipping'] eq $key"> selected </if> >{$ship}</option>
+                        </foreach>
+
+                    </select>   
+                </td>               
+     
+               <td class="th"  style="width: 60px;">处理状态：</td>
+                <td    >
+                    <select name="result" id="result">
+                    <option value="-1">--选择--</option>    
+                    <option value="0" {$getData['result']==='0'?"selected='true'":''}>未处理</option>   
+                    <foreach name="resulttypearr" item="result" key="id" >      
+                    <option value="{$id}" {$id==$getData['result']?'selected':''}>{$result}</option>      
+                    </foreach>    
+                    </select>
+                </td>   
+                <td class="th"  >处理人:</td>
+                <td >
+                    <select name="statuser" id="statuser">
+                    <option value="">--选择--</option>
+                    <foreach name="userNames" item="useritem" key="id" >      
+                    <option value="{$id}" {$id==$getData['statuser']?'selected':''}>{$useritem}</option>      
+                    </foreach>            
+                    </select>
+                </td>
+
+                <td > </td>  
+                <td >   </td>    
+
+            </tr>
+  
+            <tr>
+                <td class="th"  >录入时间:</td>
+                <td colspan ="3" ><input class="js-date date" name="start_time_enter" style="width:120px" value="{$getData['start_time_enter']}" autocomplete="off" type="text">
+                -
+                <input class="js-date date" name="end_time_enter" value="{$getData['end_time_enter']}"  type="text" style="width:120px"  autocomplete="off">          </td>
+                <td class="th"  >处理时间:</td>
+                <td colspan ="3"><input class="js-date date" name="start_time_handle" style="width:120px" value="{$getData['start_time_handle']}"   autocomplete="off" type="text">
+                -
+                <input class="js-date date" style="width:120px" name="end_time_handle" value="{$getData['end_time_handle']}"  type="text" autocomplete="off">     <button style="margin-left:10px" class="btn btn-primary searchButton" >查询</button><span class="btn btn-primary exportButton" style="margin-left:10px">导出</span>     </td>   
+                <td></td>       
+                <td></td>                         
+            </tr>
+
+        </table>
+        
+    </div> 
+   
+    <div class="pagination">{$page}<input type="text" value="" name="displayRow" placeholder="输入每页显示{$getData['displayRow']}数">
+        <input type="button" class="btn btn-small searchButton submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">
+    </div>                     
+</div>
+</form>
+
+<div class="wrap">
+
+    <div class="customerlayer">
+        <div class="ctab-panel" style="margin-top:28px">
+
+            <div class="ctab-body">
+                <div class="tableLayer">
+                    <table>
+                        <thead>
+                            <tr>
+                                <!-- <th><input type="checkbox" class="allChecked" > </th> -->
+                                <th>业务部门</th>
+                                
+                           <!--      <th>商品属性</th>
+                              <th>数量</th> -->
+                                <th>地区</th>  
+                                <th>邮箱</th>                                
+                                <th>物流</th>
+
+                                <th>物流登记时间</th>
+                                <th>运单号</th>
+                                <th>订单号</th>
+                                <th>问题类型</th>
+                                <th>原因描述</th>
+                                <th>收件人</th>
+                                <th>收件电话</th>
+                                <th>内部名</th>                                
+                                <th>总价</th>
+                                <th>发货时间</th>
+                                <th>导入时间</th>
+                                <th>处理人</th>
+                                <th>处理时间</th>
+                                <th>处理结果</th>                                
+                                <th>处理备注</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <foreach name="dataList" item="item" key='key'>
+                                <tr>
+                                    <!-- <td><input type="checkbox" class="{$inventory['status']==2?'nocheked':''} checkItem"  value="{$inventory.id}"  {$inventory['status']==2?"disabled":''}> </td> -->
+                                    <td>{$departmentList[$item['id_department']]}</td>
+                                    <td>{$zoneList[$item['id_zone']]}</td> 
+                                    <td style="width: 130px">{$item.email}</td>                                   
+                                    <td>{$shipList[$item['id_shipping']]}</td>
+                                    <td>{$item['logisticsdate']}</td>
+                                    <td> <a target="blank" href="/payment/Index/info/id/{$item.id_order}">{$item.track_number}</a></td>
+                                    <td> {$item['id_increment']}</td>
+                                    <td> {$reasonarr[$item['reasontype']]}</td>
+                                    <td> {$item['reason_remark']}</td>
+                                    <td> {$item['first_name']}</td>
+                                    <td> {$item['tel']}</td>                                    
+                                    <td style="width: 210px">
+                                        <foreach name="item.products" item="product" key='key'>
+                                        {$product.inner_name}(<span style="color:red;"> x </span>{$product.quantity} )<hr style="margin:2px 0;color:green;border: 1px solid;">
+                                        </foreach>
+                                    </td>                                    
+                                    <td>{$item.total_price}
+                                      
+                                    </td>  
+                                    <td>{$item['date_delivery']}</td>
+                                    <td>{$item['creationdate']}</td>
+                                    <td>{$userNames[$item['statuserid']]}</td>
+                                    <td>{$item['statusdate']=='0000-00-00 00:00:00'?'':$item['statusdate']}</td>  
+                                    <td> {$resulttypearr[$item['result']]}</td>                                 
+  <!--                                   <td> {$item['type']==1?'退货':'换货'}</td>
+                                    
+                                    
+                                    <td>{$statusarr[$item['status']]}</td>                                    
+                                    <td>{$userNames[$item['ownerid']]}</td>
+                                    <td>{$item['creationdate']}</td>
+                                    <td style="width: 70px">{$item['apply_remark']}</td>
+                                    <td>{$userNames[$item['statuserid']]}</td>
+                                     -->
+                                    
+                                    <td style="width: 70px">{$item['handle_remark']}</td>
+                                    <td>
+                                        <input type='hidden' class='poid' name="poid" value="{$item.poid}">                          
+                                         <textarea class="handle_remark" style="width:200px;height: 60px;" placeholder="请填写备注信息" name="handle_remark" rows="3" cols="18"></textarea><br/>
+                                        <select name='result'  class=" result" style="width:100px;">
+                                                <option value="0">请选择</option>
+                                            <foreach name="resulttypearr" item="restype" key='reskey'>
+                                            <option value="{$reskey}">{$restype}</option>
+                                            </foreach>
+                                        </select> 
+                                        <input type='button' class="btn btn-primary  handleApply " value="提交"> 
+                                        <a href="/Order/ProblemShipment/RecordInfo/id/{$item.poid}">详情</a>
+                                                                                                      
+                                        
+                                        <!-- <input type='button' class="btn btn-primary exchange btn_order" value="换货"> -->
+                                    </td>
+
+                                </tr>
+                            </foreach>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    
+    </div>
+
+</div>
+
+
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/jquery.stickytableheaders.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        var top=$('.fixedlayer').height();
+        var height_screen=document.body.clientHeight ;
+        $('.tableLayer').height(height_screen-top-140);
+        $('.customerlayer').css('padding-top',top);
+        $(".tableLayer table").stickyTableHeaders({scrollableArea: $('.tableLayer')});
+    });
+
+    $('.searchButton').on('click',function(){
+        $('#form-search').attr('action',"{:U('order/ProblemShipment/handle')}");        
+        $('#form-search').trigger('submit');
+        
+    });
+  
+
+    $('.handleApply').on('click',function(){
+        var orderobj={};
+        orderobj.poid=$(this).siblings('.poid').val();
+        orderobj.handle_remark=$(this).siblings('.handle_remark').val();
+        orderobj.result=$(this).siblings('.result').val();
+        $.ajax({
+            url:"{:U('ProblemShipment/handleApply')}",
+            type:'POST',
+            dataType:'json',
+            data:{'orderdata':orderobj},
+            success:function(data){
+                if(data.status == 1) {                               
+                    alert(data.message);                                                                 
+                    window.location.reload();
+                }else{
+                    alert(data.message); 
+                }
+            }
+        });          
+    });
+
+
+
+    $('.exportButton').on('click',function(){
+        $('#form-search').attr('action',"{:U('order/ProblemShipment/exportHandle')}");
+        $('#form-search').trigger('submit');        
+    });
+ 
+
+
+
+
+</script>
+</body>
+</html>

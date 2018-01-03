@@ -1,0 +1,80 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="department_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="department" item="item">
+                    <option value="{$key}" <php>echo isset($_GET['department_id']) && $_GET['department_id']==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+           <label class="control-label">地区:</label>
+            <select name="zone_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="zones" item="item">
+                    <option value="{$key}" <php>echo isset($_GET['zone_id']) && $_GET['zone_id']==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">日期筛选:</label>
+            <input type="text" name="start_time" class="js-datetime" value="<php>echo isset($_GET['start_time'])?str_replace('+',' ',$_GET['start_time']):'';</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="end_time" value="<php>echo isset($_GET['end_time'])?str_replace('+',' ',$_GET['end_time']):'';</php>" style="width: 120px;">
+            <button class="btn btn-primary searchButton">搜索</button><br>
+        </div>
+
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th style="text-align:center">部门</th>
+            <th style="text-align:center">主管</th>
+            <th style="text-align:center">人员</th>
+            <th style="text-align:center">单数</th>
+            <th style="text-align:center">广告费（美元）</th>
+            <th style="text-align:center">营业额（台币）</th>
+            <th style="text-align:center">平均广告费</th>
+            <th style="text-align:center">ROI</th>
+            <th style="text-align:center">平均营业额（台币）</th>
+            </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="list">
+        <php>$i = 0;</php>
+        <foreach name="list['department']" item="item">
+        <php>$num = count($list['department']);</php>
+             <tr>   
+                    <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">
+                         {$list.department_name}</td>
+                     </if>
+                   <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">
+                         {$list.department_leader}</td>
+                     </if>
+                    <td>{$item.user_nicename}</td>
+                    <td>{$item.total_ordered}</td>
+                    <td><php>echo !empty($item['expense']) ? round($item['expense'],2) : 0;</php></td>
+                    <td><php>echo round($item['effective_price'],2);</php></td>
+                    <td><php>echo  round($item['expense']/$item['total_ordered'],2);</php><</td>
+                    <td><php>echo round($item['effective_price']/$item['expense'],2);</php></td>
+                    <td><php>echo round($item['effective_price']/$item['total_ordered'],2);</php></td>
+                 </tr>
+                 <php> $i++;</php>
+                 </foreach>
+          </foreach>
+        </tbody>
+    </table>
+
+    <!--<div class="pagination">{$page}</div>-->
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

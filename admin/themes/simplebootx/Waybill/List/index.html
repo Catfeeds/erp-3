@@ -1,0 +1,58 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Waybill/List/index')}">模板列表</a></li>
+        <a href="{:U('Waybill/List/edit')}" class="btn btn-primary searchButton" style="float: right;">添加模板</a>
+    </ul>
+    <form method="get" action="" class="well form-search js-ajax-from">
+        <label class="control-label">物流名称：</label>
+        <input type="text" name="shipping_title" placeholder="请输入您要搜索的物流名称" value="{:I('request.shipping_title','')}"/>
+        <label class="control-label">模板标题：</label>
+        <input type="text" name="title" placeholder="请输入您要搜索的运单模板标题" value="{:I('request.title','')}"/>
+        <button class="btn btn-primary searchButton">搜索</button>
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th width="52">ID</th><th width="100">物流</th>
+            <th width="100">模板标题</th>
+            <th>高度</th><th>宽度</th><th>默认模板</th><th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="item">
+            <tr>
+                <td width="50">{$item.id}</td>
+                <td width="50">{$item.shipping_title}</td>
+                <td width="110">{$item.title}</td>
+                <td>{$item.height}</td>
+                <td>{$item.width}</td>
+                <td><if condition="$item.is_default eq 1 ">是<else /> 否</if></td>
+                <td><if condition="$item.status eq 1 ">是<else /> 否</if></td>
+                <td width="130">
+                    <a href="{:U('Waybill/List/edit',array(\'id\'=>$item[\'id\']))}">编辑</a>&nbsp;|&nbsp;
+                    <a href="{:U('Waybill/List/copy',array(\'id\'=>$item[\'id\']))}">复制</a>&nbsp;|&nbsp;
+                    <a class="js-ajax-delete" href="{:U('Waybill/List/delete',array(\'id\'=>$item[\'id\']))}">删除</a>
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+
+    <div class="pagination">{$Page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('Waybill/List/index')}");
+        $('.form-search').submit();
+    });
+</script>
+</body>
+</html>

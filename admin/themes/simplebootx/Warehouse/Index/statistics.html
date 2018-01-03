@@ -1,0 +1,105 @@
+<admintpl file="header" />
+<style>
+
+</style>
+</head>
+<body>
+<div class="wrap">
+    <form method="post" action="{:U('Index/statistics')}"  class="well form-search">
+        <div class="control-group" style="line-height: 36px;">
+            <p style="color:red;">默认只显示订单[未配货][配货中][缺货]状态</p>
+            <label>物流：</label>
+            <select name="shipping_id" style="width: 120px;">
+                <option value="">所有</option>
+                <foreach name="shippings" item="shipping">
+                    <option value="{$shipping.id_shipping}"<if condition="$Think.post.id_shipping eq $shipping['id_shipping']"> selected="selected"</if>>{$shipping.title}</option>
+                </foreach>
+            </select>
+            <label class="control-label">部门:</label>
+            <select name="department_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="department" item="item">
+                    <option value="{$item.id_department}" <if condition="$Think.post.department_id eq $item['id_department']"> selected="selected"</if>>{$item.title}</option>
+                </foreach>
+            </select>
+            <label class="control-label">地区:</label>
+            <select name="zone_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="zone" item="item" key="key">
+                    <option value="{$key}" <if condition="$Think.post.zone_id eq $key"> selected="selected"</if>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">仓库:</label>
+            <select name="warehouse_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="warehouse" item="item">
+                    <option value="{$item.id_warehouse}" <if condition="$Think.post.warehouse_id eq $item['id_warehouse']"> selected="selected"</if>>{$item.title}</option>
+                </foreach>
+            </select>  
+            <!--<label class="control-label">订单状态:</label>-->
+            <!--<select name="status_id" style="width: 120px;">-->
+                <!--<option value="0">所有</option>-->
+                <!--<option value="4"<if condition="$Think.post.status_id eq 4"> selected="selected"</if>>未配货</option>-->
+                <!--<option value="5"<if condition="$Think.post.status_id eq 5"> selected="selected"</if>>配货中</option>-->
+                <!--<option value="7"<if condition="$Think.post.status_id eq 7"> selected="selected"</if>>已配货</option>-->
+                <!--<option value="6"<if condition="$Think.post.status_id eq 6"> selected="selected"</if>>缺货</option>-->
+            <!--</select>-->
+            <label class="control-label">订单状态:</label>
+            <select name="status_id" style="width:100px;">
+                <option value="0">所有</option>
+                <php>
+                    if($status_list){
+                    foreach($status_list as $key=>$status){
+                    $selected = $post['status_id']==$key?' selected="selected"':'';
+                    echo '<option value="'.$key.'"'.$selected.'>'.$status.'</option>';
+                    }
+                    }
+                </php>
+            </select>
+            <label class="control-label">下单时间:</label>
+            <input type="text" name="time_start" class="js-datetime" value="{$Think.post.time_start}" style="width: 120px;" autocomplete="off">-
+            <input autocomplete="off" type="text" class="js-datetime" name="time_end" value="{$Think.post.time_end}" style="width: 120px;">
+            <button class="btn btn-primary searchButton">搜索</button>
+        </div>
+    </form>
+    <div>
+        订单数: {$order_count} &nbsp;&nbsp;&nbsp;产品数: {$product_count}
+    </div>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list order-table">
+        <thead>
+        <tr>
+            <th style="display:none">物流</th>
+            <th>产品图片</th>
+            <th>产品</th>
+            <th>属性</th>
+            <th>SKU</th>
+            <th>发货数量</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="statistics" item="stat" key="shipping_name">
+            <if condition="$stat.id_product neq ''">
+                <tr>
+                    <td>
+                        <if condition="$stat.img neq ''">
+                            <img id="photo-preview" src="{:sp_get_image_preview_url($stat['img'])}" style="height:36px;width: 36px;">
+                        </if>
+                    </td>
+                    <td>{$stat.pro_name}</td>
+                    <td>{$stat.sku_title}</td>
+                    <td><php>
+                        echo $stat['sku']
+                    </php></td>
+                    <td>{$stat.quantity}</td>
+                </tr>
+            </if>
+        </foreach>
+        </tbody>
+    </table>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,91 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a>查重记录追踪列表</a></li>
+    </ul>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="act" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+
+            <label class="control-label">操作人员:</label>
+            <select name="id_users" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="users" item="item">
+                    <option value="{$key}" <if condition="$key EQ $_GET['id_users']">selected</if>>{$item}</option>
+                </foreach>
+            </select>
+            <td class="th">查重id：</td>
+            <td>
+                <input type="text" name="id_check" style="width: 200px;" value="{$getData.id_check}" >
+            </td>
+            <td class="th">操作：</td>
+            <td>
+                <input type="text" name="des" style="width: 200px;" value="{$getData.des}" >
+            </td>
+            <td class="th">查重关键字：</td>
+            <td>
+                <input type="text" name="pro_title" style="width: 200px;" value="{$getData.pro_title}" >
+            </td>
+            <label class="control-label">日期:</label>
+            <input type="text" name="start_time" class="js-datetime" value="{$getData.start_time}" style="width: 120px;" autocomplete="off">-
+            <input autocomplete="off" type="text" class="js-datetime" name="end_time" value="{$getData.end_time}" style="width: 120px;">
+
+            <button class="btn btn-primary searchButton" id="searchBtn">搜索</button>
+         <!--   <button class="btn btn-primary exportButton" id="exportBtn">导出</button>-->
+        </div>
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list order-table">
+        <thead>
+        <tr>
+            <th>id</th>
+            <th>查重id</th>
+            <th>查重名称</th><th>内部名</th><th>域名</th>
+            <th>操作人员</th>
+            <th>操作</th>
+            <th style="width:10px">数据</th>
+            <th>日期</th>
+        </tr>
+        </thead>
+        <tbody>
+            <foreach name="list" item="v">
+                <tr style="">
+                    <td>{$v.id}</td>
+                    <td>{$v.id_check}</td>
+                    <td>{$v.title}</td>
+                    <td>{$v.inner_name}</td>
+                    <td>{$v.domain}</td>
+                    <td>{$users[$v['id_users']]}</td>
+                    <td>{$v.des}</td>
+                    <td style="width:10px"><foreach name="v['data']" item="v2" key="key2">{$key2}:{$v2}<br/></foreach></td>
+                    <td>{$v.created_at}</td>
+                </tr>
+            </foreach>
+        </tbody>
+    </table>
+        <div class="pagination">{$Page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.submitDisplayRow').click(function(){
+        var getRow = $(this).parent().find('input[name=displayRow]').val();
+        if(getRow){
+            $.post("{:U('Ordercheck/setpagerow')}",{'row':getRow},function(data){
+                window.location.reload();
+            });
+        }
+    });
+    $('.searchButton').click(function(){
+        $('.form-search input[name=act]').attr('value','');
+        $('.form-search').attr('action',"{:U('check/list_check_record')}");
+    });
+    $('.exportButton').click(function(){
+        $('.form-search input[name=act]').attr('value','export');
+        $('.form-search').attr('action',"{:U('check/list_check_record')}");
+    });
+</script>
+</body>
+</html>

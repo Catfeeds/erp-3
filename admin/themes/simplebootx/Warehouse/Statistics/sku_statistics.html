@@ -1,0 +1,72 @@
+<admintpl file="header"/>
+</head>
+<body>
+    <div class="wrap js-check-wrap">        
+        <fieldset>
+            <form method="get" action=""  class="well form-search">
+                <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+                <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+                <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+                <input type="hidden" name="id_warehouse" value="<php>echo $data['id_warehouse'];</php>">
+                <div class="control-group" style="line-height: 36px;">
+                    <label class="control-label">仓库:</label>
+                    <select name="warehouse_id" style="width:100px;">
+                        <option value="0">所有</option>
+                        <foreach name="warehouse" item="item">
+                            <option value="{$item.id_warehouse}" <php>echo isset($getData['warehouse_id']) && $getData['warehouse_id']==$item['id_warehouse'] ? 'selected' : ''</php>>{$item.title}</option>
+                        </foreach>
+                    </select>
+                    <label class="control-label">部门:</label>
+                    <select name="department_id" style="width:100px;">
+                        <option value="0">所有</option>
+                        <foreach name="department" item="item">
+                            <option value="{$item.id_department}" <php>echo isset($getData['department_id']) && $getData['department_id']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                        </foreach>
+                    </select>              
+                    <label class="control-label">SKU</label>
+                    <input type="text" name="sku_title" style="width: 200px;" value="{$getData.sku_title}" placeholder="请输入SKU...">
+                    <label class="control-label">产品内部名称:</label>
+                    <input type="text" name="pro_inner_title" style="width: 200px;" value="{$getData.pro_inner_title}" placeholder="请输入内部名称...">
+                    <button class="btn btn-primary searchButton">搜索</button>
+                </div>
+            </form>
+            <table class="table table-hover table-bordered table-list">
+                <thead>
+                    <tr>
+                        <td>仓库</td>
+                        <td>SKU</td>
+                        <td>内部名</td>
+                        <td>订单量</td>
+                        <td>入库总量</td>
+                        <td>出库总量</td>
+                        <td>库存</td>
+                        <td>缺货</td>
+                        <td>在途</td>                        
+                    </tr>
+                    <tbody>
+                        <foreach name="list" item="item">
+                            <tr>
+                                <td>{$item.warehouse}</td>
+                                <td>{$item.sku}</td>
+                                <td>{$item.inner_name}</td>
+                                <td>{$item.order_count}</td>
+                                <td>{$item.add_count}</td>
+                                <td></td>
+                                <td>{$item.quantity}</td>
+                                <td>{$item.qh}</td>
+                                <td>{$item.road_num}</td>
+                            </tr>
+                        </foreach>
+                    </tbody>
+                </thead>
+            </table>
+            <div class="pagination">{$page}</div>
+        </fieldset>
+    </div>
+    <script src="__PUBLIC__/js/common.js"></script>
+    <script>
+        $('.searchButton').click(function(){
+            $('.form-search input[name=a]').attr('value','sku_statistics');
+            $('.form-search').attr('action',"{:U('statistics/sku_statistics')}");
+        });
+    </script>

@@ -1,0 +1,143 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">域名:</label>
+            <select name="domain_id">
+                <option value="0">所有</option>
+                <foreach name="domain_name" item="item" key="key">
+                    <option value="{$key}" <php>//echo isset($_GET['domain_id']) && $_GET['domain_id']==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">地区:</label>
+            <select name="zone_id">
+                <option value="0">所有</option>
+                <foreach name="zone" item="item" key="key">
+                    <option value="{$key}" <php>echo isset($_GET['zone_id']) && $_GET['zone_id']==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+            <if condition="$flag eq 2">
+            <label class="control-label">姓名:</label>
+            <select name="user_id">
+                <option value="0">所有</option>
+                <foreach name="user_names" item="item" key="key">
+                    <option value="{$key}" <php>echo isset($_GET['user_id']) && $_GET['user_id']==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+            </if>
+            <if condition="$flag eq 1">
+            <label class="control-label">部门:</label>
+            <select name="department_id">
+                <option value="0">所有</option>
+                <foreach name="department" item="item" key="key">
+                    <option value="{$item.id_department}" <php>echo isset($_GET['department_id']) && $_GET['department_id']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                </foreach>
+            </select>
+                <label class="control-label">小组:</label>
+                <select name="group_id">
+                    <option value="0">所有</option>
+                    <foreach name="group" item="item" key="key">
+                        <option value="{$item.id_department}" <php>echo isset($_GET['group_id']) && $_GET['group_id']==$item['group_id'] ? 'selected' : ''</php>>{$item.title}</option>
+                    </foreach>
+                </select>
+            <label class="control-label">姓名:</label>
+            <input type='text' name='user_name' value="<php>echo $_GET['user_name']</php>"/>
+            </if>
+            <label class="control-label">日期筛选:</label>
+            <input type="text" name="start_time" class="js-datetime" value="<php>echo isset($_GET['start_time'])?str_replace('+',' ',$_GET['start_time']):'';</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="end_time" value="<php>echo isset($_GET['end_time'])?str_replace('+',' ',$_GET['end_time']):'';</php>" style="width: 120px;">
+            <button class="btn btn-primary searchButton">搜索</button><br>
+        </div>
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th style="text-align:center">日期</th>
+            <th style="text-align:center">姓名</th>
+            <th style="text-align:center">域名</th>
+            <th style="text-align:center">地区</th>
+            <th style="text-align:center">有效单</th>
+            <th style="text-align:center">营业额</th>
+            <th style="text-align:center">客单价</th>
+            <th style="text-align:center">广告费</th>
+            <th style="text-align:center">平均广告费</th>
+            <th style="text-align:center">采购成本</th>
+            <th style="text-align:center">运费成本</th>
+            <th style="text-align:center">ROI</th>
+            <if condition="$flag eq 1 ">
+            <th style="text-align:center">投资回报率</th>
+            <th style="text-align:center">利润率</th>
+            </if>
+        </tr>        
+        </thead>
+        <tbody>            
+            <tr>
+                <td colspan="4" style="text-align:center">总计</td>
+                <td style="text-align:center" class='total_effective'><php>echo $total_effective</php></td>
+                <td style="text-align:center" class='total_effective_price'><php>echo $total_effective_price</php></td>
+                <td style="text-align:center" class='total_price'><php>echo $total_price</php></td>
+                <td style="text-align:center" class='total_advert_price'><php>echo $total_advert_price</php></td>
+                <td style="text-align:center" class='total_ad_average_price'><php>echo $total_ad_average_price</php></td>
+                <td style="text-align:center" class='total_purchase_price'><php>echo $total_purchase_price</php></td>
+                <td style="text-align:center" class='total_weight'><php>echo $total_weight</php></td>
+                <td style="text-align:center" class='total_roi'><php>echo $total_roi</php></td>
+                <if condition="$flag eq 1 ">
+                    <td style="text-align:center"><php>echo $total_tzhb</php></td>
+                    <td style="text-align:center"><php>echo $total_lr</php></td>
+                </if>
+            </tr>
+            <foreach name="list" item="item" key='key'>   
+                <php>
+                    $count = count($item)+1;                    
+                </php>
+                <tr>
+                    <td <php>echo 'rowspan="'.$count.'"'</php> style="text-align:center"><php>echo $key</php></td>
+                </tr>
+                <foreach name="item" item="val" key="k">
+                        <tr>
+                            <td style="text-align:center">{$val.name}</td>
+                            <td style="text-align:center">{$val.domain}</td>
+                            <td style="text-align:center">{$zone[$val['id_zone']]}</td>
+                            <td style="text-align:center">{$val.effective}</td>
+                            <td style="text-align:center">{$val.effective_price}</td>
+                            <td style="text-align:center"><php>echo round($val['effective_price']/$val['effective'],2)</php></td>
+                            <td style="text-align:center"><php>echo $val['expense']</php></td>
+                            <td style="text-align:center"><php>echo round($val['expense']/$val['effective'],2)</php></td>
+                            <td style="text-align:center">{$val.purchase_price}</td>
+                            <td style="text-align:center">{$val.weight}</td>
+                            <td style="text-align:center"><php>echo round($val['effective_price']/$val['expense'],2)</php></td>                            
+                            <if condition="$flag eq 1 ">
+                                <td style="text-align:center">
+                                    <php>
+                                        $tReturns = ($val['effective_price']/($val['expense']+($val['freight'])+($val['purchase_price'])));
+                                        echo round($tReturns,2).'%';
+                                        //5688/(0+(0*2)+(5288*2))
+                                    </php>
+                                </td>
+                                <td style="text-align:center">
+                                    <php>
+                                        $Returns = (($val['effective_price']-$val['expense']-$val['freight'])-($val['purchase_price']))/($val['effective_price']*0.8);
+                                        echo round($Returns,2).'%';
+                                        //((5688-0-0*2)-(5288*2))/(5688*0.8) 4550.8
+                                    </php>
+                                </td>
+                            </if>
+                        </tr>
+                </foreach>
+            </foreach>
+        </tbody>
+    </table>
+
+    <div class="pagination">{$page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,188 @@
+<admintpl file="header" />
+</head>
+<body>
+    <div class="wrap">
+        <!--<ul class="nav nav-tabs">
+            <li class="active"><a href="{:U('Ordercheck/waitdelivery')}">待发列表</a></li>
+            <li><a href="{:U('Ordercheck/importdelivery')}">导入快递号</a></li>
+            <li><a href="{:U('Ordercheck/turnship')}">待转发</a></li>
+        </ul>-->
+        <form method="get" action=""  class="well form-search getSearchForm">
+            <input type="hidden" name="g" value="Warehouse">
+            <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+            <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+            <div class="control-group" style="line-height: 36px;">
+                <label class="control-label">部门:</label>
+                <select name="department_id" style="width:100px;">
+                    <option value="0">所有</option>
+                    <foreach name="department" item="item">
+                        <option value="{$item.id_department}" <php>echo isset($getData['department_id']) && $getData['department_id']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                    </foreach>
+                </select>
+<!--                <label class="control-label">仓库:</label>
+                <select name="warehouse_id" style="width:100px;">
+                    <option value="0">所有</option>
+                    <foreach name="warehouse" item="item">
+                        <option value="{$item.id_warehouse}" <php>//echo isset($getData['warehouse_id']) && $getData['warehouse_id']==$item['id_warehouse'] ? 'selected' : ''</php>>{$item.title}</option>
+                    </foreach>
+                </select>-->
+                <label class="control-label">关键词:</label>
+                <input type="text" name="keyword" style="width: 200px;" value="{$getData.keyword}" placeholder="请输入关键字...">
+                <button class="btn btn-primary searchButton">搜索</button>
+                <!--<button class="btn btn-primary exportSearchButton">导出搜索结果</button>-->
+            </div>
+        </form>
+        <!--    <fieldset class="well">
+            <div class="table-actions statisticsReport">
+                总单数:{$orderTotal}  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 今天总单数：{$todayTotal}
+            </div>
+            </fieldset>-->
+        <fieldset class="well">
+            <div class="table-actions">
+                <select name="warehouse" style="width:100px;">
+                    <option value="0">所有</option>
+                    <foreach name="warehouse" item="item">
+                        <option value="{$item.id_warehouse}" <php>echo isset($getData['warehouse']) && $getData['warehouse']==$item['id_warehouse'] ? 'selected' : ''</php>>{$item.title}</option>
+                    </foreach>
+                </select>
+                <button orderid="" class="btn btn-primary btn-small submitOrderList" type="button"  data-subcheck="true">确定</button>
+            </div>
+        </fieldset>
+            <table class="table table-hover table-bordered table-list order-table">
+                <thead>
+                <tr>
+                    <th width="15"><label><input type="checkbox" class="js-check-all checkAllbox" data-direction="x" data-checklist="js-check-x"></label></th>
+                    <th width="50">ID</th>
+                    <th>产品图片</th>
+                    <th>产品名</th>
+                    <th>内部名</th>
+                    <th>SKU</th>
+                    <th>库存</th>
+                </tr>
+                </thead>
+                <tbody>
+                <foreach name="product" item="item" key='key'>
+                    <tr>
+                        <td><input type="checkbox" class="js-check" name="product_id" value="{$item.id_product}"></td>
+                        <td>{$item.id_product}</td>
+                        <td>
+                            <notempty name="item['img']['photo']">
+                                <img id="photo-{$key}-preview" src="{:sp_get_image_preview_url($item['img']['photo'][0]['url'])}" style="height:36px;width: 36px;">
+                            </notempty>
+                        </td>
+                        <td>{$item.title}</td>
+                        <td>{$item.inner_name}</td>
+                        <td>{$item.model}</td>
+                        <td>
+                            <input type="text" class="receiveQty" value="1000"  name="quantity" placeholder="请输入库存数量">
+                        </td>
+                    </tr>
+                </foreach>
+                </tbody>
+            </table>
+        
+
+        <div class="pagination">{$page}</div>
+
+    </div>
+    <script src="__PUBLIC__/js/common.js"></script>
+    <script type="text/javascript">
+                                            //console.debug(jQuery('.js-ajax-form'));
+                                            $('.searchButton').click(function () {
+                                                //$('.form-search input[name=a]').attr('value','waitdelivery');
+                                                $('.form-search').attr('action', "{:U('Warehouse/Index/product_batch_add')}");
+                                            });
+                                            $(".checkAllbox").click(function () {
+                                                var setVal = $(this).attr('checked') == 'checked' ? true : false;
+                                                $("input[name=product_id]").attr("checked", setVal);
+                                                //$(".table-list :checkbox").attr("checked",setVal);
+                                            });
+                                            $('.submitDisplayRow').click(function () {
+                                                var getRow = $(this).parent().find('input[name=displayRow]').val();
+                                                if (getRow) {
+                                                    $.post("{:U('Ordercheck/setpagerow')}", {'row': getRow}, function (data) {
+                                                        window.location.reload();
+                                                    });
+                                                }
+                                            });
+                                            $('.exportSearchButton').click(function () {
+                                                //$('.form-search input[name=a]').attr('value','');
+                                                $('.form-search').attr('action', "{:U('Warehouse/Index/export_order_list')}");
+                                            });
+                                            $('.js-ajax-submit').click(function () {
+                                                var curObj = $(this);
+                                                var curParObj = curObj.parent();
+                                                var order_id = curObj.attr('orderid');
+                                                var order_remark = curParObj.find('textarea').val();
+                                                var track_number = curParObj.find('input[name=track_number]').val();
+                                                if (track_number == '') {
+                                                    alert('请输入跟踪号');
+                                                    return false;
+                                                }
+                                                $.post("{:U('Order/Index/delivery')}", {'order_id': order_id, 'track_number': track_number, 'order_remark': order_remark}, function (data) {
+                                                    var getJson = $.parseJSON(data);
+                                                    if (getJson.status) {
+                                                        curParObj.parent().remove();
+                                                    }
+                                                    alert(getJson.message);
+
+                                                });
+                                            });
+                                            $('.submitOrderList').click(function () {
+                                                var curObj = $(this);
+                                                var curParObj = curObj.parent();
+                                                var pro_id = [];
+                                                var qty = [];
+                                                $("input[name=product_id]:checked").each(function () {
+                                                    pro_id.push($(this).attr('value'));
+                                                    qty.push($('.receiveQty').attr('value'));
+                                                });
+                                                console.log(qty);
+                                                if (pro_id.length == 0) {
+                                                    alert('请至少选择一个产品');
+                                                    return false;
+                                                }
+                                                //var order_remark = curParObj.find('textarea').val();
+                                                var warehouse = curParObj.find('select[name=warehouse]').val();
+                                                if (warehouse == 0) {
+                                                    alert('请选择仓库');
+                                                    return false;
+                                                }
+                                                $.post("{:U('Index/batch_add_post')}", {'pro_id': pro_id, 'warehouse': warehouse, 'qty':qty}, function (data) {
+                                                    var getJson = $.parseJSON(data);
+                                                    if (getJson.status) {
+                                                        alert('操作成功');
+//                                                        window.location.reload();
+                                                    } else {
+                                                        alert(getJson.message);
+                                                    }
+                                                });
+                                            });
+                                            $('.cancelOrder').click(function () {
+                                                var getObj = $(this).parent();
+                                                var getOrderId = $(this).attr('order_id');
+                                                var comment = getObj.find('textarea').val();
+                                                if (confirm('确定取消？')) {
+                                                    $.post("{:U('Order/Index/cancelOrder')}", {'order_id': getOrderId, 'comment': comment}, function (data) {
+                                                        var getJson = $.parseJSON(data);
+                                                        if (getJson.status) {
+                                                            alert('操作成功');
+                                                            window.location.reload();
+                                                        } else {
+                                                            alert(getJson.message);
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                            /*$(document).ready(function(){
+                                             var getFormData = $('.getSearchForm').serializeArray();
+                                             getFormData[1]['value'] = 'Warehouse';
+                                             getFormData[2]['value'] = 'getStatisticsReport';
+                                             $.post("{:U('Warehouse/getStatisticsReport')}",getFormData,function(data){
+                                             //alert(data.info);
+                                             console.debug(data);
+                                             });
+                                             });*/
+    </script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <fieldset>
+        <form method="get" action=""  class="well form-search">
+            <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+            <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+            <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+            <div class="control-group" style="line-height: 36px;">
+                <label class="control-label">列表:</label>
+                <input type="checkbox" id="slect_def1" style="margin:0" <php>echo !isset($_GET['show_type']) || (isset($_GET['slect_check']) && $_GET['slect_check'])==1 ? 'checked' : ''</php>/>查重
+                <input type="checkbox" id="slect_def2" style="margin:0" <php>echo isset($_GET['slect_rep']) && $_GET['slect_rep']==2 ? 'checked' : ''</php>/>已备案
+                <input type="hidden" name="slect_check" value="">
+                <input type="hidden" name="slect_rep" value="">
+                &nbsp;&nbsp;
+                <label class="control-label">展示样式:</label>
+                <select name="show_type" id="slect_show" style="width:140px">
+                    <option value="3" <php>echo isset($_GET['show_type']) && $_GET['show_type']==3 ? 'selected' : ''</php>>列表展示</option>
+                    <option value="4" <php>echo isset($_GET['show_type']) && $_GET['show_type']==4 ? 'selected' : ''</php>>图片展示</option>
+                </select>
+                <button class="btn btn-primary searchButton">搜索</button>
+            </div>
+        </form>
+        <div class="pro_res">
+            <php>
+                if($_GET['show_type'] == 3 || !isset($_GET['show_type'])) {
+            </php>
+            <foreach name="list" item="item">
+                <div class="pic_res" style="margin-bottom: 20px;height: 200px;">
+                    <div class="pic" style="float: left;margin-right: 5px;">
+                        <img id="photo-{$key}-preview" src="<php>echo $item['img']</php>" style="height:200px;width:200px;">
+                    </div>
+                    <div class="pic_de" style="float: left;margin-right: 5px;">
+                        <table border="1" height="200px">
+                            <tr>
+                                <td style="text-align: center;width: 270px;">查重时间：{$item.check_time}<br><php>echo $_GET['slect_rep']==2 && $item['id_domain'] > 0 ? '备案时间：'.$item['record_time'] : ''</php></td>
+                                <td style="text-align: center;width: 270px;">{$item.cate_name}</td>
+                                <td colspan="2" style="text-align: center;width: 400px;">{$item.title}</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center;">{$item.department}</td>
+                                <td style="text-align: center">{$item.user_name}</td>
+                                <td style="text-align: center"><php>echo !empty($item['extra_domain']) ? $item['extra_domain'] : '无域名'</php></td>
+                                <td style="text-align: center">{$item.inner_name}</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center"><a target="_blank" href="{$item.purchase_url}">采购链接</a></td>
+                                <td style="text-align: center"><a target="_blank" href="{$item.sale_url}">业务链接</a></td>
+                                <td style="text-align: center">{$item.style}</td>
+                                <td style="text-align: center">{$item.remark}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="_right">
+                        <a href="{:U('Product/check/edit',array('id'=>$item['id_checked']))}" class="btn btn-primary" style="margin-bottom: 5%;">编辑</a><br>
+                        <empty name="item['id_domain']">
+                            <empty name="item['end_time']">
+                                <input style="margin-bottom:0px;width: 125px" type="text" name="start_time" id="{$item['id_checked']}" class="js-datetime" value="<php>echo date('Y-m-d',strtotime('+3 day'));</php>"  autocomplete="off">
+                                <a href="javascript:;" class="btn btn-primary extendtime" data-id="{$item['id_checked']}">延长保护期</a><br>
+                            </empty>
+                        </empty>
+                        <if condition="$item.id_domain != 0">
+                            <if condition="$item.status != 3">
+                                <a href="javascript:;" class="btn btn-primary fe" data-id="{$item['id_checked']}">永久保留</a>
+                            </if>
+                        </if>
+                    </div>
+                </div>
+            </foreach>
+            <php>
+                }
+            </php>
+            <php>
+                if($_GET['show_type'] == 4) {
+            </php>
+            <foreach name="list" item="item">
+                <div class="pic_res" style="display: inline-block;margin-right: 3%;">
+                    <div class="pic">
+                        <img id="photo-{$key}-preview" src="<php>echo $item['img']</php>" style="height:300px;width:467px;">
+                    </div>
+                    <div class="pic_de" style="margin-bottom: 5px;">
+                        <table border="1" class="table table-hover table-bordered table-list">
+                            <tr>
+                                <td style="text-align: center">查重时间：{$item.check_time}</td>
+                                <td style="text-align: center">{$item.cate_name}</td>
+                                <td colspan="2" style="text-align: center">{$item.title}</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center">{$item.department}</td>
+                                <td style="text-align: center">{$item.user_name}</td>
+                                <td style="text-align: center"><php>echo !empty($item['extra_domain']) ? $item['extra_domain'] : '无域
+                                    名'</php></td>
+                                <td style="text-align: center">{$item.inner_name}</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center"><a target="_blank" href="{$item.purchase_url}">采购链接</a></td>
+                                <td style="text-align: center"><a target="_blank" href="{$item.sale_url}">业务链接</a></td>
+                                <td style="text-align: center">{$item.style}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="text-align: center">{$item.remark}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="_right" style="margin-bottom: 5px;">
+                        <a href="{:U('Product/check/edit',array('id'=>$item['id_checked']))}" class="btn btn-primary">编辑</a>
+                        <empty name="item['id_domain']">
+                            <empty name="item['end_time']">
+                                <input style="margin-bottom:0px;width: 125px" type="text" name="start_time" id="{$item['id_checked']}" class="js-datetime" value="<php>echo date('Y-m-d',strtotime('+3 day'));</php>"  autocomplete="off">
+                                <a href="javascript:;" class="btn btn-primary extendtime" data-id="{$item['id_checked']}">延长保护期</a><br>
+                            </empty>
+                        </empty>
+                        <if condition="$item.id_domain != 0">
+                            <if condition="$item.status != 3">
+                                <a href="javascript:;" class="btn btn-primary fe" data-id="{$item['id_checked']}">永久保留</a>
+                            </if>
+                        </if>
+                    </div>
+                </div>
+            </foreach>
+            <php>
+                }
+            </php>
+        </div>
+        <div class="pagination">{$page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+    $('#slect_show').change(function(){
+        $('.searchButton').click();
+    });
+
+    $('.searchButton').on('click', function(){
+        if($("#slect_def1").prop("checked")) {
+            $('input[name="slect_check"]').val(1);
+        }
+        if($("#slect_def2").prop("checked")){
+            $('input[name="slect_rep"]').val(2);
+        }
+        if($("#slect_def1").prop("checked") && $("#slect_def2").prop("checked")) {
+            $('input[name="slect_check"]').val(1);
+            $('input[name="slect_rep"]').val(2);
+        }
+    });
+
+</script>

@@ -1,0 +1,62 @@
+<admintpl file="header"/>
+</head>
+<body>
+<style>
+    .form-horizontal .controls {
+        line-height: 29px;
+    }
+</style>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Index/look',array('id'=>$_GET['id']))}">查看详情</a></li>
+    </ul>
+    <form class="form-horizontal js-ajax-form" method="post">
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label">退货入库单：</label>
+                <div class="controls">
+                    {$data.return_no}
+                </div>
+            </div>
+
+            <div class="control-group attributesValueList">
+                <label class="control-label">属性库存：</label>
+                <div class="controls">
+                    <table class="table table-hover table-bordered table-list attributesListBox">
+                        <tbody>
+                            <tr>
+                                <th>运单号</th>
+                                <th>产品图片</th>
+                                <th>SKU</th>
+                                <th>产品名</th>
+                                <th>部门</th>
+                                <th>退货数量</th>
+                                <th>已收货数量</th>
+                            </tr>
+                            <foreach name="purchase_list" item="list">
+                                <php>//$photo = !empty($list['img']['photo']) ? $list['img']['photo'][0]['url'] : '';</php>
+                                <tr>
+                                    <td>{$list.track_number}</td>
+                                    <td><img  src="<?php //echo sp_get_image_preview_url($photo)?>" style="height:36px;width: 36px;"></td>
+                                    <td>{$list.sku}</td>
+                                    <td>{$list.title}</td>
+                                    <td>{$list.dep_title}</td>
+                                    <td>{$list.quantity}</td>
+                                    <th>{$list.received}</th>
+                                </tr>
+                            </foreach>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </fieldset>
+        <div class="form-actions">
+            <a class="btn" href="{:U('return/purchase_list2')}">{:L('BACK')}</a>
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

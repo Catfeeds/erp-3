@@ -1,0 +1,43 @@
+<admintpl file="header"/>
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('index/collect_order_list')}">导出订单</a></li>
+    </ul>
+</div>
+<form action='' method='post' class="form-horizontal">
+    <div class="control-group">
+        <div class="controls">
+            域名：
+            <textarea name="domain" style="width:250px;height:300px" placeholder="一行一个"></textarea>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            时间：
+            <input class="js-date date" name="start_time" value="" style="width: 160px;" autocomplete="off" type="text">-
+            <input class="js-date date" name="end_time" value="" style="width: 160px;" autocomplete="off" type="text">
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            国家：
+            <select name="country" id="">
+                <option value="TW">台湾</option>
+                <option value="HK">香港</option>
+                <option value="JP">日本</option>
+                <option value="MY">马来西亚</option>
+            </select>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">导出</button>
+        </div>
+    </div>
+</form>
+{$data}
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

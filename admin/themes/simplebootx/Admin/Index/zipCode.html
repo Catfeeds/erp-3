@@ -1,0 +1,72 @@
+<admintpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li <if condition="$method eq 'localhost' "> class="active"</if> ><a href="{:U('Admin/Index/zipCode',array('method'=>'localhost'))}">本地环境代码打包</a></li>
+		<li  <if condition="$method eq 'online' "> class="active"</if> ><a href="{:U('Admin/Index/zipCode',array('method'=>'online'))}" >生产环境代码打包</a></li>
+        <li>
+            <form action="{:U('Admin/Index/fileUpload')}" method="post"
+                  enctype="multipart/form-data">
+                <input type="file" name="file" id="file" />
+    
+                选择项目：
+                <select name="project" id="">
+                    <option value="1">ERP正式服</option>
+                    <option value="4">ERP预上线服</option>
+                    <option value="5">ERP香港服</option>
+                    <option value="2">建站系统后台</option>
+                    <option value="3">建站系统前台</option>
+                </select>
+                <input type="submit" name="submit" value="上传" />
+                路径：/data/online_backup/
+            </form>
+        </li>
+    </ul>
+</div>
+<if condition="$method eq 'localhost' ">
+    <div class="control-group"  style="margin-left:50px">
+		<form method="post" action="{:U('Admin/Index/zipCode')}" >
+            选择项目：
+            <select name="project" id="">
+                <option value="1">ERP</option>
+                <option value="2">建站系统后台</option>
+                <option value="3">建站系统前台</option>
+            </select>
+            <br>
+			本地打包:
+            <br>------------------------------------------------------------------------------------------------------------<br>
+			  文件目录:<br/><textarea name="zipdir" type="text" id="zipdir"  style="width:500px;height:300px"/></textarea>(例如./folder)<br/>
+			  <input name="zip" type="submit" id="zip" value="压缩" /><br>
+			  <input name="method" type="hidden" value="localhost" /><br>
+		</form>
+</div>
+<else />
+    <div class="control-group"  style="margin-left:50px">
+		<form method="post" action="{:U('Admin/Index/zipCode')}" >
+            
+            选择项目：
+            <select name="project" id="">
+                <option value="1">ERP</option>
+                <option value="2">建站系统后台</option>
+                <option value="3">建站系统前台</option>
+            </select>
+            <br>
+			  生产服务器打包备份:
+			  
+            <br>
+ 服务器打包路径:/home/online_back <br>
+            /------------------------------------------------------------------------------------------------------------------------------
+            <br>
+			  文件目录:<br/><textarea name="zipdir" type="text" id="zipdir"  style="width:500px;height:300px"/></textarea>(例如./folder)<br/>
+			  <input name="zip" type="submit" id="zip" value="压缩" /><br>
+		</form>
+	</div>
+
+
+</if>
+
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

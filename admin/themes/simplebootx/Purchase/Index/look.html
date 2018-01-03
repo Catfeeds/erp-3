@@ -1,0 +1,195 @@
+<admintpl file="header"/>
+</head>
+<body>
+<style>
+    .form-horizontal .controls {
+        line-height: 29px;
+    }
+    .searchLayer table td{white-space:normal;word-break:break-all;}
+</style>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Index/look',array('id'=>$_GET['id']))}">查看详情</a></li>
+    </ul>
+    <div class="searchLayer">
+    <form class="form-horizontal js-ajax-form" method="post" style="padding:20px">
+    <table cellspacing="1" class="table-bordered">
+        <tr>
+            <td class="th">采购单号：</td>
+            <td>
+                {$data.purchase_no}
+            </td>
+            <td class="th">内部采购单号：</td>
+            <td>
+                {$data.inner_purchase_no}
+            </td>
+            <td class="th">采购渠道订单号：</td>
+            <td>
+                {$data.alibaba_no}
+            </td>            
+            <td class="th">内部采购时间：</td>
+            <td>
+                {$data.inner_purchase_time}
+            </td>
+            <td class="th">部门：</td>
+            <td>
+                {$department}
+            </td>
+
+
+
+        </tr>
+        <tr>
+            <td class="th">供应商：</td>
+            <td>
+                {$supplier.title}
+            </td>
+            <td class="th">供应商链接：</td>
+            <td style="white-space:normal;">
+                {$supplier.supplier_url}
+            </td>
+            <td class="th">运费：</td>
+            <td>
+                {$data.price_shipping}
+            </td>
+            <td class="th">总金额：</td>
+            <td colspan="">
+                {$data.price}
+            </td>
+
+        </tr>
+        <tr>
+            <td class="th">仓库：</td>
+            <td>
+                {$warehouse}
+            </td>
+            <td class="th">采购渠道：</td>
+            <td>
+                {$pur_channel}
+            </td>
+            <td class="th">预付金额</td>
+            <td>
+                {$data.prepay}
+            </td>
+            <td class="th">付款方式：</td>
+            <td>
+                <php>if( $data['payment']&&$data['payment']==1) echo '货到付款';elseif($data['payment']&&$data['payment']==2) echo '通道付款';else echo '无';</php>
+            </td>
+        </tr>
+    </table>
+        <br/>
+
+        <div class="ctab-panel">
+            <div class="ctab-head">
+                <a id="items" href="#" class="active">属性详情</a>
+                <a href="#" id="import">采购单操作记录</a>
+            </div>
+            <div class="ctab-body" id="first">
+                <div class="tableLayer" style="height:400px">
+                    <table class="table table-hover table-bordered table-list attributesListBox">
+                        <tbody>
+                        <tr>
+                            <!--                                <th>产品图片</th>-->
+                            <th>SKU</th>
+                            <th>属性</th>
+                            <th>产品名</th>
+                            <!-- <th>采购单价</th>-->
+                            <th>采购数</th>
+                            <!--         <th>采购金额</th>-->
+                            <th>可用库存</th>
+                            <th>实际库存</th>
+                            <th>在途数量</th>
+                            <th>缺货量</th>
+                            <th>近三日销量</th>
+                            <th>日均销量</th>
+                        </tr>
+                        <foreach name="purchase_list" item="list">
+                            <php>//$photo = !empty($list['img']['photo']) ? $list['img']['photo'][0]['url'] : '';</php>
+                            <tr>
+                                <!--<td><img  src="<?php //echo sp_get_image_preview_url($photo)?>" style="height:36px;width: 36px;"></td>-->
+                                <td>{$list.sku}</td>
+                                <td>{$list.option}</td>
+                                <td>{$list.title}</td>
+                                <!-- <td>{$list.price}</td>-->
+                                <td>{$list.quantity}</td>
+                                <td>{$list.actual_quantity}</td>
+                                <!--   <td><php>echo $list['price']*$list['quantity']</php></td>-->
+                                <td>{$list.qty}</td>
+                                <td>{$list.road_num}</td>
+                                <td>{$list.order_qty}</td>
+                                <td>{$list.tday_sale}</td>
+                                <td>{$list.oday_sale}</td>
+                            </tr>
+                        </foreach>
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+            <div class="ctab-body" style='display:none;' id="second">
+            <div class="tableLayer"  style="height:400px">
+                <table class="table table-hover table-bordered table-list attributesListBox">
+                    <tbody>
+                    <tr>
+                        <th>状态</th>
+                        <th>用户</th>
+                        <th>详细</th>
+                        <th>时间</th>
+                    </tr>
+                    <foreach name='pur_record' item='item'>
+                        <tr>
+                            <td><php>echo $pur_status[$item['status']]</php></td>
+                            <td><php>$user = M('Users')->field('user_nicename')->where(array('id'=>$item['id_users']))->find();echo $user['user_nicename']</php></td>
+                            <td>{$item.desc}</td>
+                            <td>{$item.created_at}</td>
+                        </tr>
+                    </foreach>
+                    </tbody>
+                </table>
+              <!--  <div class="pagination">{$page}</div>-->
+            </div>
+            </div>
+        </div>
+        <br/>
+        <table cellspacing="1" class="table-bordered">
+            <tr>
+                <td class="th">备注：</td>
+                <td>
+                    {$data['remark']}
+                </td>
+                <td class="th">预计发货时间：</td>
+                <td>{$data.date_from}</td>
+                <td class="th">预计到货时间：</td>
+                <td>{$data.date_to}</td>
+            </tr>
+        </table>
+        <div class="form-actions">
+            <a class="btn" href=”#” onClick="javascript :history.back(-1);">{:L('BACK')}</a>
+           <!-- <a class="btn" href="{:U('Index/index')}">{:L('BACK')}</a>-->
+        </div>
+        <br/>
+
+    </form>
+        </div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+    $(function(){
+        //切换选项卡
+        $('#import').on('click', function(){
+            $('#import').addClass('active');
+            $('#items').removeClass("active");
+            $('#second').attr('style','display:block;')
+            $('#first').attr('style','display:none;')
+        });
+        $('#items').on('click', function(){
+            $('#items').addClass("active");
+            $('#import').removeClass("active");
+            $('#second').attr('style','display:none;')
+            $('#first').attr('style','display:block;')
+        });
+    })
+</script>
+</body>
+</html>

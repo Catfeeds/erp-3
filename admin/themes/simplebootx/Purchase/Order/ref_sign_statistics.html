@@ -1,0 +1,97 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="fixedlayer" style="height: 40px;">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Purchase/Order/ref_sign_statistics')}">部门拒签率</a></li>
+    </ul>
+</div>
+<php>$sort = isset($_GET['sort']) && $_GET['sort']=='desc'?'asc':'desc';</php>
+<div class="wrap">
+    <div class="customerlayer" style="height: 300px;margin-top: -80px;" >
+    <form method="get" action=""  class="well form-search">
+        <div class="searchLayer" style="padding:20px;background-color: #ecf0f1;">
+            <table cellspacing="1">
+                <tr>
+                    <td class="th">部门：</td>
+                    <td>
+                        <select name="id_department" style="height:30px">
+                            <option value="">全部</option>
+                            
+                            
+                             <foreach name="department" item="dep_id">
+                                 <php> 
+                                $selected = $_GET['id_department']==$dep_id['id_department']?" selected=selected":'';
+                                 </php>
+                                 <option value="{$dep_id['id_department']}" <php> echo $selected </php> >{$dep_id.title}</option>;
+                             </foreach>
+                            
+                            
+                        </select>
+                    </td>
+                    <td class="th">姓名：</td>
+                    <td>
+                        <input type="text" name="user_name" style="width: 80%;" value="{:I('request.user_name/s','')}" placeholder="请输入姓名...">
+                    </td>
+                    <td class="th">域名：</td>
+                    <td>
+                        <input type="text" name="domain" style="width: 80%;" value="{:I('request.domain/s','')}" placeholder="请输入域名...">
+                    </td>
+                    <td class="th">建立时间：</td>
+                    <td colspan="2" style="white-space:nowrap;">
+                    <php>$date = date('Y-m-d', strtotime('-7 days'));</php>
+                        <input type="text" name="start_time" class="js-datetime" value="<php>echo isset($_GET['start_time'])&&$_GET['start_time']?$_GET['start_time']:$date;</php>" style="width: 120px;" autocomplete="off">-
+                        <input type="text" class="js-datetime" name="end_time" value="<php>echo isset($_GET['end_time'])&&$_GET['end_time']?$_GET['end_time']:date('Y-m-d',strtotime('+1 day'));</php>" style="width: 120px;">
+                    </td>
+                </tr>
+            </table>
+            <br/>
+            <button class="btn btn-primary searchButton">搜索</button>
+        </div>
+
+
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th>姓名</th>
+            <th>域名</th>
+            <th>广告名</th>
+            <th><a href="{:U('Purchase/Order/ref_sign_statistics',array('order_by'=>'total','sort'=>$sort))}">总订单</a></th>
+            <th><a href="{:U('Purchase/Order/ref_sign_statistics',array('order_by'=>'effective','sort'=>$sort))}">有效单</a></th>
+            <th><a href="{:U('Purchase/Order/ref_sign_statistics',array('order_by'=>'delivery','sort'=>$sort))}">已发货</a></th>
+            <th><a href="{:U('Purchase/Order/ref_sign_statistics',array('order_by'=>'smooth_delivery','sort'=>$sort))}">已签收</a></th>
+            <th><a href="{:U('Purchase/Order/ref_sign_statistics',array('order_by'=>'refused_to_sign','sort'=>$sort))}">已拒签</a></th>
+            <th><a href="{:U('Purchase/Order/ref_sign_statistics',array('order_by'=>'refused_to_sign','sort'=>$sort))}">拒签率</a></th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="item">
+            <tr>
+                <td id_users="{$item.id_users}">{$item['user_name']}</td>
+                <td id_domain="{$item.id_domain}">{$item['domain_name']}</td>
+                <td>{$item.advert_name}</td>
+                <td>{$item.total}</td>
+                <td>{$item.effective}</td>
+                <td>{$item.delivery}</td>
+                <td>{$item.smooth_delivery}</td>
+                <td>{$item.refused_to_sign}</td>
+                <td><php>$probability = $item['refused_to_sign']/($item['refused_to_sign']+$item['smooth_delivery'])*100; echo number_format($probability);</php>%</td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+
+        <div class="pagination">{$page}</div>
+    </fieldset>
+</div>
+    </div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+</script>
+</body>
+</html>

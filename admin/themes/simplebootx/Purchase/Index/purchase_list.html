@@ -1,0 +1,204 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <fieldset>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <!--<input type="hidden" name="id_warehouse" value="<php>echo $data['id_warehouse'];</php>">-->
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="department_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="department" item="item">
+                    <option value="{$item.id_department}" <php>echo isset($getData['department_id']) && $getData['department_id']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                </foreach>
+            </select>          
+            <label class="control-label">仓库:</label>
+            <select name="warehouse_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="warehouse" item="item">
+                    <option value="{$item.id_warehouse}" <php>echo isset($getData['warehouse_id']) && $getData['warehouse_id']==$item['id_warehouse'] ? 'selected' : ''</php>>{$item.title}</option>
+                </foreach>
+            </select> 
+            <label class="control-label">状态:</label>
+            <select name="status_id" style="width:100px;">
+                <option value="0">所有</option>
+                <option value="1"<if condition="$getData.status_id eq 1"> selected="selected"</if>>未收货</option>
+                <option value="2"<if condition="$getData.status_id eq 2"> selected="selected"</if>>已收货</option>
+                <option value="3"<if condition="$getData.status_id eq 3"> selected="selected"</if>>作废</option>
+            </select>
+            <label class="control-label">采购单编号:</label>
+            <input type="text" name="purchase_no" style="width: 120px;" value="{$getData.purchase_no}"  placeholder="请输入编号...">
+            <label class="control-label">快递单号:</label>
+            <input type="text" name="track_number" style="width: 200px;" value="{$getData.track_number}" placeholder="请输入快递单号...">
+            <label class="control-label">建立日期:</label>
+            <input type="text" name="start_time" class="js-datetime" value="{$getData.start_time}" style="width: 120px;" autocomplete="off">-
+            <input autocomplete="off" type="text" class="js-datetime" name="end_time" value="{$getData.end_time}" style="width: 120px;">
+            <br/>
+            <button class="btn btn-primary searchButton">搜索</button>
+        </div>
+    </form>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th width="50">采购单号</th>
+            <th>采购总数量</th>
+            <th>已收到数量</th><!--<th>供应商</th>
+            <!--<th>采购总价</th>-->
+            <th>采购人员</th>
+            <th>快递号</th>
+            <th>备注</th>
+            <th>建立日期</th>
+            <th>更新日期</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="pro_list" item="item">
+            <tr>
+                <td width="50">{$item.purchase_no}</td>
+                <td><span class="totalPurchase{$item.id_purchase}">{$item.total}</span>
+                </td>
+                <td><span class="notReceivedNumber{$item.id_purchase}">{$item.total_received}</span></td>
+                <!--<td>{$item.supplier_name}</td>
+                <td>{$item.price}</td>-->
+                <td>{$item.user_nicename}</td>
+                <td>{$item.track_number}</td>
+                <td>{$item.remark}</td>
+                <td>{$item.created_at}</td>
+                <td>{$item.updated_at}</td>
+                <td><php>echo $item['status']==3 ? '已作废' : ($item['status']==2?'已完成':'未完成');</php></td>
+                <td width="130">
+                    <!--<php>if($item['not_received_number']>0){</php>
+                    <input type="text" style="width: 130px;" name="not_received_number" required value="" placeholder="请输入收到数量"/>
+                    <input type="button" orderid="{$item.id}"   class="btn updateNumber" value="更新">
+                    <php>}</php>-->
+                    <!--<a href="javascript:void(0);" class="setChildSkuQty" orderid="{$item.id}">采购明细</a>|-->
+                    <if condition="($item['status'] neq 3) and ($item['status'] neq 2)">
+                    <a href="{:U('index/signed',array('id'=>$item['id_purchase']))}" orderid="{$item.id_purchase}">确认收货</a>
+                    </if>
+                </td>
+            </tr>
+            <tr class="hide showPurchase{$item.id_purchase}">
+                <td colspan="30">
+                    <form action="javascript:void(0);" method="post" class="form-horizontal" enctype="multipart/form-data">
+                        <input type="hidden" name="order_id" value="{$item.id}">
+                    <table class="table table-hover table-bordered table-list">
+                        <thead><tr style="font-weight: bold;background:#f5f5f5;"><td>属性</td><td>采购数量</td><td>未收到数量</td><td>采购价格</td><td>收货数量</td></tr></thead>
+                        <tbody>
+                        <php>
+                            if($item['product_option_id']){
+                            $getAttrQty = unserialize($item['product_option_id']);
+                            if(is_array($getAttrQty)){
+                            foreach($getAttrQty as $qtyData){
+                            $price = $qtyData['price']?$qtyData['price']:'';
+                            $notReceive = isset($qtyData['not_receive'])?$qtyData['not_receive']:$qtyData['qty'];
+                            echo '<tr><td>'.$qtyData['attr_name'].'</td><td>'.$qtyData['qty'].'</td>
+                            <td><span class="rowQty" qty="'.$notReceive.'">'.$notReceive.'</span></td>
+                            <td>'.$price.'</td>
+                            <td><input type="text" class="receiveQty" value=""   name="receive_qty['.$qtyData['option_id'].']" required placeholder="请输入收到数量"> </td>
+                            </tr>';
+                            }
+                            }
+                            }
+                        </php>
+                        <tr style="font-weight: bold;background:#f5f5f5;">
+                            <td colspan="30"><button  orderid="{$item.id}" type="button" class="btn btn-primary submitStockForm">提交</button></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    </form>
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+
+    <div class="pagination">{$page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','purchase_list');
+        $('.form-search').attr('action',"{:U('Index/purchase_list')}");
+    });
+    
+    $('.updateNumber').click(function(){
+        var getOrderId = $(this).attr('orderid');
+        var getQty = $(this).parent().find('input[name=not_received_number]').val();
+        var totalPurchase = $('.totalPurchase'+getOrderId).text();
+        getQty  = parseInt(getQty);
+        if (getQty > parseInt(totalPurchase)) {
+            alert('输入超过了总采购数量,请重新输入。');
+            return false;
+        }
+        if(getQty){
+            $.post("{:U('Purchase/setReceivedNumber')}",{'order_id':getOrderId,'qty':getQty},function(data){
+                var getData = $.parseJSON(data);
+                if(getData.status){alert('更新成功');$('.notReceivedNumber'+getOrderId).html(getData.not_received);}else{alert(getData.message);}
+            });
+        }else{
+            alert('库存只能为整数。');
+        }
+    });
+    $('.setChildSkuQty').click(function(){
+        var curObj = $(this);
+        var getTagName = $(this).attr('orderid');
+        var getAction  = $(this).text();
+        if(getAction=='采购明细'){
+            curObj.text('隐藏');console.debug(curObj);
+            $('.showPurchase'+getTagName).show();
+        }else{
+            $(this).html('采购明细');$('.showPurchase'+getTagName).hide();
+        }
+        $('.setChildSkuQty').each(function(i){
+            var getClassN = $(this).attr('orderid');
+            if(getClassN!=getTagName){
+                $('.showPurchase'+getClassN).hide();
+                $(this).html('采购明细');
+            }
+        });
+    });
+    $('.submitStockForm').click(function(){
+        var getOrderId = $(this).attr('orderid');var postFlag = true;
+        var receiveQty = [];
+        $('.showPurchase'+getOrderId+' .receiveQty').each(function(){
+            var getPurQty = parseInt($(this).parent().parent().find('.rowQty').attr('qty'));
+            var getInputQty= parseInt($(this).val());
+            if(getInputQty>getPurQty){
+                postFlag = false;$(this).focus();
+            }
+        });
+
+        if(postFlag){
+            var getSerialize  =  $('.showPurchase'+getOrderId+' form').serializeArray();
+            $.post("{:U('Purchase/setReceivedNumber')}",getSerialize,function(data){
+                var getJsonData =  $.parseJSON(data);
+                if(getJsonData.status){
+                    //if(getJsonData.total)$('.totalQtySpan'+getProductId).html(getJsonData.total);
+                    /*$('.showPurchase'+getOrderId+' .receiveQty').each(function(){
+                        var getPurQty = parseInt($(this).parent().parent().find('.rowQty').attr('qty'));
+                        var getInputQty= parseInt($(this).val());
+                        if(getInputQty!='NaN'){
+                            var curQty = getPurQty-getInputQty;
+                            $(this).parent().parent().find('.rowQty').attr('qty',curQty).text(curQty);
+                            var getOrderTotal = $('.notReceivedNumber'+getOrderId).text();
+                        }
+                    });*/
+                    alert('设置库存成功');
+                    window.location.reload();
+                }
+            });
+        }else{
+            alert('输入有误，大于采购数量。');
+            return false;
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,405 @@
+﻿ <admintpl file="header"/>
+</head>
+<body>
+<style>
+    #search_auto, #search_auto_pro{border:1px solid #dce4ec; position:absolute; display:none;}
+    #search_auto li, #search_auto_pro li{background:#FFF; text-align:left;list-style-type:none;}
+    #search_auto li.cls, #search_auto_pro li.cls{text-align:right;}
+    #search_auto li a, #search_auto_pro li a{display:block; padding:5px 6px; cursor:pointer; color:#666;}
+    #search_auto li a:hover, #search_auto_pro li a:hover{background:#D8D8D8; text-decoration:none; color:#000;}
+    ul{margin: 0 0 10px;}
+</style>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('In/add',array('id'=>$data['id_purchase']))}">新增采购入库单</a></li>
+    </ul>
+    <div class="searchLayer">
+        <form method="post" action="{:U('In/add')}"  class="form-search" style="padding:20px" onsubmit="return checkform();">
+            <table cellspacing="1" class="table-bordered">
+                <tr>
+                    <td class="th">采购单号：</td>
+                    <td>
+                        <input type="hidden" name="purchase_no" value="{$data.purchase_no}"/>PO#{$data.purchase_no}
+                        <input type="hidden" name="shipping_no" value="{$data.shipping_no}"/>
+                    </td>
+                    <td class="th">内部采购单号：</td>
+                    <td>
+                        <input type="hidden" name="inner_purchase_no" value="{$data.inner_purchase_no}"/>{$data['inner_purchase_no']}
+                    </td>
+                    <td class="th">采购渠道订单号：</td>
+                    <td>
+                        <input type="hidden" name="alibaba_no" value="{$data.alibaba_no}"/>{$data['alibaba_no']}
+                    </td>
+                    <td class="th">单据类型：</td>
+                    <td>
+                        <select name="billtype" style="width:120px;height:30px" require id="billtype">
+                            <option value="0">请选择</option>
+                             <option value="1">采购入库</option>
+                             <option value="2">采购退货</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="th">所属仓库：</td>
+                    <td>
+                        <select name="id_warehouse" style="width:120px;height:30px" disabled="disabled">
+                            <option value="0">所有</option>
+                            <foreach name="search['warehouses']" item="item">
+                                <option value="{$item.id_warehouse}" <php>echo $data['id_warehouse']==$item['id_warehouse'] ? 'selected' : ''</php>>{$item.title}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <td class="th">所属部门：</td>
+                    <td>
+                        <select name="id_department" style="width:90%;height:30px" disabled="disabled">
+                            <option value="0">所有</option>
+                            <foreach name="search['departments']" item="item">
+                                <option value="{$item.id_department}" <php>echo $data['id_department']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <td class="th">采购渠道：</td>
+                    <td>
+                        <select title="" class="selectChannel" name="pur_channel" required disabled="disabled" style="width:90%;height:30px">
+                            <option value="">请选择</option>
+                            <option value="1" <php>echo $data['purchase_channel']==1?'selected="selected"':'';</php>>阿里巴巴</option>
+                            <option value="2" <php>echo $data['purchase_channel']==2?'selected="selected"':'';</php>>淘宝</option>
+                            <option value="3" <php>echo $data['purchase_channel']==3?'selected="selected"':'';</php>>线下</option>
+                        </select>
+                        <span class="form-required" style="color:red">*</span>
+                    </td>
+                    <td class="th">采购总价：</td>
+                    <td>
+                        <input type="text" name="price" value="" readonly id="price">
+                    </td>
+                    <!--<td class="th">产品：</td>-->
+                    <!--<td>-->
+                        <!--<div id="search_pro">-->
+                            <!--<input name="product_id" id="product_id" type="hidden" value="{$product.0.id_product}">-->
+                            <!--{$product.0.inner_name}-->
+                        <!--</div>-->
+
+                    <!--</td>-->
+                </tr>
+                <tr>
+                    <td class="th">供应商：</td>
+                    <td>
+                        <div id="search">
+                            <input name="id_supplier" id="supplier_id" type="hidden" value="{$data.id_supplier}">
+                            <input class="inputtxt1 ui-autocomplete-input" id="supplier" name="supplier_name" type="text" autocomplete="off" value="{$supplier_name.title}" required readonly style="width:90%;height:30px">
+                            <span class="form-required" style="color:red">*</span>
+                            <span class="error-msg"></span>
+                        </div>
+                        <div id="search_auto"></div>
+                    </td>
+                    <td class="th">供应商链接：</td>
+                    <td colspan="5">
+                        <div class="controls">
+                            <div id="search_url">
+                                <input class="inputtxt1 ui-autocomplete-input" id="supurl" name="supplier_url" type="text" autocomplete="off" value="{$supplier_name.supplier_url}" required readonly style="width:90%;height:30px">
+                                <span class="form-required" style="color:red">*</span>
+                            </div>
+                            <div id="search_url_auto"></div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table class="table table-hover table-bordered table-list attributesListBox" style="margin-top:20px">
+                <php>
+
+                    $status = array(                //需计算的订单状态
+                    Order\Lib\OrderStatus::UNPICKING,     //未配货
+                    Order\Lib\OrderStatus::PICKED,        //已配货
+                    Order\Lib\OrderStatus::APPROVED,      //已审核
+                    );
+
+                    if($product){
+                    $tempData = array();
+                    //dump($product);
+                    foreach($product as $key=>$item){
+
+                    //计算实际库存
+                    $item['sku_qty'] = empty($item['sku_qty']) ? 0 : $item['sku_qty'];
+                    $actual_quantity = M('Order')->alias('o')
+                    ->field("SUM(oi.quantity) AS actual_quantity")
+                    ->join("__ORDER_ITEM__ as oi ON o.id_order=oi.id_order", 'left')
+                    ->where(array('oi.id_product_sku'=>$item['id_product_sku']))
+                    ->where(array('o.id_order_status'=> array('IN', $status)))
+                    ->find();
+                    $actual_quantity = empty($actual_quantity['actual_quantity']) ? 0 : intval($actual_quantity['actual_quantity']) + $item['sku_qty'];
+                    if(!in_array($item['id_product'],$tempData)){
+                    echo '<tr class="productBox' . $item['id_product'] . '"><td colspan="6" style="background-color: #f5f5f5;">'.$item['title'].'</td></tr>';
+                    echo '<tr><th>SKU</th><th>属性</th><th>采购金额</th><th>采购数量</th><th>入库数量</th><th>采购单价</th></tr>';
+                    $tempData[] = $item['id_product'];
+                    }
+                    echo '<tr><td>'.$item['sku'].'</td><td>'.$item['option_value'].'</td>
+                    <input type="hidden" value="' . $item['option_value'] . '" name="attr_name[' . $item['id_product'] . '][' . $item['id_product_sku'] . ']"/>
+                    <td><div class="countprice'.$key.'">0</div>
+                    </td>
+                    <td>0'.'<input type="hidden" name="purchase_quantity[' . $item['id_product'] . '][' . $item['id_product_sku'] . ']" value="0"/></td>
+                    <td><input type="text" class="sqt'.$key.'" value="' . $item['received'] . '" name="set_qty[' . $item['id_product'] . '][' . $item['id_product_sku'] . ']" onchange="qty_change('.$key.')"/></td>
+                    <td><span class="cprice'.$key.'">'.$item['price'].'</span><input type="hidden" name="set_price['. $item['id_product'].']['.$item['id_product_sku'].']" value="'.$item['price'].'"/></td>
+                    </tr>';
+                    }
+                    }
+                </php>
+                <input type="hidden" name="total" value="{$data['total']}"/>
+                <input type="hidden" name="id_erp_purchase" value="{$data['id_purchase']}"/>
+            </table>
+            <table class="table-bordered" style="margin-top:20px">
+                <tr>
+                    <td class="th">本次采购运费：</td>
+                    <td><input type="text" name="price_shipping" value="{$data.price_shipping}" onchange="total_price()"/></td>
+                    <td class="th">预计发货时间：</td>
+                    <td><input type="text" name="date_from" class="js-datetime date" value="{$data.date_from}" style="width: 120px;" autocomplete="off"></td>
+                    <td class="th">预计到货时间：</td>
+                    <td><input type="text" name="date_to" class="js-datetime date" value="{$data.date_to}" style="width: 120px;" autocomplete="off"></td>
+                    <td class="th">备注：</td>
+                    <td>  <textarea name="remark" cols="10" class="inputtext" style="height: 30px; width: 200px;">{$data.remark}</textarea></td>
+                </tr>
+
+            </table>
+            <div class="form-actions">
+                <input type="submit" class="btn btn-primary" value="保存"/>
+                <a class="btn" href="{:U('In/index')}">{:L('BACK')}</a>
+            </div>
+        </form>
+    </div>
+
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+    //表单提交前验证
+    function checkform(){
+        $(".form-search select").removeAttr("disabled");
+        var flag = true;
+        var message = '';
+        var billtype = $('#billtype').val();
+        if(billtype == 0){
+            alert('请选择单据类型');
+            flag = false;
+            $(".form-search select").not("#billtype").attr("disabled","disabled");
+        }
+        if(billtype == 2){
+            $('input[name^=set_qty]').each(function(){
+               var quantity = $(this).val();
+                if(quantity>0){
+                    message = '退货时，数量必须是负数！';
+                }
+            })
+            if(message!=''){
+                alert(message);
+                $(".form-search select").attr("disabled","disabled");
+                flag = false;
+            }
+        }
+        if(billtype == 1){
+            $("input[name^='set_qty']").each(function(index,ele){
+                if(isNaN(ele['value'])){
+                   alert('请输入数字');
+                    flag = false;
+                    $(".form-search select").attr("disabled","disabled");
+                }
+                if(ele['value']<0){
+                    alert('采购收货时，入库数量不能为负数');
+                    flag = false;
+                    $(".form-search select").attr("disabled","disabled");
+                }
+            });
+        }
+        return flag;
+    }
+    $(function () {
+        //获取采购总价
+//        total_price();
+        //搜索提示供应商
+        $('#search_auto').css({'width':'220px','background':'white','height':'100px','overflow':'auto'});
+        function supp_post() {
+            $.post("{:U('Index/get_supp_attr')}",{'value':$('#supplier').val(),'pro_id':$('#product_id').val()},function(data){
+                if(data=='0') {
+                    $('.error-msg').html('没有找到供应商').css({'color':'red'});
+                    $('#search_auto').html('').css('display','none');
+                    $('.sub').attr("disabled", true);
+                    $('.tj_sub').attr("disabled", true);
+                }else{
+                    $('#search_auto').html(data).css('display','block');
+                    setTimeout(function(){
+                        $('#search_auto').html('').css('display','none');
+                    },4000);
+                }
+            });
+        }
+
+        $('#supplier').click(function(){
+            supp_post();
+        });
+//            $('#supplier').bind('input propertychange', function() {
+        $('#search input[name="supplier_name"]').keyup(function(){
+            supp_post();
+        });
+        //搜索提示产品内部名
+        $('#search_auto_pro').css({'width': '220px', 'background': 'white','height':'180px','overflow':'auto'});
+        $('#search_pro input[name="inner_name"]').keyup(function () {
+            var inputText= $.trim(this.value);
+            if(inputText!=""){
+                $.post("{:U('Index/get_product_title')}",{'value':$(this).val(),'id_department':$('.selectDepartment').val()},function(data){
+                    if(data=='0') {
+                        $('.error-msg-pro').html('没有找到产品').css({'color':'red'});
+                        $('#search_auto_pro').html('').css('display','none');
+                        $('.sub').attr("disabled", true);
+                        $('.tj_sub').attr("disabled", true);
+                    }else {
+                        $('#search_auto_pro').html(data).css('display','block');
+                    }
+                });
+            } else {
+                $('.error-msg-pro').html('');
+                $('#search_auto_pro').html('').css('display','none');
+            }
+        });
+    });
+
+    function get_supp(i) {
+        var name = $('.sup' + i).text();
+        var id_supp = i;
+        $('#supplier_id').val(id_supp);
+        $('#supplier').val(name);
+        $('#search_auto').html('').css('display', 'none');
+        $('.sub').removeAttr("disabled");
+        $('.tj_sub').removeAttr("disabled");
+        get_sup_url();
+    }
+
+    function get_pro_param(j) {
+        var name = $('.pro' + j).text();
+        var id_pro = j;
+        $('#product_id').val(id_pro);
+        $('#inner').val(name);
+        $('#search_auto_pro').html('').css('display', 'none');
+        get_pro_attr(id_pro);
+        $('.sub').removeAttr("disabled");
+        $('.tj_sub').removeAttr("disabled");
+    }
+
+    $('#supurl').keyup(function(){
+        $.ajax({
+            url:"{:U('Index/get_supplier_title')}",
+            type:'post',
+            dataType:'json',
+            data:{'value':$(this).val(),'id_department':$('.selectDepartment').val()},
+            success:function(data) {
+                if(data != '') {
+                    $('#supplier_id').val(data.id);
+                    $('#supplier').val(data.title);
+                }
+            }
+        });
+    });
+
+    function get_sup_url() {
+        $.post("{:U('Index/get_supp_url')}",{'supp_id':$('#supplier_id').val(),'id_department':$('.selectDepartment').val()},function(res){
+            $('#supurl').val(res);
+        });
+    }
+
+    //算出采购金额
+    function qty_change(k) {
+
+        var spr = parseFloat($('.cprice' + k).html());
+        var qty = $('.sqt' + k).val();
+        var count_price = (spr*qty).toFixed(4);
+//            console.log(count_price);
+        $('.countprice' + k).text(count_price);
+          total_price();
+    }
+
+    function total_price(){
+        var sum = 0;
+        var price_shipping = $('input[name=price_shipping]').val();
+                $("input[name^='set_price']").each(function(index,ele){
+            $("input[name^='set_qty']").each(function(index2,ele2){
+                if(index == index2){
+                    sum=sum+parseFloat(ele['value']*ele2['value']);
+                }
+            })
+        });
+        sum = sum+parseFloat(price_shipping);
+//        console.log(sum);
+        $("#price").val(sum.toFixed(4));
+    }
+    function get_pro_attr(id){
+        var getProId = id;
+        if (getProId == 0) {
+            return false;
+        }
+        if ($('.productBox' + getProId).text()) {
+            alert('已经存在');
+            return false;
+        }
+
+        $('.loading').show();
+        $.post("{:U('Index/get_attr')}", {'product_id': getProId,'warehouse_id':$('.selectWarehouse').val(),'id_purchase':$('.id_purchase').val()}, function (data) {
+            $('.loading').hide();
+            var resultData = $.parseJSON(data);
+            //var tableHeader = '<tr class="headings"><th>SKU</th><th>属性</th><th>库存</th><th>价格</th></tr>';
+            if (resultData.status) {
+                //$('.attributesListBox').append(tableHeader);
+                $('.attributesValueList').show();
+//                    $('.attributesListBox').append(resultData.row);
+                $('.attributesListBox').html(resultData.row);
+                $('.deleteBox').click(function () {
+                    var getBoxId = $(this).attr('delete');
+//                        console.log(getBoxId);
+                    if ($(this) && window.confirm('你确定要删除该记录！')) {
+                        $('.' + getBoxId).remove();
+                        $('#inner').val('');
+//                            $('.attributesValueList').hide();
+//                            if($(".selectProduct option:first").val() == 0) {
+//                                $('.selectProduct').val(0);
+//                            }
+                    }
+                });
+            }
+        });
+    }
+
+    $('.tj_sub').click(function(){
+        if (confirm('确定要提交？')) {
+            var pid = $('#product_id').val();
+            if(pid == ''){
+                alert('产品不能为空！');
+                return false;
+            } else {
+                $('.form-horizontal input[name="hid"]').val('2');
+                $('.form-horizontal').submit();
+            }
+        } else {
+            return false;
+        }
+    });
+
+    $('.selectDepartment').change(function() {
+        $('#product_id').val('');
+        $('#inner').val('');
+        $('#supplier_id').val('');
+        $('#supplier').val('');
+        $('#search_auto_pro').html('').css('display','none');
+        $('.attributesValueList').hide();
+        $('.attributesListBox').html('');
+        $('.error-msg-pro').html('');
+    });
+
+    $('.selectWarehouse').change(function() {
+        $('#product_id').val('');
+        $('#inner').val('');
+        $('#supplier_id').val('');
+        $('#supplier').val('');
+        $('#search_auto_pro').html('').css('display','none');
+        $('.attributesValueList').hide();
+        $('.attributesListBox').html('');
+        $('.error-msg-pro').html('');
+    });
+</script>
+</body>
+</html>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       

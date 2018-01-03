@@ -1,0 +1,41 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li ><a href="{:U('Position/index')}">货位列表</a></li>
+        <li class="active"><a href="{:U('Position/import_position')}">导入货位</a></li>
+    </ul>
+    <fieldset>
+        <form method="post" action="{:U('Position/import_position')}" enctype="multipart/form-data"  class="form-horizontal">
+            <div class="control-group" style="line-height: 36px;">
+                <div class="control-group">
+                    <div class="controls">
+                        <p style="color: #ff0000">直接从Excel复制四列:仓库，区域名称，货位名称，货位通道</p>
+                       <!-- <p style="color: #ff0000">仓库，区域名称，货位名称，货位通道为必填项；SKU，库存为非必填项（可填可不填）</p>-->
+                        <p style="color: #ff0000">仓库，区域名称，货位名称，货位通道为必填项；</p>
+                        <textarea name="data" style="width:500px;height:300px;">{$data}</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">{:L('导入')}</button>
+            </div>
+        </form>
+    </fieldset>
+    <present name="Think.post.data">
+        <div>共更新:{$total} 失败:{$infor.error|count} 成功:{$infor.success|count}</div>
+    </present>
+    <foreach name="infor.error" item="err">
+        <div style="color:red;">{$err}</div>
+    </foreach>
+    <foreach name="infor.warning" item="warning">
+        <div style="color:yellowgreen;">{$warning}</div>
+    </foreach>
+    <foreach name="infor.success" item="success">
+        <div style="color:green;">{$success}</div>
+    </foreach>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Loginmanage/apply_auth')}">{:L('申请权限')}</a></li>
+        <li><a href="{:U('Loginmanage/apply_result')}">{:L('申请结果')}</a></li>
+    </ul>
+    <form class="form-horizontal" method="post" id="form">
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label">部门：</label>
+                <div class="controls">
+                    <select name="id_department" id="id_department" aria-invalid="false" required>
+                        <option value="0">所有</option>
+                        <foreach name="depart" item="item">
+                            <option value="{$item.id_department}" >{$item.title}</option>
+                        </foreach>
+                    </select>
+                    <span style="color: red;">*将会提交到相对应的部门主管进行审核</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">申请人：</label>
+                <div class="controls">
+                    <input type="text" name="user_nicename" id="user_nicename" value="{$userInfo.user_nicename}" required readonly/>
+                    <input type="hidden" name="id_users" id="id_users" value="{$userInfo.id}" required/>
+                    <span class="form-required">*</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">申请时间：</label>
+                <div class="controls">
+                    <input type="text" name="start_time" id="start_time" class="js-datetime date" value="" style="width: 150px;" autocomplete="off" required><span class="form-required">*</span>&nbsp;-&nbsp;
+                    <input type="text" name="end_time" id="end_time" class="js-datetime date" value="" style="width: 150px;" autocomplete="off" required><span class="form-required">*</span>
+                    时间期限过后将不能登录
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">申请原因：</label>
+                <div class="controls">
+                    <textarea name="apply_reson" id="apply_reson" style="width: 700px;height: 150px;"></textarea>
+                </div>
+            </div>
+            <div class="form-actions">
+                <a class="btn btn-primary tj_sub">提交</a>
+                <!--<a class="btn btn-primary sub" id="save">保存</a>-->
+            </div>
+        </fieldset>
+    </form>
+</div>
+</body>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    function ajax_post(){
+        var formData = new FormData($("#form")[0]);
+        var id_department = $('#id_department').val();
+        var id_users = $('#id_users').val();
+        var user_nicename = $('#user_nicename').val();
+        var start_time = $('#start_time').val();
+        var end_time = $('#end_time').val();
+        var apply_reson = $('#apply_reson').val();
+        if(id_department==''||id_department==0){
+            alert('必须选择所在部门！');
+            return false;
+        }else if(id_users==''){
+            alert('用户ID不能为空！');
+            return false;
+        }else if(user_nicename==''){
+            alert('用户名不能为空！');
+            return false;
+        }else if(start_time==''){
+            alert('申请开始使用时间不能为空！');
+            return false;
+        }else if(end_time==''){
+            alert('申请结束使用时间不能为空！');
+            return false;
+        }else if(apply_reson==''){
+            alert('申请原因不能为空！');
+            return false;
+        }else if(start_time >= end_time){
+            alert('申请结束使用时间必须大于开始使用时间');
+            return false;
+        }
+        $.ajax({
+            url:"{:U('User/Loginmanage/save_apply_post')}",
+            type:"post",
+            data:formData,
+            contentType:false,
+            processData:false,
+            async:false,
+            success:function(returndata){
+                console.log(returndata);
+                returndata = JSON.parse(returndata);
+                if(returndata.status == 1){
+                    console.log(returndata.message);
+                    alert(returndata.message);
+                    return false;
+                }else if(returndata.status == 0){
+                    alert(returndata.message);
+                    window.location.href="{:U('/User/Loginmanage/apply_result')}";
+                }
+            }
+        });
+    }
+
+    /*//保存部分
+    $("#save").click(function () {
+       ajax_post();
+    });*/
+    //提交部分
+    $(".tj_sub").click(function () {
+       ajax_post();
+    });
+</script>

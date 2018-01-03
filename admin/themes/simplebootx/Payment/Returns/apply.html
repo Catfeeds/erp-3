@@ -1,0 +1,216 @@
+<admintpl file="header" />
+</head>
+<body style="overflow: hidden;">
+
+<style>
+.fixedlayer {
+    position: fixed;
+    top: 0px;
+    left: 20px;
+    right: 20px;
+    padding-top: 20px;
+    background-color: #fff;
+    z-index: 10;
+}
+.buttonLayer {margin-bottom: 10px;  background-color: #fff;}
+
+.customerlayer {height: 100%; }
+.fixedlayer .pagination { margin-top: 10px; margin-bottom: 0px; }
+.searchLayer {border: solid 1px #ddd; margin-bottom: 10px; }
+#id_warehouse{height: 30px;}
+.searchLayer input,.searchLayer select{height: 30px;}
+.searchLayer table {width: 100%; background-color: #fff; border-spacing: 1px !important; border-collapse: separate; font-family: "宋体"; table-layout: fixed; }
+.searchLayer table td {padding: 5px; margin: 1px; width: auto; }
+.searchLayer table td.th {background: #f1f1f1; width: 80px; }
+.searchLayer input[type="text"] {margin-bottom: 0px; border: none; box-shadow: none; border-bottom: solid 1px #ddd; border-radius: 0px; outline: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+.searchLayer select {margin-bottom: 0px; border-radius: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; outline: 0px;  line-height: 20px;}
+
+.tableLayer {width: 100%; overflow: scroll; height: 480px; }
+.tableLayer table{width: 100%}
+.tableLayer table th {border: solid 1px #ddd; padding: 10px; font-weight: bold; background: #f1f1f1; }
+.tableLayer table td {border: solid 1px #ddd; padding: 10px;  text-align:center;}
+.multi-line{word-wrap:break-word;word-break:break-all;white-space: normal; }
+.ctab-panel {width: 100%; position: relative; margin-bottom: 10px; }
+.ctab-head {height: 40px; }
+.ctab-head > a {display: inline-block; color: #333; padding: 0px 10px; line-height: 40px; }
+.ctab-head > a.active {border: solid 1px #ddd; border-bottom: none; background-color: #fff; border-top: solid 2px #3daae9; }
+.ctab-body {border: solid 1px #ddd; padding: 10px; }
+.btn a{color: white;text-decoration: none;}
+.noapply{background:  #f1f1f1;}
+
+</style>
+<form method="get" action=""  id="form-search">
+<div class="fixedlayer">
+    <div class="searchLayer">        
+        <input type="hidden" name="page" value="">
+        <table cellspacing="1">
+            <tr>
+                <td class="th"  style="width: 60px;">订单号：</td>
+                <td ><input type="text" style="width: 250px;" name="keywords" value="{$getData['keywords']?$getData['keywords']:''}"></td>
+                <td class="th"  style="width: 60px;">运单号：</td>
+                <td ><input type="text" style="width: 250px;" name="track_number" value="{$getData['track_number']?$getData['track_number']:''}"></td>                
+                <td class="th"  style="width: 60px;">物流企业：</td>
+                <td >
+                    <select name="id_shipping" id="id_shipping">
+                    <option value="">--选择--</option>
+                    <foreach name="shipList" item="ship" key="id" >      
+                    <option value="{$id}" {$id==$getData['id_shipping']?'selected':''}>{$ship}</option>      
+                    </foreach>            
+                    </select>
+                </td>    
+                <td><button class="btn btn-primary searchButton" >查询</button></td>            
+            </tr>
+  
+        </table>
+        
+    </div>  
+
+     
+    <div class="pagination">{$page}<input type="text" value="" name="displayRow" placeholder="输入每页显示{$getData['displayRow']}数">
+        <input type="button" class="btn btn-small searchButton submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">
+    </div>                     
+</div>
+</form>
+
+<div class="wrap">
+
+    <div class="customerlayer">
+        <!--  -->
+
+        <!--  -->
+        <div class="ctab-panel">
+
+            <div class="ctab-body">
+                <div class="tableLayer">
+                    <table>
+                        <thead>
+                            <tr>
+                                <!-- <th><input type="checkbox" class="allChecked" > </th> -->
+                                <th>订单编号</th>
+                                <th>运单号</th>
+                                <th>物流企业</th>
+                                <th>商品信息</th>                      
+                                <th>商品价格</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody style="">
+                            <foreach name="orderList" item="item" key='key'>
+                                <tr>
+                                    <!-- <td><input type="checkbox" class="{$inventory['status']==2?'nocheked':''} checkItem"  value="{$inventory.id}"  {$inventory['status']==2?"disabled":''}> </td> -->
+                                    <td> <a target="blank" href="/payment/Index/info/id/{$item.id_order}">{$item.id_increment}</a></td>
+                                    <td> {$item.track_number}</td>
+                                    <td> {$shipList[$item['id_shipping']]}</td>
+                                    <td class="multi-line"  style="width: 350px">
+                                        <foreach name="item.products" item="product" key='key'>
+                                        {$product.product_title}({$product.attrs_title}<span style="color:red;"> x </span>{$product.quantity})<hr style="margin:2px 0;color:green;border: 1px solid;">
+                                        </foreach>
+                                    </td>
+                                 
+                                        
+                                    <td>
+                                    {$item.total_price}
+                                    </td>  
+                                    <td>
+                                        <input type='hidden' class='id_increment' name="id_increment" value="{$item.id_increment}">
+                                        <input type='hidden' class='id_order' name="id_order" value="{$item.id_order}">
+                                        <input type='button' class="btn  return btn_order {$item['noapply']==1?'noapply':'btn-primary '}" value="退货">
+                                        <input style="margin-left: 15px;" type='button' class="btn exchange btn_order {$item['noapply']==1?'noapply':'btn-primary '}" value="换货">
+                                     <!--    <if condition="$item['noapply'] eq 1 "><br/><br/>
+                                        <input type='button' class="btn btn-primary  btn_order updatapply"  value="修改申请"> 
+                                        <input type='hidden' class='applyid' name="applyid" value="{$item.applyedId}">
+                                         </if> -->
+                                    </td>
+
+                                </tr>
+                            </foreach>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    
+    </div>
+
+</div>
+
+
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/artDialog/artDialog.js"></script>
+<script src="__PUBLIC__/js/jquery.stickytableheaders.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        var top=$('.fixedlayer').height();
+        var height_screen=document.body.clientHeight  ;
+        $('.tableLayer').height(height_screen-top-10);
+        $('.customerlayer').css('padding-top',top+20);
+        $(".tableLayer table").stickyTableHeaders({scrollableArea: $('.tableLayer')});
+    });
+
+    $('.searchButton').on('click',function(){
+        $('#form-search').attr('action',"{:U('Payment/Returns/apply')}"); 
+        $('#form-search').trigger('submit');
+        
+    });
+
+    var tiphtml='原&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;因：<select id="reason"><option value="1">质量原因</option><option value="2">质不对板</option><option value="3">个人原因（不想要）</option><option value="4">其他</option></select> <br/><br/>申请来源：<select id="source"><option value="1">售后邮箱</option><option value="2">问题件</option><option value="3">物流自退</option></select><br/>备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：<textarea id="apply_remark" style="width:200px;height: 30px;" placeholder="请填写备注信息" name="apply_remark" rows="3" cols="18"></textarea>';
+
+    $('.btn_order').on('click',function(){
+        if($(this).hasClass('noapply')){
+            return false;
+        }
+        var orderobj={};
+        orderobj.id_order=$(this).siblings('.id_order').val();
+        orderobj.id_increment=$(this).siblings('.id_increment').val();
+        if($(this).hasClass('return')){
+            orderobj.type=1;
+            var typestr="退货申请";
+        }        
+        if($(this).hasClass('exchange')){
+            orderobj.type=2;
+            var typestr="换货申请";
+
+        }
+
+  
+        art.dialog({
+                id:'menu_4834783', 
+                title:typestr, content:tiphtml,
+                lock:true, 
+                okVal: "确定",
+                ok: function () { 
+                    orderobj.reason=$('#reason').val();
+                    orderobj.source=$('#source').val();
+                    orderobj.apply_remark=$('#apply_remark').val();
+
+                    $.ajax({
+                        url:"{:U('Returns/submitApply')}",
+                        type:'POST',
+                        dataType:'json',
+                        data:{'orderdata':orderobj},
+                        success:function(data){
+                            if(data.status == 1) {                               
+                                alert(data.message);                                                                 
+                                window.location.reload();
+                            }else{
+                                alert(data.message); 
+                            }
+                        }
+                    });
+
+                },
+                cancelVal: "取消",
+                cancel: function () { }         
+              });  
+    });
+
+ 
+
+
+
+</script>
+</body>
+</html>

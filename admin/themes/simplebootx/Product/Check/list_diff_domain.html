@@ -1,0 +1,79 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a>域名和链接不匹配列表</a></li>
+    </ul>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="act" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <td class="th">查重关键字：</td>
+            <td>
+                <input type="text" name="pro_title" style="width: 200px;" value="{$getData.pro_title}" >
+            </td>
+            <label class="control-label">部门:</label>
+            <select name="department_id" id="department_id" style="width:140px">
+                <option value="">请选择部门</option>
+                <foreach name="department" item="item" key="id_department">
+                    <option value="{$id_department}" <php>echo isset($_GET['department_id']) && $_GET['department_id']==$id_department ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">广告专员:</label>
+            <input type="text" name="ad_username" style="width: 120px;" value="<php>echo $_GET['ad_username']</php>" ><br>
+            <button class="btn btn-primary searchButton" id="searchBtn">搜索</button>
+         <!--   <button class="btn btn-primary exportButton" id="exportBtn">导出</button>-->
+        </div>
+
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list order-table">
+        <thead>
+        <tr>
+            <th>查重id</th>
+            <th>查重名称</th>
+            <th>域名</th>
+            <th>链接</th>
+            <th>内部名</th>
+            <th>广告专员</th>
+            <th>部门</th>
+        </tr>
+        </thead>
+        <tbody>
+            <foreach name="list" item="v">
+                <tr style="">
+                    <td>{$v.id_checked}</td>
+                    <td>{$v.title}</td>
+                    <td>{$v.domain}</td>
+                    <td>{$v.extra_domain}</td>
+                    <td>{$v.inner_name}</td>
+                    <td>{$users[$v['id_users']]}</td>
+                    <td>{$v.dep}</td>
+                </tr>
+            </foreach>
+        </tbody>
+    </table>
+        <div class="pagination">{$Page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+//    $('.submitDisplayRow').click(function(){
+//        var getRow = $(this).parent().find('input[name=displayRow]').val();
+//        if(getRow){
+//            $.post("{:U('Ordercheck/setpagerow')}",{'row':getRow},function(data){
+//                window.location.reload();
+//            });
+//        }
+//    });
+    $('.searchButton').click(function(){
+        $('.form-search input[name=act]').attr('value','');
+        $('.form-search').attr('action',"{:U('check/list_diff_domain')}");
+    });
+    $('.exportButton').click(function(){
+        $('.form-search input[name=act]').attr('value','export');
+        $('.form-search').attr('action',"{:U('check/list_diff_domain')}");
+    });
+</script>
+</body>
+</html>

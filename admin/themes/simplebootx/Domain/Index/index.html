@@ -1,0 +1,134 @@
+<admintpl file="header" />
+</head>
+<body>
+    <div class="wrap js-check-wrap">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="{:U('index/index')}">域名管理</a></li>
+            <li><a href="{:U('index/add')}">添加域名</a></li>
+        </ul>
+        <form method="get" action=""  class="well form-search">
+            <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+            <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+            <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+            <div class="control-group" style="line-height: 36px;">
+                <label class="control-label">域名:</label>
+                <input type="text" name="keyword" style="width: 200px;height: 32px;line-height: 32px;" value="{:I('request.keyword/s','')}" placeholder="请输入域名...">
+                <select name="id_department">
+                <option value="">全部</option>
+                <foreach name="depart_list" item="vv" key="key">
+                    <option value="{$key}" <if condition="($key==$_GET['id_department'])"> selected="selected" </if> >{$vv}</option>
+                    </foreach>
+                </select>
+                <button class="btn btn-primary searchButton">搜索</button>
+                <!-- 部分导出 -->
+                <a class="btn btn-primary exportButton">导出</a>
+                <input type="hidden" name="export_url" value="">
+                <!-- 导出 -->               
+            </div>
+            <!-- 全部导出 -->
+        <a class="btn btn-primary exportAllButton">全部导出</a>
+        </form>
+        
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th width="30">ID</th>
+                    <th align="left">域名</th>
+                    <th align="left">IP地址</th>
+                    <th align="left">部门</th>
+                    <th align="left">业务员</th>
+                    <th align="left">SMTP主机</th>
+                    <th align="left">SMTP用户</th>
+                    <th align="left">SMTP密码</th>
+                    <!-- <th align="left">SMTP加密</th> -->
+                    <!--<th align="left">审核状态</th>-->
+                    <!--<th align="left">参考网站</th>-->
+                    <th width="40" align="left">状态</th>
+                    <th align="left">创建时间</th>
+                    <th align="left">有效订单</th>
+                    <th width="80">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            <foreach name="domains" item="vo">
+                <tr>
+                    <td class="id_domain">{$vo.id_domain}</td>
+                    <td>{$vo.name}</td>
+                    <td>{$vo.ip}</td>
+                    <td>{$depart_list[$vo['id_department']]}</td>
+                    <td>{$vo.advertiser}</td>
+                    <td>{$vo.smtp_host}</td>
+                    <td>{$vo.smtp_user}</td>
+                    <td>{$vo.smtp_pwd}</td>
+                    <!-- <td>
+                <if condition="$vo['smtp_ssl'] eq 1">
+                    <font color="red">√</font>
+                    <else />
+                    <font color="red">╳</font>
+                </if>
+                </td> -->
+                <!--                        <td>
+                                            <if condition="$vo['verify'] eq 1">
+                                                <font color="red">√</font>
+                                                <else />
+                                                <font color="red">╳</font>
+                                            </if>
+                                        </td>-->
+                <!--<td>{$vo.copy_url}</td>-->
+                <td>
+                <if condition="$vo['status'] eq 1">
+                    <font color="red">√</font>
+                    <else />
+                    <font color="red">╳</font>
+                </if>
+                </td>
+                <td>{$vo.created_at}</td>
+                <td><php> if(!isset($vo['qty_ordered'])||empty($vo['qty_ordered'])){echo 0;}else{
+                echo $vo['qty_ordered'];
+                }
+                </php> </td>
+                <td>
+
+
+                    <!-- <a href="javascript:open_iframe_dialog('{:U('domain/member',array('id'=>$vo['id']))}','成员管理');">成员管理</a>| -->
+                    <a href="{:U('index/edit',array('id'=>$vo['id_domain']))}">{:L('EDIT')}</a>|
+                    <a class="js-ajax-delete" href="{:U('index/delete',array('id'=>$vo['id_domain']))}">{:L('DELETE')}</a>
+
+                </td>
+                </tr>
+            </foreach>
+            </tbody>
+        </table>
+        <div class="pagination">{$Page}</div>
+    </div>
+    <script src="__PUBLIC__/js/common.js"></script>
+    <script>
+        $(function(){
+            var mylength,id_domains;
+            var id_domains="";
+            $('.exportButton').click(function(){ 
+                mylength=$(".id_domain").length;
+                for(var i=0;i<mylength;i++){
+                   if(i<mylength-1){
+                       id_domains+=$(".id_domain").eq(i).html()+",";
+                   }else{
+                       id_domains+=$(".id_domain").eq(i).html();
+                   }
+                }
+                $("input[name=export_url]").val(id_domains);
+                $('.form-search').attr('action',"{:U('Domain/Index/export_index')}");
+                $('.form-search').submit();
+        });
+        $('.searchButton').click(function(){ 
+                $('.form-search').attr('action',"{:U('Domain/Index/index')}");
+                $('.form-search').submit();
+        });
+        $('.exportAllButton').click(function(){ 
+                $('.form-search').attr('action',"{:U('Domain/Index/export_all')}");
+                $('.form-search').submit();
+        });
+        
+        })
+    </script>
+</body>
+</html>

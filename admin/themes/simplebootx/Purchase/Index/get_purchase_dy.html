@@ -1,0 +1,138 @@
+<admintpl file="header" />
+<title>采购单</title>
+</head>
+<body>
+<style>
+    .form-horizontal .controls {
+        line-height: 29px;
+        margin-left: 138px;
+    }
+    .form-horizontal .control-group {
+        margin-bottom: 5px;
+    }
+    .form-horizontal .control-label {
+        width: 130px
+    }
+</style>
+<div class="wrap">
+    <div class="form-horizontal">
+        <div class="control-group">
+            <label class="control-label">采购单号：</label>
+            <div class="controls">
+                {$data.purchase_no}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">销售方：</label>
+            <div class="controls">
+                {$department}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">采购员：</label>
+            <div class="controls">
+                {$user}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">收货人：</label>
+            <div class="controls">
+                <input type="text" name="name"/>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">收货电话：</label>
+            <div class="controls">
+                <input type="text" name="phone"/>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">送货地址：</label>
+            <div class="controls">
+                <input type="text" name="address"/>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">备注：</label>
+            <div class="controls">               
+                1.送货单上面请注明我司采购订单号，货物最小包装必须按我们提供的附件标签张贴，此单必须有一张填写完整随货箱子内，外箱备注好；<br>
+                2.交货方式：供方负责运输到指定地点，包装运输费用供需双方协调好，填写好相关方承担；<br>
+                3.产品质量符合的相关标准，包装无破损，货物无变形，碎等；<br>
+                4.其他事项参考双方签署的相关采购合同。<br>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">特别说明：</label>
+            <div class="controls">               
+                需要放采购单，在外箱标示清楚，外包装用中性包装。
+            </div>
+        </div>
+        <table class="table table-hover table-bordered table-list" border="1" style="border-collapse:collapse;">
+            <thead>
+                <tr>
+                    <th style="text-align:center">图片</th>
+                    <th style="text-align:center">产品名</th>
+                    <th style="text-align:center">SKU</th>
+                    <th style="text-align:center">属性</th>
+                    <th style="text-align:center">采购单价</th>
+                    <th style="text-align:center">数量</th>
+                    <th style="text-align:center">采购金额</th>
+                </tr>
+            </thead>
+            <tbody>
+                <foreach name="list" item="item">
+                    <tr>
+                        <td style="text-align:center">
+                            <notempty name="item['img']['photo']">
+                                <img id="photo-{$key}-preview" src="{:sp_get_image_preview_url($item['img']['photo'][0]['url'])}" style="height:36px;width: 36px;">
+                            </notempty>
+                        </td>
+                        <td style="text-align:center">{$item.title}</td>
+                        <td style="text-align:center">{$item.sku}</td>
+                        <td style="text-align:center">{$item.option_value}</td>
+                        <td style="text-align:center">{$item.price}</td>
+                        <td style="text-align:center">{$item.quantity}</td>
+                        <td style="text-align:center"><php>echo $item['price']*$item['quantity']</php></td>
+                    </tr>
+                </foreach>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--<input type='hidden' name='session_value' id='add' value="">-->
+<script src="__PUBLIC__/js/common.js"></script>
+<script src='__PUBLIC__/js/jQuery.print.js'></script>
+<script src='__PUBLIC__/js/jquery.barcode/jquery-barcode.js'></script>
+<script src="/public/js/jquery.ui/jquery-ui.min.js"></script>
+<script>        
+    $(function() {
+        $("#on-print").find('button').on('click', function() {
+            $("#on-print").print({
+                globalStyles: false,
+//                mediaPrint: false,
+//                stylesheet: null,
+                noPrintSelector: ".no-print",
+//                iframe: true,
+//                append: null,
+//                prepend: null,
+//                manuallyCopyFormValues: true,
+//                deferred: $.Deferred()
+            });
+            
+            var num = <php>echo $_GET['num']</php>;
+            $.ajax({
+                url:"{:U('wave/print_number')}",
+                type:'post',
+                dataType:'json',
+                data:{'num':num},
+                success:function(data){}                 
+            });
+            
+        });
+    });
+    
+    var config = {'set_value':'<php>echo $_GET["num"]</php>','set_div':'.bcd','barWidth':'2','barHeight':'35'};
+    generateBarcode(config);
+</script>
+</body>
+</html>

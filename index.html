@@ -1,0 +1,60 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Goodssku/index')}">货位SKU</a></li>
+    </ul>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="Admin">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">货位名称:</label>
+            <input type="text" name="goods_name" value="{$_GET['goods_name']}"/>
+            <label class="control-label">SKU:</label>
+            <input type="text" name="sku" value="{$_GET['sku']}" />
+            <label class="control-label">内部名称:</label>
+            <input type="text" name="inner_name" value="{$_GET['inner_name']}"/>
+
+
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="btn btn-primary searchButton" id="searchBtn">搜索</button>
+            <a href="{:U('Goodssku/add')}" class="btn btn-primary searchButton">批量关联</a>
+        </div>
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list order-table">
+        <thead>
+        <tr>
+            <th>产品图片</th>
+            <th>内部名称</th>
+            <th>SKU</th>
+            <th>属性</th>
+            <th>货位</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="proList" item="item" key='key'>
+            <tr style="font-weight: bold;background:#f5f5f5;">
+                <td>
+                    <notempty name="item['img']['photo']">
+                        <img id="photo-{$key}-preview" src="{:sp_get_image_preview_url($item['img']['photo'][0]['url'])}" style="height:36px;width: 36px;">
+                    </notempty>
+                </td>
+                <td>{$item.inner_name}</td>
+                <td>{$item.sku}</td><td>{$item.value}</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </foreach>
+        </tbody>
+
+    </table>
+
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

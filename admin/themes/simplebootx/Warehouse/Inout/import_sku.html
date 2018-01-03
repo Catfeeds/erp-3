@@ -1,0 +1,90 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="loading" style="display:none;position:absolute; left:0; top:0;width:100%; height:100%;z-index:20000;background-color:gray;opacity:0.5; -moz-opacity:0.5; filter:alpha(opacity=50);">
+    loading...
+</div>
+<!--<div class="fixedlayer">-->
+    <!--<ul class="nav nav-tabs">-->
+        <!--<li><a href="{:U('warehouse/change/change_stock')}">物理调整列表</a></li>-->
+        <!--<li class="active"><a href="{:U('warehouse/change/add')}">添加物流调整单</a></li>-->
+    <!--</ul>-->
+<!--</div>-->
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('warehouse/inout/indexofin')}">上架单明细列表</a></li>
+    </ul>
+    <div class="customerlayer" style="padding-top: 0">
+        <form method="post" enctype="multipart/form-data" action="{:U('inout/import_sku')}">
+            <div class="buttonLayer">
+                <a  class="btn btn-primary" href="{:U('warehouse/inout/indexofin')}">保存</a>
+                <a href="javrscript:;" data-id="{$id}" class="btn btn-primary js-ajax-submit tj_sub">提交</a>
+                <a class="btn"href="{:U('warehouse/inout/indexofin')}">{:L('BACK')}</a>
+            </div>
+            <div class="ctab-panel">
+                <div class="ctab-head">
+                    <a href="{:U('inout/detail',array('id'=>$id))}" >明细</a>
+                    <a href="{:U('inout/import_sku',array('id'=>$id))}" class="active">导入SKU</a>
+                </div>
+                <input type="hidden" name="hid" value="{$id}">
+                <div class="ctab-body">
+                    <div class="tableLayer" style="height:300px">
+                        <div class="controls" style="float: left">
+                            <textarea placeholder="从Excel中复制四列:sku,仓库名称，货位编号，数量" style="width: 300px; height: 255px;" id="import_data" name="sku_data"></textarea>
+                            <button type="submit" class="btn btn-primary qd" style="margin-bottom: 10px;">确定</button>
+                        </div>
+                        <div style="float: left;">
+                            <present name="Think.post.data">
+                                <div>共更新:{$total} 失败:{$infor.error|count} 成功:{$infor.success|count}</div>
+                            </present>
+                            <foreach name="infor.error" item="err">
+                                <div style="color:red;">{$err}</div>
+                            </foreach>
+                            <foreach name="infor.warning" item="warning">
+                                <div style="color:yellowgreen;">{$warning}</div>
+                            </foreach>
+                            <foreach name="infor.success" item="success">
+                                <div style="color:green;">{$success}</div>
+                            </foreach>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+    $('.qd').click(function(){
+        if($('#import_data').val() == '') {
+            alert('导入SKU不能为空');
+            return false;
+        }
+        $(this).submit();
+    });
+    //提交
+    $('.tj_sub').click(function(){
+        var id = $(this).attr('data-id');
+        if(confirm('是否确定要提交')) {
+            $(this).attr("disabled", true);
+            $.ajax({
+                url:"{:U('inout/update_status')}",
+                type: 'POST',
+                dataType: 'json',
+                data: {'id': id},
+                success: function (data) {
+                    if (data.status == 1) {
+                        window.location.href='/warehouse/inout/indexofin';
+
+                    } else {
+                        alert(data.message);
+                        window.location.reload();
+                    }
+                    $(this).removeAttr("disabled");
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

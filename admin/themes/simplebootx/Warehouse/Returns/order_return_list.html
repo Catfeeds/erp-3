@@ -1,0 +1,215 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="fixedlayer">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Warehouse/Returns/order_return_list')}">退货订单</a></li>
+        <li><a href="{:U('Warehouse/Returns/create_order_return')}">创建退货订单</a></li>
+        <li><a href="{:U('Warehouse/Returns/import_return_order')}">批量生成退货单</a></li>
+    </ul>
+
+
+</div>
+
+<div class="wrap">
+    <div class="customerlayer" style="margin-top: -30px;">
+        <div class="buttonLayer">
+            <button class="btn btn-primary searchButton">搜索</button>
+            <button class="btn btn-primary js-ajax-submit submitButton" >提交</button>
+        </div>
+        <div class="searchLayer">
+            <form method="get" action=""  class="well form-search">
+                <table cellspacing="1">
+                    <tr>
+                        <td class="th">部门：</td>
+                        <td>
+                            <select name="id_department" style="height:30px">
+                                <option value="0">所有</option>
+                                <foreach name="departments" item="item">
+                                    <option value="{$key}" <php>echo isset($get['id_department']) && $get['id_department']==$key ? 'selected' : ''</php>>{$item}</option>
+                                </foreach>
+                            </select>
+                        </td>
+                        <td class="th">仓库：</td>
+                        <td>
+                            <select name="id_warehouse" style="height: 30px">
+                                <option value="0">所有</option>
+                                <foreach name="warehouse" item="item">
+                                    <option value="{$key}" <php>echo isset($get['id_warehouse']) && $get['id_warehouse']==$key? 'selected' : ''</php>>{$item}</option>
+                                </foreach>
+                            </select>
+                        </td>
+                        <td class="th">创建日期：</td>
+                        <td>
+                            <input type="text" name="start_time_create" class="js-datetime" value="{$_GET['start_time_create']}" style="width: 140px;" autocomplete="off">-
+                            <input autocomplete="off" type="text" class="js-datetime" name="end_time_create" value="{$_GET['end_time_create']}" style="width: 140px;">
+                            <input type="hidden" id = "start_time_create" value="{$start_time_create}">
+                            <input type="hidden" id = "end_time_create" value="{$end_time_create}">
+                        </td>
+                        <td class="th">退货日期：</td>
+                        <td>
+                            <input type="text" name="start_time_return" class="js-datetime" value="{$get['start_time_return']}" style="width: 140px;" autocomplete="off">-
+                            <input autocomplete="off" type="text" class="js-datetime" name="end_time_return" value="{$get['end_time_return']}" style="width: 140px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="th">订单号：</td>
+                        <td>
+                            <input type="text" name="id_increment" value="{$get['id_increment']}"/>
+                        </td>
+                        <td class="th">状态：</td>
+                        <td>
+                            <select name="status" style="height: 30px">
+                                <option value="0">所有</option>
+                                <foreach name="status" item="item">
+                                    <option value="{$key}" <php>echo isset($get['status']) && $get['status']==$key? 'selected' : ''</php>>{$item}</option>
+                                </foreach>
+                            </select>
+                        </td>
+                        <td class="th">可再次派货：</td>
+                        <td>
+                            <select name="isagain" required style="height: 30px;width: 130px;">
+                                <option value="0">所有</option>
+                                <foreach name="isAgain" item="val">
+                                    <option value="{$key}" <php>echo isset($get['isagain']) && $get['isagain']==$key ? 'selected' : ''</php> >{$val}</option>
+                                </foreach>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+
+        <div class="ctab-panel">
+            <div class="ctab-head">
+                <a href="{:U('Warehouse/Returns/order_return_list')}" class="active">退货订单列表</a>
+                <a href="{:U('Warehouse/Returns/order_return_detail')}">退货订单详情表</a>
+            </div>
+            <div class="pagination">{$page}
+                <input type="text" value="" name="displayRow" placeholder="输入每页显示数">
+                <input type="button" class="btn btn-small submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">
+            </div>
+            <div class="ctab-body">
+                <div class="tableLayer" style="height: 430px;">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th><input type="checkbox" value="" id="all">ID</th>
+                            <th>订单号</th>
+                            <th>部门</th>
+                            <th>所属仓库</th>
+                            <th>退款运单号</th>
+                            <th>退货人</th>
+                            <th>退货日期</th>
+                            <th>退货原因</th>
+                            <th>状态</th>
+                            <th>再次派货</th>
+                            <th>创建日期</th>
+                            <th>更新日期</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <foreach name="return_order_list" item="order">
+                            <tr>
+                                <th><php>if($order['status']=='未提交'){</php><input type="checkbox" class="single" value="{$order['id_order_return']}"/><php>}</php>{$order['id_order_return']}</th>
+                                <th>{$order['id_increment']}</th>
+                                <th>{$order['id_department']}</th>
+                                <th>{$order['id_warehouse']}</th>
+                                <th>{$order['track_number']}</th>
+                                <th>{$order['id_users']}</th>
+                                <th>{$order['date_return']}</th>
+                                <th>{$order['remark']}</th>
+                                <th>{$order['status']}</th>
+                                <th>{$order['isagain']}</th>
+                                <th>{$order['created_at']}</th>
+                                <th>{$order['updated_at']}</th>
+                                <th>
+                                    <php>
+                                        if($order['status'] == '未提交'){</php> <a  href="{:U('Warehouse/Returns/order_return_edit',array(
+                                    'id_order' =>$order['id_order'],
+                                    ))}">修改</a>
+                                    <php>}
+                                    </php>
+
+                                    <a  href="{:U('Warehouse/Returns/order_return_info',array(
+                                    'id_order' =>$order['id_order'],
+                                    ))}">详情</a>
+
+                                </th>
+                            </tr>
+                        </foreach>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/jquery.stickytableheaders.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".tableLayer table").stickyTableHeaders({scrollableArea: $('.tableLayer')});
+    });
+    var start_time = $('input[name=start_time_create]').val();
+    var end_time = $('input[name=end_time_create]').val();
+    if(!start_time && !end_time)
+    {
+        var start = $("#start_time_create").val();
+        var end = $("#end_time_create").val();
+        $('input[name=start_time_create]').val(start);
+        $('input[name=end_time_create]').val(end);
+    }
+
+    $('.searchButton').click(function()
+    {
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('Warehouse/Returns/order_return_list')}");
+        $('.form-search') .submit();
+    });
+
+    $("#all").click(function(){
+        if(this.checked){
+            $("th :checkbox").prop("checked", true);
+        }else{
+            $("th :checkbox").prop("checked", false);
+        }
+    });
+
+    $('.submitButton').click(function(){
+        var id = '';
+        $('input:checkbox[class=single]:checked').each(function(i,item){
+            id+= (item['value']+",");
+        });
+        length = id.length;
+        if(!length){
+            alert('未选择要提交的入库单');
+            return false;
+        }
+        id = id.substring(0,length-1);
+        window.location.href="{:U('/Warehouse/Returns/create_order_return_all')}?id="+id;
+        return false;
+    });
+
+    $('.tj_sub').click(function(){
+        $('.form-horizontal input[name=a]').attr('value','index');
+        $('.form-horizontal').attr('action',"{:U('Warehouse/Returns/save_post/status/2')}");
+        $('.form-horizontal') .submit();
+    });
+
+    $('.submitDisplayRow').click(function()
+    {
+        var getRow = $(this).parent().find('input[name=displayRow]').val();
+        if(getRow){
+            $.post("{:U('/Warehouse/Returns/setpagerow')}",{'row':getRow},function()
+            {
+                window.location.reload();
+            });
+        }
+    });
+
+</script>
+</body>
+</html>

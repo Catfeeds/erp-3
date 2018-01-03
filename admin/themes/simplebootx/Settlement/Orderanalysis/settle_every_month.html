@@ -1,0 +1,218 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="department_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="department" item="item">
+                    <option value="{$item.id_department}" <php>echo isset($_GET['department_id']) && $_GET['department_id']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                </foreach>
+            </select>  
+            
+            <label class="control-label">选择年月:</label>
+            <input type="text" name="time" class="js-date" value="<php>echo $_GET['time']</php>" style="width: 120px;" autocomplete="off">
+<!--            <select name="year1" style="width:130px;"></select>
+            <select name="month1" class="mon" style="width:130px;"></select>-->
+            <button class="btn btn-primary searchButton">搜索</button>
+            <!--<button class="btn btn-primary exportSearchButton">导出结果</button><br><br>-->
+            <label class="control-label">台币汇率:</label>
+            <input type="text" class="tb-hl count_hl" name="tb" value="<php>echo $_GET['tb']</php>" style="width:100px">
+            <label class="control-label">港币汇率:</label>
+            <input type="text" class="gb-hl count_hl" name="gb" value="<php>echo $_GET['gb']</php>" style="width:100px">
+            <label class="control-label">日元汇率:</label>
+            <input type="text" class="jpy-hl count_hl" name="jpy" value="<php>echo $_GET['jpy']</php>" style="width:100px">
+            <label class="control-label">新加坡元汇率:</label>
+            <input type="text" class="xjp-hl count_hl" name="xjp" value="<php>echo $_GET['xjp']</php>" style="width:100px">
+            <!--<a href="javascript:;" class="btn btn-primary countButton ">计算合计金额</a>-->
+            <button class="btn btn-primary countButton">计算合计金额</button>
+            <button class="btn btn-primary resetButton">重置</button>
+            <!--<a href="javascript:;" class="btn btn-primary resetButton ">重置</a>-->
+        </div>
+    </form>
+    
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th rowspan="2" style="line-height:70px;text-align:center">部门</th>
+            <th rowspan="2" style="line-height:70px;text-align:center">物流</th>
+            <!--<th rowspan="2" style="line-height:70px;text-align:center">币种</th>-->
+            <th colspan="3" style="text-align:center;width:20px">有效单</th>
+            <th colspan="3" style="text-align:center">已结款</th>
+            <th colspan="2" style="text-align:center">未结款</th>
+            <th colspan="2" style="text-align:center">已发货</th>
+            <th colspan="2" style="text-align:center">未发货</th>
+            <th colspan="2" style="text-align:center">顺利送达</th>
+            <th colspan="2" style="text-align:center">配送中</th>
+            <th colspan="2" style="text-align:center">暂置营业所保管</th>
+            <th colspan="2" style="text-align:center">无信息</th>
+            <th colspan="3" style="text-align:center">退货</th>
+            <th colspan="3" style="text-align:center">签收单</th>
+            <th colspan="3" style="text-align:center">签收退货单</th>
+        </tr>
+        <tr>
+            <td style="text-align:center">订单数</td>
+            <td style="text-align:center">金额</td>
+            <td style="text-align:center">客单价</td>
+            <td style="text-align:center">订单数</td>
+            <td style="text-align:center">金额</td>
+            <td style="text-align:center">结款占比</td>
+            <td style="text-align:center">订单数</td>
+            <td style="text-align:center">金额</td>
+            <td style="text-align:center">订单数</td>
+            <td style="text-align:center">金额</td>
+            <td style="text-align:center">订单数</td>
+            <td style="text-align:center">金额</td>
+            <td style="text-align:center">订单数</td>
+            <td style="text-align:center">金额</td>
+            <td style="text-align:center">订单数</td>
+            <td style="text-align:center">金额</td>
+            <td style="text-align:center">订单数</td>
+            <td style="text-align:center">金额</td>
+            <td style="text-align:center">订单数</td>
+            <td style="text-align:center">金额</td>
+            <td style="text-align:center">订单数</td>
+            <td style="text-align:center">金额</td>
+            <td style="text-align:center">退货率</td>
+            <td style="text-align:center">订单数</td>
+            <td style="text-align:center">金额</td>
+            <td style="text-align:center">签收率</td>
+            <td style="text-align:center">订单数</td>
+            <td style="text-align:center">金额</td>
+            <td style="text-align:center">签收退货率</td>
+        </tr>
+        </thead>
+        <tbody>
+            <foreach name="list" item="item" key="key">
+                <php>
+                    $count = count($item)+2;
+                    $total_effective=0;$total_effective_price=0;
+                    $total_sett=0;$total_sett_price=0;
+                    $total_no_sett=0;$total_no_sett_price=0;
+                    $total_is_ship=0;$total_is_ship_price=0;
+                    $total_no_ship=0;$total_no_ship_price=0;
+                    $totla_signed=0;$totla_signed=0;
+                    $total_delivery=0;$total_delivery_price=0;
+                    $total_custody=0;$total_custody_price=0;
+                    $total_cargo_return=0;$total_cargo_return_price=0;
+                    $total_rejected=0;$total_rejected_price=0;
+                    $total_no_msg=0;$total_no_msg_price=0;
+                    $total_smooth_delivery=0;$total_smooth_delivery_price=0;
+                    $total_signed_return=0;$total_signed_return_price=0;
+                </php>
+                <tr>
+                    <td <php>echo 'rowspan="'.$count.'"'</php> style="text-align:center"><php>echo M('Department')->where(array('id_department'=>$key))->getField('title')</php></td>
+                </tr>
+                <foreach name='item' item='val' key='k'>
+                    <php>
+                        $total_effective+=$val['effective'];$total_effective_price+=$val['effective_price'];
+                        $total_sett+=$val['sett'];$total_sett_price+=$val['sett_price'];
+                        $total_no_sett+=$val['no_sett'];$total_no_sett_price+=$val['no_sett_price'];
+                        $total_is_ship+=$val['is_ship'];$total_is_ship_price+=$val['is_ship_price'];
+                        $total_no_ship+=$val['no_ship'];$total_no_ship_price+=$val['no_ship_price'];
+                        $totla_signed+=$val['signed'];$totla_signed_price+=$val['signed_price'];
+                        $total_delivery+=$val['delivery'];$total_delivery_price+=$val['delivery_price'];
+                        $total_custody+=$val['custody'];$total_custody_price+=$val['custody_price'];
+                        $total_cargo_return+=$val['cargo_return'];$total_cargo_return_price+=$val['cargo_return_price'];
+                        $total_rejected+=$val['rejected'];$total_rejected_price+=$val['rejected_price'];
+                        $total_no_msg+=$val['no_msg'];$total_no_msg_price+=$val['no_msg_price'];
+                        $total_smooth_delivery+=$val['smooth_delivery'];$total_smooth_delivery_price+=$val['smooth_delivery_price']; 
+                        $total_signed_return+=$val['signed_return'];$total_signed_return_price+=$val['signed_return_price'];
+                        $shipping = M('Shipping')->where(array('id_shipping'=>$val['id_shipping']))->getField('title')
+                    </php>
+                    <tr>                        
+                        <td style="text-align:center"><php>echo $shipping ? $shipping : '无物流'</php></td>
+                        <!--<td style="text-align:center"><php>//echo $currency</php></td>-->
+                        <td style="text-align:center">{$val.effective}</td>
+                        <td style="text-align:center">{$val.effective_price}</td>
+                        <td style="text-align:center"><php>echo round((float)$val['effective_price']/$val['effective'],2)</php></td>
+                        <td style="text-align:center">{$val.sett}</td>
+                        <td style="text-align:center">{$val.sett_price}</td>
+                        <td style="text-align:center"><php>$Returns = ($val['sett']/$val['effective'])*100;echo number_format($Returns,2).'%';</php></td>          
+                        <td style="text-align:center">{$val.no_sett}</td>
+                        <td style="text-align:center">{$val.no_sett_price}</td>
+                        <td style="text-align:center">{$val.is_ship}</td>
+                        <td style="text-align:center">{$val.is_ship_price}</td>
+                        <td style="text-align:center">{$val.no_ship}</td>
+                        <td style="text-align:center">{$val.no_ship_price}</td>
+                        <td style="text-align:center">{$val.smooth_delivery}</td>
+                        <td style="text-align:center">{$val.smooth_delivery_price}</td>
+                        <td style="text-align:center">{$val.delivery}</td>
+                        <td style="text-align:center">{$val.delivery_price}</td>
+                        <td style="text-align:center">{$val.custody}</td>
+                        <td style="text-align:center">{$val.custody_price}</td>
+                        <td style="text-align:center">{$val.no_msg}</td>
+                        <td style="text-align:center">{$val.no_msg_price}</td>
+                        <td style="text-align:center">{$val.cargo_return}</td>
+                        <td style="text-align:center">{$val.cargo_return_price}</td>
+                        <td style="text-align:center"><php>$Returns = ($val['cargo_return']/($val['effective']-$val['no_ship']))*100;echo number_format($Returns,2).'%';</php></td>
+                        <td style="text-align:center">{$val.signed}</td>
+                        <td style="text-align:center">{$val.signed_price}</td>
+                        <td style="text-align:center"><php>$Returns = ($val['signed']/($val['effective']-$val['no_ship']))*100;echo number_format($Returns,2).'%';</php></td>        
+                        <td style="text-align:center">{$val.signed_return}</td>
+                        <td style="text-align:center">{$val.signed_return_price}</td>
+                        <td style="text-align:center"><php>$Returns = ($val['signed_return']/$val['is_ship'])*100;echo number_format($Returns,2).'%';</php></td>        
+                    </tr>
+                </foreach>
+                <tr>
+                    <td style="text-align:center">总计</td>
+                    <td style="text-align:center"><php>echo $total_effective</php></td>
+                    <td style="text-align:center" class="total_effective_price"><php>echo $total_effective_price</php></td>
+                    <td style="text-align:center"><php>echo round($total_effective_price/$total_effective,2)</php></td>
+                    <td style="text-align:center"><php>echo $total_sett</php></td>
+                    <td style="text-align:center" class="total_sett_price"><php>echo $total_sett_price</php></td>
+                    <td style="text-align:center"><php>$Returns = ($total_sett/$total_effective)*100;echo number_format($Returns,2).'%';</php></td>
+                    <td style="text-align:center"><php>echo $total_no_sett</php></td>
+                    <td style="text-align:center" class="total_no_sett_price"><php>echo $total_no_sett_price</php></td>
+                    <td style="text-align:center"><php>echo $total_is_ship</php></td>
+                    <td style="text-align:center" class="total_no_sett_price"><php>echo $total_is_ship_price</php></td>
+                    <td style="text-align:center"><php>echo $total_no_ship</php></td>
+                    <td style="text-align:center" class="total_no_ship_price"><php>echo $total_no_ship_price</php></td>
+                    <td style="text-align:center"><php>echo $total_smooth_delivery</php></td>
+                    <td style="text-align:center" class="total_smooth_delivery_price"><php>echo $total_smooth_delivery_price</php></td>
+                    <td style="text-align:center"><php>echo $total_delivery</php></td>
+                    <td style="text-align:center" class="total_delivery_price"><php>echo $total_delivery_price</php></td>
+                    <td style="text-align:center"><php>echo $total_custody</php></td>
+                    <td style="text-align:center" class="total_custody_price"><php>echo $total_custody_price</php></td>
+                    <td style="text-align:center"><php>echo $total_no_msg</php></td>
+                    <td style="text-align:center" class="total_no_msg_price"><php>echo $total_no_msg_price</php></td>
+                    <td style="text-align:center"><php>echo $total_cargo_return</php></td>
+                    <td style="text-align:center" class="total_cargo_return_price"><php>echo $total_cargo_return_price</php></td>
+                    <td style="text-align:center"><php>$Returns = ($total_cargo_return/($total_effective-$total_no_ship))*100;echo number_format($Returns,2).'%';</php></td>
+                    <td style="text-align:center"><php>echo $totla_signed</php></td>
+                    <td style="text-align:center" class="totla_signed_price"><php>echo $totla_signed_price</php></td>
+                    <td style="text-align:center"><php>$Returns = ($totla_signed/($total_effective-$total_no_ship))*100;echo number_format($Returns,2).'%';</php></td>        
+                    <td style="text-align:center"><php>echo $total_signed_return</php></td>
+                    <td style="text-align:center" class="totla_signed_return_price"><php>echo $total_signed_return_price</php></td>
+                    <td style="text-align:center"><php>$Returns = ($total_signed_return/$total_is_ship)*100;echo number_format($Returns,2).'%';</php></td>        
+                </tr>
+            </foreach>
+        </tbody>
+    </table>
+
+    <div class="pagination">{$page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/YMDClass.js"></script>   
+<script>
+//    new YMDselect('year1','month1',new Date().getFullYear());
+    $('.resetButton').click(function(){
+        $('.tb-hl').val('');
+        $('.gb-hl').val('');
+        $('.jpy-hl').val('');
+        $('.xjp-hl').val('');
+        window.location.reload();
+    });
+    
+    
+    
+</script>
+</body>
+</html>

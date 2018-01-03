@@ -1,0 +1,103 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="fixedlayer" style="height: 40px;">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Purchase/Index/every_day')}">状态统计</a></li>
+    </ul>
+</div>
+<div class="wrap">
+    <div class="customerlayer" style="height: 300px;">
+    <form method="get" action=""  class="well form-search" style="margin-top: -80px;">
+        <div class="searchLayer" style="padding:20px;background-color: #ecf0f1;">
+            <table cellspacing="1">
+                <tr>
+                    <td class="th">部门：</td>
+                    <td>
+                        <select name="id_department" style="height:30px">
+                            <option value="">全部</option>
+                            <foreach name="department" item="dep_id">
+                                 <php> 
+                                $selected = $_GET['id_department']==$dep_id['id_department']?" selected=selected":'';
+                                 </php>
+                                 <option value="{$dep_id['id_department']}" <php> echo $selected </php> >{$dep_id.title}</option>;
+                             </foreach>
+                        </select>
+                    </td>
+                    <td class="th">建立日期：</td>
+                    <td>
+                        <php>$date = date('Y-m-d', strtotime('-7 days'));</php>
+                        <input type="text" name="start_time" class="js-datetime" value="<php>echo isset($_GET['start_time'])&&$_GET['start_time']?$_GET['start_time']:$date;</php>" style="width: 120px;" autocomplete="off">-
+                        <input type="text" class="js-datetime" name="end_time" value="<php>echo isset($_GET['end_time'])&&$_GET['end_time']?$_GET['end_time']:date('Y-m-d',strtotime('+1 day'));</php>" style="width: 120px;">
+                    </td>
+                    <td>
+                        <button class="btn btn-primary searchButton">搜索</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th>日期</th>
+            <th>总订单</th>
+            <th>有效订单</th>
+            <th>无效订单</th>
+            <th>未处理</th>
+            <th>待处理</th>
+            <!--<th>配送中</th>-->
+            <th>待审核</th>
+            <th>未配货</th>
+            <th>配货中</th>
+            <th>缺货</th>
+            <th>已配货</th>
+            <th>配送中</th>
+            <th>已签收</th>
+            <th>已退货</th>
+            <th>重复下单</th>
+            <th>信息不完整</th>
+            <th>恶意下单</th>
+            <th>客户取消</th>
+            <th>质量问题/产品破损</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="item">
+            <tr>
+                <td>{$item.set_date}</td>
+                <td>{$item.total}</td>
+                <td>{$item.effective}</td>
+                <td>{$item.invalid}</td>
+                <td>{$item.status1}</td>
+                <td>{$item.status2}</td>
+                <td>{$item.status3}</td>
+                <td>{$item.status4}</td>
+                <td>{$item.status5}</td>
+                <td>{$item.status6}</td>
+                <td>{$item.status7}</td>
+                <td>{$item.status8}</td>
+                <td>{$item.status9}</td>
+                <td>{$item.status10}</td><td>{$item.status11}</td>
+                <td>{$item.status12}</td><td>{$item.status13}</td>
+                <td>{$item.status14}</td><td>{$item.status15}</td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+
+    <div class="pagination">{$page}</div>
+    </fieldset>
+</div>
+    </div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+</script>
+</body>
+</html>

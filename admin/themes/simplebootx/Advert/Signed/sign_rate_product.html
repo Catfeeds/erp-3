@@ -1,0 +1,94 @@
+<admintpl file="header" />
+</head>
+<body>
+<style>
+.table-list th,.table-list td{text-align: center;}
+</style>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <input type="hidden" name="show" value="">
+        <input type="hidden" name="isexport" id="isexport" value='0'>
+        <div>
+            <span class="btn btn-primary" ><a  style="color:white" href="{:U('Advert/Signed/receipt_rate_by_date')}?id_department={$getData['id_department']}">返回</a></span>
+        </div>
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="id_department">
+                <option value="">--所有--</option>
+                <foreach name="departList" item="item" key="key">
+                <option value="{$key}" {$key==$getData['id_department']?'selected':''}>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">物流:</label>
+            <select name="id_shipping">
+                 <option value="">--所有--</option>
+                <foreach name="shippingList" item="item" key="key">
+                <option value="{$key}" {$key==$getData['id_shipping']?'selected':''}>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">地区:</label>
+            <select name="id_zone">
+                 <option value="">--所有--</option>
+                <foreach name="zoneList" item="item" key="key">
+                <option value="{$key}" {$key==$getData['id_zone']?'selected':''}>{$item}</option>
+                </foreach>
+            </select>            
+            <label class="control-label">发货日期:</label>
+            <input type="text" name="date_delivery" class="js-date" value="{$getData['date_delivery']}" style="width: 120px;" autocomplete="off">
+            <sapn class="btn btn-primary searchButton">搜索</sapn>
+            <sapn class="btn btn-primary exportSearchButton">导出数据</sapn>
+        </div>
+    </form>
+    <fieldset>
+        <table class="table table-hover table-bordered table-list">
+            <thead>
+            <tr>
+                <th>产品图片</th>
+                <th>内部名</th>
+                <th>发货单数</th>
+                <th>签收单</th>
+                <th>签收率</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            <foreach name="signedList" item="item" key='key'>
+                <tr>
+                    <td>
+
+                    <notempty name="item['thumbs']['photo']">
+                        <a href="{:sp_get_image_preview_url($item['thumbs']['photo'][0]['url'])}" target="_blank"> <img id="photo-{$key}-preview" src="{:sp_get_image_preview_url($item['thumbs']['photo'][0]['url'])}" style="height:36px;width: 36px;"></a>
+                    </notempty>
+
+                    </td>
+                    <td>{$item['inner_name']}</td>
+                    <td>{$item['count_delivered']}</td>
+                    <td>{$item['count_signed']}</td>
+                    <td>{$item['rate_signed']}</td> 
+                </tr>
+            </foreach>
+            </tbody>
+        </table>
+
+        <!--<div class="pagination">{$page}</div>-->
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('#isexport').val('0');
+        $('.form-search').attr('action',"{:U('Signed/sign_rate_product')}");
+        $('.form-search').trigger('submit');
+
+    });
+    $('.exportSearchButton').click(function(){
+        $('#isexport').val('1');
+        $('.form-search').attr('action',"{:U('Signed/sign_rate_product')}");
+        $('.form-search').trigger('submit');
+    });
+</script>
+</body>
+</html>

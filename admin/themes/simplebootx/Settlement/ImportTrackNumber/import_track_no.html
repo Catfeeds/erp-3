@@ -1,0 +1,64 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('ImportTrackNumber/import_track_no')}">导入运单号</a></li>
+    </ul>
+    <fieldset>
+        <form method="post" action="{:U('ImportTrackNumber/import_track_no')}" enctype="multipart/form-data"  class="form-horizontal">
+            
+            <div class="control-group" style="line-height: 36px;">
+                <div class="control-group">
+                    <div class="controls">
+                        <p style="color:red;">导入运单号，改变订单状态，物流状态随之更改</p>
+                        <p>直接从Excel复制三列:运单号 物流状态 物流归类</p>
+                        物流：
+                        <select name="id_shipping" id="">
+                            <volist name="shipping" id="vo">
+                                <option value="{$vo.id_shipping}" <php>if ($id_shipping == $vo['id_shipping'])
+                                {echo "selected";}</php>
+                                >{$vo.title}</option>
+                            </volist>
+                        </select>
+                        订单状态：
+                        <select name="id_order_status" id="">
+                                <option value="9" <php>if ($id_order_status == 9)
+                                {echo "selected";}</php>
+                                >已签收</option>
+                                <option value="8" <php>if ($id_order_status == 8)
+                                {echo "selected";}</php>
+                                >配送中</option>
+                                <option value="10" <php>if ($id_order_status == 10)
+                                {echo "selected";}</php>
+                                >已退货</option>
+                                <option value="16" <php>if ($id_order_status == 16)
+                                {echo "selected";}</php>
+                                >拒收</option>
+                        </select>
+                        <br>
+                        <textarea name="data" style="width:800px;height:400px;">{$data}</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">{:L('导入')}</button>
+            </div>
+        </form>
+    </fieldset>
+    <present name="Think.post.data">
+        <div>共更新:{$total} 失败:{$infor.error|count} 成功:{$infor.success|count}</div>
+    </present>
+    <foreach name="infor.error" item="err">
+        <div style="color:red;">{$err}</div>
+    </foreach>
+    <foreach name="infor.warning" item="warning">
+        <div style="color:#f89406;">{$warning}</div>
+    </foreach>
+    <foreach name="infor.success" item="success">
+        <div style="color:green;">{$success}</div>
+    </foreach>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

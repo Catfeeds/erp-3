@@ -1,0 +1,45 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('blacklist/index')}">黑名单列表</a></li>
+        <li><a href="{:U('blacklist/add')}">导入黑名单</a></li>
+    </ul>
+    <table class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th width="30">ID</th>
+            <th width="90">匹配类型</th>
+            <th width="230">内容</th>
+            <th width="90">等级</th>
+            <th width="90">添加人</th>
+            <th width="90">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="data" item="vo">
+            <tr>
+                <td>{$vo.id_blacklist}</td>
+                <td>{$vo.field}</td>
+                <td>{$vo.title}</td>
+                <td>
+                    <if condition="$vo['level'] eq 1" >
+                        <font color="red">警告</font>
+                    <else />
+                        黑名单
+                    </if>
+                </td>
+                <td>{$vo.user_nicename}</td>
+                <td>
+                    <a class="js-ajax-delete" href="{:U('blacklist/delete',array('id'=>$vo['id_blacklist']))}">{:L('DELETE')}</a>
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+    <div class="pagination">{$page}</div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

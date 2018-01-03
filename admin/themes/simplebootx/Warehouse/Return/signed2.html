@@ -1,0 +1,209 @@
+<admintpl file="header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Index/signed2',array('id'=>$_GET['id']))}">确认收货</a></li>
+    </ul>
+    <div class="form-horizontal js-ajax-form">
+        <div class="control-group">
+            <label class="control-label"></label>
+            <div class="controls">
+
+
+                <form method="get" action=""  class="form-search">
+                    退货入库单：{$data.return_no}
+                    <span style="margin-left: 40px;">运单号：</span>
+                    <input type="hidden" name="id" value="{$data.id_return}"/>
+                    <input type="text" name="track_number" style="width: 200px;" value="{$getData.track_number}" placeholder="请输入运单号...">
+                    <button class="btn btn-primary searchButton">搜索</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <form class="form-horizontal js-ajax-form" method="post" action="{:U('return/save_stock2')}" id="form">
+        <fieldset>
+
+            <div class="control-group attributesValueList">
+                <label class="control-label">属性库存:</label>
+                <div class="controls">
+                    <table class="table table-hover table-bordered table-list attributesListBox">
+                        {$attr_row}
+                    </table>
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-actions">
+            <input type="hidden" name="id_return" value="{$data.id_return}"/>
+            <input type="hidden" name="id_warehouse" value="{$data.id_warehouse}"/>
+            <button type="submit" class="btn btn-primary  js-ajax-submit submit" name="method" value="wait">部分入库</button>
+            <button type="submit" class="btn btn-primary  js-ajax-submit submit" name="method" value="finish">入库完成</button>
+            <a class="btn" href="{:U('return/purchase_list2')}">{:L('BACK')}</a>
+        </div>
+        <!--弹出层时背景层DIV---start-->
+        <div id="fade" class="black_overlay"></div>
+        <div id="MyDiv" class="white_content">
+            <div style="text-align: right; cursor: default; margin-top:10px;margin-bottom:10px;">
+                <span style="font-size: 16px; margin-right: 17px; color: #56BE2D; font-weight: 600;cursor:pointer;"  onclick="CloseDiv('MyDiv','fade')">关闭</span>
+            </div>
+            <div class="itempanel" style="margin-left: 13%;">
+                <div class="floatleft title" style="text-align: left;color: red;font-size: 16px;padding-bottom: 20px">确认拒收？</div>
+                <div class="floatleft editor" style="font-size:16px;height: 24px;line-height: 24px;">
+                    <input type="text"  name="remark" placeholder="请输入拒收原因" style="width: 400px;height:40px" id="label">
+                </div>
+                <div class="floatleft message"></div>
+                <div class="clear"></div>
+            </div>
+
+            <div style="margin-bottom: 23px; margin-top: 50px; margin-left: 23%;">
+                <button type="submit" class="btn btn-primary  js-ajax-submit"  style="width: 123px;margin-left: 30px;" onclick="return goToAdd()"   name="method" value="reject">{:L('拒收')}</button>
+                <input type="button" class="btn" style="width: 123px;margin-left: 30px;" onclick="CloseDiv('MyDiv','fade')" value="取消" style="width: 123px; margin-left: 20%; ">
+            </div>
+        </div>
+        <!--弹出层时背景层DIV---end-->
+    </form>
+</div>
+<!--<script src="__PUBLIC__/js/common.js"></script>-->
+<style>
+    /* ===================================弹框css部分 start by:songfayuan========================================= */
+    .black_overlay{
+        display: none;
+        position: absolute;
+        top: 0%;
+        left: 0%;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        z-index:1001;
+        -moz-opacity: 0.8;
+        opacity:.50;
+        filter: alpha(opacity=50);
+    }
+    .white_content {
+        display: none;
+        position: absolute;
+        top: 35%;
+        left: 36%;
+        width: 33%;
+        border: 2px solid #d3d3d3;
+        background-color: white;
+        z-index: 1002;
+        /* overflow: auto; */
+    }
+    .white_content_small {
+        display: none;
+        position: absolute;
+        top: 20%;
+        left: 30%;
+        width: 40%;
+        height: 50%;
+        border: 16px solid lightblue;
+        background-color: white;
+        z-index:1002;
+        overflow: auto;
+    }
+    /* ===================================弹框css部分 end by:songfayuan========================================= */
+</style>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search').attr('action',"{:U('return/signed2')}");
+        $('.form-search').submit();
+        return false;
+    });
+    //===================================弹框js部分 start by:songfayuan=========================================
+    //弹出隐藏层
+    function ShowDiv(show_div,bg_div){
+        var scrollHeight = document.body.scrollHeight; //文档高度
+        document.getElementById(bg_div).style.height=scrollHeight+'px';
+
+        document.getElementById(show_div).style.display='block';
+        document.getElementById(bg_div).style.display='block';
+    };
+    //关闭弹出层
+    function CloseDiv(show_div,bg_div)
+    {
+        document.getElementById("label").value = '';
+        document.getElementById(show_div).style.display='none';
+        document.getElementById(bg_div).style.display='none';
+    };
+    //关闭弹出层
+    function CloseDiv2()
+    {
+        document.getElementById("MyDiv").style.display='none';
+        document.getElementById("fade").style.display='none';
+    };
+    function goToAdd()
+    {
+        var label = $('#label').val();
+        if(label==''){
+            alert('拒收原因不能为空');
+            return false;
+        }
+        CloseDiv2();
+    }
+
+    //===================================弹框js部分 end by:songfayuan=========================================
+    $('.submit').click(function(){
+        if(window.confirm('您确定要进行入库操作？')){
+            var flag = true;
+            var type="^[0-9]*[1-9][0-9]*$";
+            var re=new RegExp(type);
+            $('.tr').each(function(index,element){
+                var purchase =  parseInt($(this).find(".purchase")[0].innerText);
+                var received =  parseInt($(this).find(".received")[0].innerText);
+                var add =  parseInt($(this).find('input').val());
+                //          if(isNaN(add)||add<0||!re.test(add)){
+                //              flag = false;
+                //              return false;
+                //          }
+                if((add + received)> purchase){
+                    flag = false;
+                }
+            });
+
+            if(flag == false){
+                alert('收货数量不正确');
+                window.location.reload();
+                return false;
+            }else{
+                $('.form-horizontal').submit();
+            }
+        }else{
+            return false;
+        }
+
+
+//        var getOrderId = $(this).attr('orderid');
+//        var flag = true;
+//        $('.entryQty').each(function(e){
+//            var getNumber = parseInt($(this).parent().parent().parent().find('.countQty'+e).text());
+//            var rowNumber = parseInt($(this).parent().parent().find('.rowQty'+e).text());
+//            var getEntryQty  = $(this).val();
+//            console.log(getNumber);
+//            console.log(Number(getEntryQty)+rowNumber);
+//            if(Number(getEntryQty) > getNumber || (getNumber === rowNumber && Number(getEntryQty) > 0) || (Number(getEntryQty)+rowNumber) > getNumber){
+////                alert('输入的数量大于总采购数');
+//                $('.error_div').show();
+//                $('.error_msg').html('输入的数量大于总采购数');
+//                $(this).focus();
+//                flag = false;
+//            }
+//        });
+//        if(flag){
+//            var getData = $('.form-horizontal').serializeArray();
+//            $.post("{:U('Index/save_stock2')}",getData,function(data){
+//                var result = $.parseJSON(data);
+//                if(result.status){
+//                    window.location.reload();
+//                }else{
+//                    alert(getData.message);
+//                }
+//            });
+//        }
+//        return false;
+    });
+
+</script>
+</body>
+</html>

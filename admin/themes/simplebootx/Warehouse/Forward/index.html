@@ -1,0 +1,105 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <fieldset>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <!--<input type="hidden" name="id_warehouse" value="<php>echo $data['id_warehouse'];</php>">-->
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="department_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="department" item="item">
+                    <option value="{$key}" <php>echo isset($_GET['department_id']) && $_GET['department_id']==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">仓库:</label>
+            <select name="warehouse_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="warehouse" item="item">
+                    <option value="{$key}" <php>echo isset($_GET['warehouse_id']) && $_GET['warehouse_id']==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+
+            <label class="control-label">产品名称:</label>
+            <input type="text" name="title" style="width: 200px;" value="{$getData.title}">
+            <label class="control-label">SKU或者条码:</label>
+            <input type="text" name="sku" style="width: 200px;" value="{$getData.sku}" >
+            <label class="control-label">内部名:</label>
+            <input type="text" name="inner_name" style="width: 200px;" value="{$getData.inner_name}" >
+            <label class="control-label">订单号:</label>
+            <input type="text" name="id_increment" style="width: 200px;" value="{$getData.id_increment}" >
+            <label class="control-label">运单号:</label>
+            <input type="text" name="track_number" style="width: 200px;" value="{$getData.track_number}" >
+            <br/>
+            <label class="control-label">状态:</label>
+            <select name="status" style="width:100px;">
+                <option value="666">所有</option>
+                <foreach name="forward_status" item="item">
+                    <option value="{$key}" <php>echo isset($_GET['status']) && $_GET['status']==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+            <button class="btn btn-primary searchButton">搜索</button>
+            <button class="btn btn-primary exportButton">导出</button>
+
+        </div>
+    </form>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th width="60">运单号</th>
+            <th >订单号</th>
+            <th>部门</th>
+            <th>产品名</th>
+            <th>内部名</th>
+            <th>sku</th>
+            <th>sku数量</th>
+            <th>所属仓库</th>
+            <th>状态</th>
+           <!-- <th>操作</th>-->
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="pro_list" item="item">
+            <tr>
+
+                <td width="60">{$item.track_number}</td>
+                <td >{$item.id_increment}</td>
+                <td>{$department[$item['id_department']]}</td>
+                <td><foreach name="item.titlearray" item="title">{$title}<br/></foreach></td>
+                <td><foreach name="item.innerarray" item="inner_name">{$inner_name}<br/></foreach></td>
+                <td> <foreach name="item.skuarray" item="sku">{$sku}<br/></foreach></td>
+                <td> <foreach name="item.totalarray" item="total">{$total}<br/></foreach></td>
+                <td>{$warehouse[$item['id_warehouse']]}</td>
+                <td>{$forward_status[$item['status']]}</td>
+               <!-- <td width="130">
+                    <a href="{:U('forward/look',array('id'=>$item['id_forward']))}">查看</a>
+                </td>-->
+            </tr>
+
+        </foreach>
+        </tbody>
+    </table>
+
+    <div class="pagination">{$page}</div>
+        <div style="margin-bottom:5%"></div>
+    </fieldset>
+</div>
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('forward/index')}");
+    });
+    $('.exportButton').click(function(){
+        $('.form-search input[name=a]').attr('value','export');
+        $('.form-search').attr('action',"{:U('forward/export')}");
+    });
+
+</script>
+</body>
+</html>

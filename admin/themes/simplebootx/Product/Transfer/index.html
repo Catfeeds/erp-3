@@ -1,0 +1,212 @@
+<admintpl file="header" />
+</head>
+<body>
+<style>
+    .searchLayer table td {
+        margin: 1px;
+        padding: 1px;
+        width: auto;
+    }
+</style>
+<div class="fixedlayer">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('product/transfer/index')}">产品调拨单列表</a></li>
+        <li><a href="{:U('product/transfer/add')}">添加产品调拨单</a></li>
+    </ul>
+    <form method="get" action="" >
+        <input type="hidden" name="g" value="Warehouse">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="searchLayer">
+            <table cellspacing="1">
+                <tr>
+                    <td class="th">单据编号：</td>
+                    <td><input name="docno" type="text" style="min-height: 30px;" value="<php>echo $_GET['docno']</php>"></td>
+                    <td class="th">调出部门：</td>
+                    <td>
+                        <select name="out_department_id" id="out_department" style="height: 30px;">
+                            <option value="">--选择--</option>
+                            <foreach name="department" item="name" key="key">
+                                <option value="{$key}" <php>echo isset($_GET['out_department_id']) && $_GET['out_department_id']==$key ? 'selected' : ''</php>>{$name}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <td class="th">调入部门：</td>
+                    <td>
+                        <select name="in_department_id" id="in_department" style="height: 30px;">
+                            <option value="">--选择--</option>
+                            <foreach name="department" item="name" key="key">
+                                <option value="{$key}" <php>echo isset($_GET['in_department_id']) && $_GET['in_department_id']==$key ? 'selected' : ''</php>>{$name}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="th">单据状态：</td>
+                    <td>
+                        <select name="status_id" style="height: 30px;">
+                            <option value="">--全部--</option>
+                            <option value="1" <php>echo isset($_GET['status_id']) && $_GET['status_id']==1 ? 'selected' : ''</php>>待提交</option>
+                            <option value="2" <php>echo isset($_GET['status_id']) && $_GET['status_id']==2 ? 'selected' : ''</php>>已提交</option>
+                        </select>
+                    </td>
+                    <td class="th">单据日期：</td>
+                    <td>
+                        <input type="text" name="start_time" class="js-datetime" value="{$Think.get.start_time}" style="width: 135px;min-height: 30px;" autocomplete="off">-
+                        <input autocomplete="off" type="text" class="js-datetime" name="end_time" value="{$Think.get.end_time}" style="width: 135px;min-height: 30px;">
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="buttonLayer">
+            <button class="btn btn-primary searchButton">搜索</button>
+            <a href="{:U('transfer/add')}" class="btn btn-primary">新增</a>
+            <a href="javascript:;" class="btn btn-primary tjButton">提交</a>
+            <a href="javascript:;" class="btn btn-primary delButton">作废</a>
+        </div>
+    </form>
+</div>
+
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('warehouse/change/change_stock')}">物理调整列表</a></li>
+        <li><a href="{:U('warehouse/change/add')}">添加物流调整单</a></li>
+    </ul>
+    <div class="customerlayer1" style="padding-top: 123px">
+        <div class="pagination" style="margin:0">{$page}
+            <input type="text" value="" name="displayRow" placeholder="输入每页显示数">
+            <input type="button" class="btn btn-small submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">
+        </div>
+        <!--  -->
+        <div class="ctab-panel">
+            <div class="ctab-body">
+                <div class="tableLayer" style="height:300px">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th><label><input type="checkbox" class="js-check-all checkAllbox" data-direction="x" data-checklist="js-check-x"></label></th>
+                            <th>序号</th>
+                            <th>单据编号</th>
+                            <th>单据日期</th>
+                            <th>调出部门</th>
+                            <th>调入部门</th>
+                            <th>备注</th>
+                            <th>单据状态</th>
+                            <th>总行数</th>
+                            <th>总数量</th>
+                            <th>制单人</th>
+                            <th>提交人</th>
+                            <th>制单时间</th>
+                            <th>提交时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <foreach name="list" item="item" key="key">
+                            <tr>
+                                <td style="text-align: center"><input type="checkbox" class="js-check" name="docno_id" value="{$item.id}"></td>
+                                <td style="text-align: center"><php>echo $key+1</php></td>
+                                <td style="text-align: center"><a href="{:U('transfer/add_details',array('id'=>$item['id']))}">{$item.docno}</a></td>
+                                <td style="text-align: center">{$item.bill_date}</td>
+                                <td style="text-align: center">{$item.out_department}</td>
+                                <td style="text-align: center">{$item.in_department}</td>
+                                <td style="text-align: center">{$item.description}</td>
+                                <td style="text-align: center">
+                                    <php>echo $item['status']==1?'待提交':'已提交'</php>
+                                </td>
+                                <th style="text-align: center">{$item.count}</th>
+                                <th style="text-align: center">{$item.count_sum}</th>
+                                <td style="text-align: center">{$item.user_name}</td>
+                                <td style="text-align: center">{$item.tj_name}</td>
+                                <td style="text-align: center">{$item.create_time}</td>
+                                <td style="text-align: center">{$item.status_time}</td>
+                            </tr>
+                        </foreach>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('transfer/index')}");
+        $('.form-search').submit();
+    });
+
+    $(".checkAllbox").click(function(){
+        var setVal = $(this).attr('checked')=='checked'?true:false;
+        $("input[name=docno_id]").attr("checked",setVal);
+    });
+
+    $('.submitDisplayRow').click(function(){
+        var getRow = $(this).parent().find('input[name=displayRow]').val();
+        if(getRow){
+            $.post("{:U('transfer/setpagerow')}",{'row':getRow},function(data){
+                window.location.reload();
+            });
+        }
+    });
+
+    //批量提交
+    $('.tjButton').click(function(){
+        var id = [];
+        $("input[name=docno_id]:checked").each(function(){
+            id.push($(this).attr('value'));
+        });
+        if(id.length==0){alert('请至少选择一个单据');return false;}
+        if(confirm('是否要提交？')) {
+            $(this).attr("disabled", true);
+            $.ajax({
+                url: "{:U('product/transfer/batch_sub')}",
+                type: 'POST',
+                dataType: 'json',
+                data: {'id': id},
+                success: function (data) {
+                    if (data.status == 1) {
+                        alert(data.message);
+                        window.location.reload();
+                    } else {
+                        alert(data.message);
+                        window.location.reload();
+                    }
+                    $(this).removeAttr("disabled");
+                }
+            });
+        }
+    });
+
+    //批量作废
+    $('.delButton').click(function(){
+        var id = [];
+        $("input[name=docno_id]:checked").each(function () {
+            id.push($(this).attr('value'));
+        });
+
+        if (id.length == 0) {
+            alert('请至少选择一个单据');
+            return false;
+        }
+        $(this).attr("disabled", true);
+        if(confirm('确定要作废？')) {
+            $.ajax({
+                url: "{:U('product/transfer/batch_del')}",
+                type: 'POST',
+                dataType: 'json',
+                data: {'id': id},
+                success: function (data) {
+                    if (data.status == 1) {
+                        alert(data.message);
+                        window.location.reload();
+                    } else {
+                        alert(data.message);
+                        window.location.reload();
+                    }
+                    $(this).removeAttr("disabled");
+                }
+            });
+        }
+    });
+</script>

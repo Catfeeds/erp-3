@@ -1,0 +1,72 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('blacklist/index')}">黑名单列表</a></li>
+        <li><a href="{:U('blacklist/add')}">导入黑名单</a></li>
+    </ul>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">等级:</label>
+            <select name="level" style="width:100px;">
+                <option value="">所有</option>
+                <foreach name="levels" item="item" key="key">
+                    <option value="{$key}" <php>echo isset($_GET['level']) && $_GET['level']==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select> 
+            <label class="control-label">匹配类型:</label>
+            <input type="text" name="ptype" style="width: 200px;" value="<php>echo $_GET['ptype'];</php>" placeholder="请输入匹配类型">
+            <label class="control-label">内容:</label>
+            <input type="text" name="keyword" style="width: 200px;" value="<php>echo $_GET['keyword'];</php>" placeholder="请输入内容">
+            <button class="btn btn-primary searchButton">搜索</button>
+        </div>        
+    </form>
+    <table class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th width="30">ID</th>
+            <th width="90">匹配类型</th>
+            <th width="230">内容</th>
+            <th width="90">等级</th>
+            <th width="90">添加人</th>
+            <th width="90">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="data" item="vo">
+            <tr>
+                <td>{$vo.id_blacklist}</td>
+                <td>{$vo.field}</td>
+                <td>{$vo.title}</td>
+                <td>
+                    <if condition="$vo['level'] eq 1" >
+                        <font color="red">警告</font>
+                    <else />
+                        黑名单
+                    </if>
+                </td>
+                <td>
+                    <php>
+                        if($vo['user_nicename'] != '') {
+                            echo $vo['user_nicename'];
+                        } else {
+                            echo $vo['user_login'];
+                        }
+                    </php>
+                </td>
+                <td>
+                    <a class="js-ajax-delete" href="{:U('blacklist/delete',array('id'=>$vo['id_blacklist']))}">{:L('DELETE')}</a>
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+    <div class="pagination">{$page}</div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<admintpl file="header" />
+<style type="text/css">
+    body,span{color:#000;}
+</style>
+<php>$div_count = 0;</php>
+<!--<button class="print-link no-print">打印</button>-->
+<!--background-image:url(<php>echo 'http://'.$_SERVER['SERVER_NAME'];</php>{$template.waybill_image});background-repeat:no-repeat; -->
+<foreach name="print_data" item="item">
+    <div class="print_box" style="float:left;margin-right:10px;position:relative;width:{$template.width}px;height:{$template.height}px;
+    overflow: hidden;"><img src="<php>echo 'http://'.$_SERVER['SERVER_NAME'];</php>{$template.waybill_image}" style="position:absolute;top:0;left:0;"/>
+        <foreach name="item" item="vo" key="key">
+            <php>
+                $width =$vo['width'];$div_count++;
+                if($key=='track_number1' or $key=='track_number2'){
+                    $vo['label'] = str_replace('-','',$vo['label']);
+                }
+            </php>
+            <span class="{$key}" id="{$key}{$div_count}" style="font-size:{$vo.font_size}px;
+            position:absolute;top:{$vo.top}px;left:{$vo.left}px;
+            <notempty name='width'>width:{$width}px;</notempty>">{$vo.label}</span>
+        </foreach>
+    </div>
+</foreach>
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="/public/js/jquery.barcode/jquery-barcode.js"></script>
+<script src="/public/js/jquery.ui/jquery-ui.min.js"></script>
+<php>if($template['id_shipping']==39 or $template['id_shipping']==33){</php>
+<script type="text/javascript">
+    $('.track_number1,.track_number2').each(function(){
+        //var track_number1 = $(this).text();
+        var track_number1 = $(this).text().replace(/-/, "");
+        var get_div_id  = $(this).attr('id');
+        var config = {'set_value':track_number1,'set_div':'#'+get_div_id,'showHRI':true,'btype':'code39','barWidth':2};
+        generateBarcode(config);
+    });
+</script>
+<php>}else{</php>
+<script type="text/javascript">
+    $('.track_number1,.track_number2').each(function(){
+        var track_number1 = $(this).text().replace(/-/, "");
+        var get_div_id  = $(this).attr('id');
+        var config = {'set_value':track_number1,'set_div':'#'+get_div_id,'showHRI':true,'btype':'code39'};
+        generateBarcode(config);
+    });
+</script>
+<php>}</php>
+<script type="text/javascript">
+    /*if($('.track_number2')){
+        $('.track_number2').each(function(){
+            var track_number2 = $(this).text();
+            var get_div_id  = $(this).attr('id');
+            var config2 = {'set_value':track_number2,'set_div':'#'+get_div_id,'barWidth':1,'barHeight':20};
+            generateBarcode(config2);
+        });
+    }*/
+
+    $('.customer_code').each(function(){
+        var customer_code = $(this).text().replace(/-/, "");
+        var get_div_id  = $(this).attr('id');
+        var config2 = {'set_value':customer_code,'set_div':'#'+get_div_id,'barWidth':1,'barHeight':20,'btype':'code39'};
+        generateBarcode(config2);
+    });
+    $('.zip_code_barcode').each(function(){
+        var customer_code = $(this).text().replace(/-/, "");
+        var get_div_id    = $(this).attr('id');
+        var config = {'set_value':customer_code,'set_div':'#'+get_div_id,'showHRI':true,'btype':'code39'};
+        generateBarcode(config);
+    });
+    //$('body').css('width',"<php>echo $template['width']*2+50;</php>");
+</script>

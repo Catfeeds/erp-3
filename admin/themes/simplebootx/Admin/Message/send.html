@@ -1,0 +1,119 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('message/index')}">接收消息列表</a></li>
+        <li><a href="{:U('message/mysend',array('id'=>$vo['id_country']))}">我发送的消息</a></li>
+        <li class="active"><a href="{:U('message/send',array('id'=>$vo['id_country']))}">发送消息</a></li>
+    </ul>
+    <div class="wrap">
+        <div class="common-form">
+            <form method="post" class="form-horizontal js-ajax-form" action="{:U('message/send_post')}" autocomplete="off">
+                <fieldset>
+                    <div class="control-group">
+                        <label class="control-label">消息标题 :</label>
+                        <div class="controls">
+                            <input type="text" name="title" required value="">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">消息内容 :</label>
+                        <div class="controls">
+                            <textarea required name="content" style="width:350px;height:200px;"></textarea>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">消息等级 :</label>
+                        <div class="controls">
+                            <select name="level">
+                                <option value="1"  selected>重要</option>
+                                <option value="2"  selected>非常重要</option>
+                                <option value="3"  selected>紧急</option>
+                                <option value="4"  selected>非常紧急</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">展示时间 :</label>
+                        <div class="controls">
+                            <input type="text" name="show_start_time" class="js-datetime" required value="{:I('request.show_start_time/s','')}" style="width: 120px;" autocomplete="off">-
+                            <input autocomplete="off" type="text" class="js-datetime" required name="show_end_time" value="{:I('request.show_end_time/s','')}" style="width: 120px;">
+                        </div>
+                        <br/>
+                        <label class="control-label">收信人 :</label>
+                        <div class="controls">
+                            <label class="radio inline" for="active_true1"><input type="radio" name="user" checked value="1" id="active_true1" />个人</label>&emsp;&emsp;&emsp;
+                            <label class="radio inline" for="active_true2"><input type="radio" name="user" value="2" id="active_true2" />部门</label>&emsp;&emsp;&emsp;
+                            <label class="radio inline" for="active_true2"><input type="radio" name="user" value="3" id="active_true3" />全公司</label>
+                        </div>
+                        <br/>
+                        <div class="controls" id="choo1">
+                            <select name="send_users[]" id="send_users" multiple>
+                                <option value=""  selected>选择发送人</option>
+                                <foreach name="data_user" item="vo">
+                                    <option value="{$vo['id']}">{$vo['user_nicename']}</option>
+                                </foreach>
+                            </select>
+                            <span class="form-required">*</span>
+                        </div>
+
+                        <div class="controls" id="choo2" hidden>
+                            <select name="send_parts[]" id="send_parts" multiple>
+                                <option value=""  selected>选择发送部门 </option>
+                                <foreach name="data_part" item="vo">
+                                    <option value="{$vo['id_department']}">{$vo['title']}</option>
+                                </foreach>
+                            </select>
+                            <span class="form-required">*</span>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">发送</button>
+                    <a class="btn" href="javascript:history.back(-1);">取消</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+    $(function(){
+        $(":radio[name='user']").click(function(){
+            var rad_user = $('input[name="user"]:checked').val();
+            if(rad_user==1){
+                $("#choo1").css("display","block");
+                $("#choo2").css("display","none");
+                $("#send_parts").val("");
+            }else if(rad_user==2){
+                $("#choo1").css("display","none");
+                $("#choo2").css("display","block");
+                $("#send_users").val("");
+            } else {
+                $("#choo1").css("display","none");
+                $("#choo2").css("display","none");
+                $("#send_users").val("");
+                $("#send_parts").val("");
+            }
+        });
+
+        $('.btn').click(function(){
+            var rad_user = $('input[name="user"]:checked').val();
+            if(rad_user==1){
+                if($("#send_users").val() == '') {
+                    alert('请选择发送人');
+                    return false;
+                }
+            } else if (rad_user==2) {
+                if($("#send_parts").val() == '') {
+                    alert('请选择要发送部门');
+                    return false;
+                }
+            }
+            $(this).submit();
+        });
+    });
+</script>
+</body>
+</html>

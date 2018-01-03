@@ -1,0 +1,111 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('Loginmanage/setting_addf')}">{:L('设置IP地址段')}</a></li>
+        <li class="active"><a href="{:U('Loginmanage/addf_list')}">{:L('IP列表')}</a></li>
+    </ul>
+    <div class="customerlayer" style="padding-top: 100px;">
+        <form action="" method="get" class="well form-search" style="margin-top: -80px;">
+            <table cellspacing="1">
+                <tbody>
+                <tr>
+                    <td class="th">部门：</td>
+                    <td>
+                        <select name="id_department" id="id_department" aria-invalid="false" >
+                            <option value="0">所有</option>
+                            <foreach name="depart" item="item">
+                                <option value="{$item.id_department}" <php>echo isset($_GET['id_department']) && $_GET['id_department'] == $item['id_department'] ? 'selected':'';</php> >{$item.title}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <td class="th">用户名：</td>
+                    <td>
+                        <input type="text" name="user_login" value="{$_GET['user_login']}"/>
+                    </td>
+                    <td class="th">IP段：</td>
+                    <td>
+                        <select name="ip_addf" aria-invalid="false" >
+                            <option value="0">所有</option>
+                            <foreach name="groupIP" item="item">
+                                <option value="{$item.ip_addf}" <php>echo isset($_GET['ip_addf']) && $_GET['ip_addf'] == $item['ip_addf'] ? 'selected':'';</php> >{$item.ip_addf}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <td class="th">
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <button class="btn btn-primary searchButton">搜索</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+        <div class="ctab-body">
+            <div class="tableLayer" style="height: 500px;">
+                <table style="padding: 0;text-align: center;">
+                    <thead class="tableFloatingHeaderOriginal">
+                    <tr>
+                        <th>ID</th>
+                        <th>用户</th>
+                        <th>用户所在部门</th>
+                        <th>非局域网登录时间</th>
+                        <th>IP地址段</th>
+                        <th>允许在其他IP地址登录</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <foreach name="lists" item="list">
+                            <tr>
+                                <td>{$list.id_auth}</td>
+                                <td>{$list.user_nicename}</td>
+                                <td>{$list.title}</td>
+                                <td><php>echo date('Y-m-d H:i:s',$list['non_lan_start']).' - '.date('Y-m-d H:i:s',$list['non_lan_end']);</php></td>
+                                <td>{$list.ip_addf}</td>
+                                <td><if condition="$list['is_allow_other'] eq 0">否<else/>是</if></td>
+                                <td>
+                                    <if condition="$list['user_nicename']">
+                                        <a href="{:U('Loginmanage/setting_addf',array('id'=>$list['id_auth']))}">编辑</a>
+                                    </if>
+                                    <a href="javascript:void(0);" data-num="{$list['id_auth']}" class="js-ajax-submit">删除</a>
+                                </td>
+                            </tr>
+                        </foreach>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="pagination" style="line-height: 30px;">{$Page}
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','addf_list');
+        $('.form-search').attr('action',"{:U('User/Loginmanage/addf_list')}");
+        $('.form-search') .submit();
+    });
+    //异步 删除IP列表记录
+    $('.js-ajax-submit').click(function(){
+        var curObj = $(this);
+        var curParObj =  curObj.parent();
+        var id_num = curObj.attr('data-num');
+        if(confirm("您确定要删除吗？"))
+        {
+            $.ajax({
+                url:"{:U('User/Loginmanage/delete_addf_info')}",
+                type:'post',
+                dataType:'json',
+                data:{'id':id_num},
+                success:function(data){
+                    alert(data.msg);
+                    $('.searchButton').click();
+                    return false;
+                }
+
+            });
+        }
+    });
+</script>

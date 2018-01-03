@@ -1,0 +1,60 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li ><a href="{:U('import/update_package_list')}">更新已打包记录列表</a></li>
+        <li class="active"><a href="{:U('import/update_package_code')}">扫码更新已打包</a></li>
+    </ul>
+
+    <fieldset>
+        <th>运单号或订单号</th>
+        <td>
+            <input type="text" style="width: 400px;"   class="search-text" name="track_number" value =""  autocomplete="off" id="track_number"/>
+            <div name="tipShow" class="tipShow" style=""></div>
+        </td>
+    </fieldset>
+
+</div>
+<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+$(function(){
+    document.onkeydown = function(e){
+        var ev = document.all ? window.event : e;
+        if(ev.keyCode==13) {
+
+                var track_number = $('#track_number').val();
+                track_number = track_number;
+                var ali_i = $(this);
+                if(track_number != null && track_number != ""){
+                    $('#track_number').attr("readOnly",true);
+                    $.ajax({
+                        url:"{:U('import/update_package_code_save')}",
+                        type:"get",
+                        data:{'track_number':track_number},
+                        dataType:'json',
+                        success: function(data){
+                            if(data.indexOf('<ul>') >= 0){
+                                console.log(data);
+                                //$('.tipShow').append(data);
+                                $('.tipShow').prepend(data);
+                                $('#track_number').attr("readOnly",false);
+                                $('#track_number').val('');
+                            }
+                            else {
+                                    alert(data);
+                                $('#track_number').attr("readOnly",false);
+                                $('#track_number').val('');
+                            }
+                        }
+                    })
+                }else{
+                    alert('输入不能为空');
+                    $('#track_number').val('');
+                }
+        }
+    }
+});
+</script>
+</body>
+</html>

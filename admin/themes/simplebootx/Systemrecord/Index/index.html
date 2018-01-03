@@ -1,0 +1,77 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Index/index')}">操作记录列表</a></li>
+    </ul>
+    <fieldset>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <label class="control-label">类型:</label>
+        <select name="type">
+            <option value="">--所有--</option>
+            <foreach name='oper_type' item='title' key='key'>
+                <option value='{$key}' <php>echo isset($_GET['type']) && $_GET['type']==$key ? 'selected' : ''</php>>{$title}</option>
+            </foreach>
+        </select>
+        <label class="control-label">类型对象:</label>
+        <select name="obj_type">
+            <option value="">--所有--</option>
+            <foreach name='oper_obj_type' item='title' key='key'>
+                <option value='{$key}' <php>echo isset($_GET['obj_type']) && $_GET['obj_type']==$key ? 'selected' : ''</php>>{$title}</option>
+            </foreach>
+        </select>
+        <label class="control-label">关键词:</label>
+        <input type="text" name="keyword" style="width: 200px;" value="<php>echo $_GET['keyword'];</php>" >
+        <label class="control-label">操作日期:</label>
+        <input type="text" name="start_time" class="js-datetime" value="<php>echo $_GET['start_time'];</php>" style="width: 120px;" autocomplete="off">-
+        <input type="text" class="js-datetime" name="end_time" value="<php>echo $_GET['end_time'];</php>" style="width: 120px;">
+        <button class="btn btn-primary searchButton">搜索</button>
+    </form>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th width="50">ID</th>
+            <th>用户名称</th>
+            <th>类型</th>
+            <th>操作类型</th>
+            <th>操作内容</th>
+            <th>文件路径</th>
+            <th>操作日期</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="proList" item="item">
+            <tr>
+                <td width="50">{$item.id_system_record}</td>
+                <td width="100">{$item.user_name}</td>
+                <td>
+                    <if condition="$item.type eq 1">新增</if><if condition="$item.type eq 2">编辑</if><if condition="$item.type eq 3">删除</if><if condition="$item.type eq 4">查看</if>
+                    <if condition="$item.type eq 5">导入</if><if condition="$item.type eq 6">其他</if><if condition="$item.type eq 7">导出</if>
+                </td>
+                <td><if condition="$item.category eq 1">仓库</if><if condition="$item.category eq 2">产品</if><if condition="$item.category eq 3">其他</if><if condition="$item.category eq 4">订单</if></td>
+                <td>{$item.desc}</td>
+                <td>{$item.path}</td>
+                <td>{$item.created_at}</td>
+<!--                <td>{$item.account}</td>
+                <td><php>echo $item['status']?'开启':'关闭';</php></td>-->
+<!--                <td width="130">
+                    <a href="{:U('index/create',array(\'id\'=>$item[\'id_shipping\']))}">编辑</a>&nbsp;|&nbsp;
+                    <a class="js-ajax-delete" href="{:U('index/delete',array(\'id\'=>$item[\'id_shipping\']))}">删除</a>
+                </td>-->
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+
+    <div class="pagination">{$Page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+</script>
+</body>
+</html>

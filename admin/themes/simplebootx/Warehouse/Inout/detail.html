@@ -1,0 +1,292 @@
+<admintpl file="header" />
+<style>
+    .tipShow{
+        float:left;
+        position: absolute;
+    }
+    .tipShow ul{
+        height:150px;
+        overflow:auto;
+        width:221px;
+        background-color: white;
+        margin:0 0 0 0;
+    }
+</style>
+</head>
+<body>
+<div class="loading" style="display:none;position:absolute; left:0; top:0;width:100%; height:100%;z-index:20000;background-color:gray;opacity:0.5; -moz-opacity:0.5; filter:alpha(opacity=50);">
+    loading...
+</div>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('warehouse/inout/indexofin')}">上架单明细列表</a></li>
+    </ul>
+    <div class="customerlayer" style="padding-top: 0">
+        <form method="post" enctype="multipart/form-data" action="{:U('inout/save')}">
+            <input type="hidden" name="id" value="{$id}">
+            <div class="buttonLayer">
+                <a href="javrscript:;" data-id="{$id}" class="btn btn-primary js-ajax-submit save_sub">保存</a>
+                <a href="javrscript:;" data-id="{$id}" class="btn btn-primary js-ajax-submit tj_sub">提交</a>
+                <a class="btn"href="{:U('warehouse/inout/indexofin')}">{:L('BACK')}</a>
+            </div>
+            <div class="searchLayer">
+                <table cellspacing="1">
+                    <tr>
+                        <td class="th">单据日期：</td>
+                        <td>
+                            <if condition="$data.status eq 1">
+                                <input type="text" name="created_at" class="js-datetime" value="{$data.created_at}" style="min-height: 30px;" autocomplete="off" readonly id="created_at">
+                            </if>
+                            <if condition="$data.status eq 2">
+                                {$data.created_at}
+                            </if>
+                        </td>
+                        <td class="th">备注：</td>
+                        <td>
+                            <if condition="$data.status eq 1">
+                                <input required="" type="text" name="description" value="{$data.description}" required style="min-height: 30px;" id="description">
+                            </if>
+                            <if condition="$data.status eq 2">
+                                {$data.description}
+                            </if>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="ctab-panel">
+                <div class="ctab-head">
+                    <a href="#" class="active">明细列表</a>
+                    <a href="{:U('inout/import_sku',array('id'=>$id))}" >导入SKU</a>
+                </div>
+                <div class="ctab-body">
+                    <div class="tableLayer" style="height: 300px;">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th><label><input type="checkbox" class="js-check-all checkAllbox" data-direction="x" data-checklist="js-check-x"></label></th>
+                                <th>明细id</th>
+                                <th>所属单id</th>
+                                <th>上架日期</th>
+                                <th>制单人</th>
+                                <th>产品</th>
+                                <th>内部名</th>
+                                <th>产品sku</th>
+                                <th>仓库名称</th>
+                                <th>货位编码</th>
+                                <th>上架数量</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <foreach name="list" item="vlist" key="key">
+                                <tr>
+                                    <td style="text-align: center"><input type="checkbox" class="js-check" name="docno_id" value="{$vlist.id}"></td>
+                                    <td>{$vlist['id']}</td>
+                                    <td>{$vlist['warehouse_allocation_inout_id']}</td>
+                                    <td>{$vlist['created_at']}</td>
+                                    <td>{$vlist['user_nicename']}</td>
+                                    <td>{$vlist['title']}</td>
+                                    <td>{$vlist['inner_name']}</td>
+                                    <td>{$vlist['sku']}</td>
+                                    <td>{$warehouse[$vlist['id_warehouse']]}</td>
+
+                                    <td>{$vlist['goods_name']}</td>
+                                    <td>{$vlist['qty']}</td>
+                                </tr>
+                            </foreach>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="">
+
+                        产品SKU：<input type="text" name="sku_name" id="sku_name"/>
+                        仓库:
+                        <select name="id_warehouse" style="width:100px;" id="id_warehouse">
+                            <foreach name="warehouse" item="item">
+                                <option value="{$key}" <if condition="$key EQ $_GET['id_warehouse']">selected</if>>{$item}</option>
+                            </foreach>
+                        </select>
+                        货位名称：<!--<input type="text" name="wa_name"/>-->
+                        <span>
+                        <input type="text" id="wa_name" name="wa_name" class="search-text" value="{$data.goods_name}" autocomplete="off"/>
+                        <div name="tipShow" class="tipShow" style="left: 520px;"></div>
+                        </span>
+
+                        上架数量：<input type="text" name="qty" id="qty">
+                        <button type="submit" class="btn btn-primary qd" style="margin-bottom: 10px;">新增明细</button>
+                        <a href="javascript:;" class="btn btn-primary del_det" style="margin-bottom: 10px;">删除明细</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+    $(".checkAllbox").click(function(){
+        var setVal = $(this).attr('checked')=='checked'?true:false;
+        $("input[name=docno_id]").attr("checked",setVal);
+    });
+
+    showTips();
+    var goods_nameTmp = '';
+    function showTips(){
+        $('.search-text').each(function(){
+            $(".tipShow").empty();
+            $(this).live('input', function(){
+                //$(".tipShow").empty();
+                var goods_name = $(this).val();
+                var id_warehouse= $("#id_warehouse").val();
+                goods_nameTmp = goods_name;
+                var ali_i = $(this);
+                if(goods_name != null && goods_name != ""){
+                    $.ajax({
+                        url:"{:U('Inout/search_text')}",
+                        type:"get",
+                        data:{'goods_name':goods_name,'id_warehouse':id_warehouse},
+                        dataType:'json',
+                        success: function(data){
+                            if(data=='0' || data == "<ul></ul>"){
+                                ali_i.next().html('');
+                                $(".tipShow").empty();
+                            }
+                            else {
+                                console.log(data);
+                                ali_i.next().html(data).css('display','block');
+                            }
+                        }
+                    })
+                }else{
+                    ali_i.next().html('');
+                    $(".tipShow").empty();
+                }
+            })
+        })
+    }
+    $(".tipShow ul li").live('mouseover',function(){
+        $(this).parent().children().css("background","white");
+        $(this).css("background","#ddd");
+    })
+    $(".tipShow ul li").live('click',function(e){
+        $(this).parent().parent().prev().val($(this)[0].innerText);
+        $(".tipShow").empty();
+        stopPropagation(e);
+    })
+    $('input').click(function(e){
+        stopPropagation(e);
+        if(goods_nameTmp == ''){
+            $(".tipShow").empty();
+        }
+    })
+    //冒泡
+    function stopPropagation(e) {
+        if (e.stopPropagation)
+            e.stopPropagation();
+        else
+            e.cancelBubble = true;
+    }
+    //批量删除
+    $('.del_det').click(function(){
+        var id = [];
+        $("input[name=docno_id]:checked").each(function () {
+            id.push($(this).attr('value'));
+        });
+
+        if (id.length == 0) {
+            alert('请至少选择一个数据');
+            return false;
+        }
+        $(this).attr("disabled", true);
+        if(confirm('确定要删除？')) {
+            $.ajax({
+                url: "{:U('Warehouse/inout/del_in')}",
+                type: 'POST',
+                dataType: 'json',
+                data: {'id': id},
+                success: function (data) {
+                    if (data.status == 1) {
+                        window.location.reload();
+                    } else {
+                        alert(data.message);
+                        window.location.reload();
+                    }
+                    $(this).removeAttr("disabled");
+                }
+            });
+        }
+    });
+
+    //提交
+    $('.tj_sub').click(function(){
+        var id = $(this).attr('data-id');
+        if(confirm('是否确定要提交')) {
+            $(this).attr("disabled", true);
+            $.ajax({
+                url:"{:U('inout/update_status')}",
+                type: 'POST',
+                dataType: 'json',
+                data: {'id': id},
+                success: function (data) {
+                    if (data.status == 1) {
+                        window.location.href='/warehouse/inout/indexofin';
+
+                    } else {
+                        alert(data.message);
+                        window.location.reload();
+                    }
+                    $(this).removeAttr("disabled");
+                }
+            });
+        }
+    });
+    //保存
+    $('.save_sub').click(function(){
+        var created_at = $('#created_at').val();
+        var description = $('#description').val();
+        var id = $(this).attr('data-id');
+        $(this).attr("disabled", true);
+
+        $.ajax({
+            url:"{:U('inout/save')}",
+            type: 'POST',
+            dataType: 'json',
+            data: {'case': 1,'id':id,'created_at':created_at,'description':description},
+            success: function (data) {
+                if (data.status == 1) {
+                    window.location.href='/warehouse/inout/indexofin';
+                } else {
+                    alert(data.message);
+                    window.location.reload();
+                }
+                $(this).removeAttr("disabled");
+
+            }
+            });
+
+    });
+    function validate(num)
+    {
+        var reg = /^\d+(?=\.{0,1}\d+$|$)/
+        if(reg.test(num)) return true;
+        return false ;
+    }
+    $('.qd').click(function(){
+        var sku_name = $("#sku_name").val();
+        var wa_name =$("#wa_name").val();
+        var qty = $("#qty").val();
+        if (sku_name == "") {
+            alert("请输入sku！");
+            return false;
+        }
+        if (wa_name == "") {
+            alert("请输入货位名称！");
+            return false;
+        }
+        if(!validate(qty)){
+            alert("数量必须是正整数");
+            return false;
+        }
+
+    });
+</script>
+</body>
+</html>

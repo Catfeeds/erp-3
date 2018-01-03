@@ -1,0 +1,36 @@
+<admintpl file="header"/>
+</head>
+<body>
+
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('tempFind/index')}">临时查询物流信息</a></li>
+    </ul>
+</div>
+<form action='' method='post' class="form-horizontal">
+    
+    <div class="control-group">
+        <div class="controls">
+            <select name="ship_name" id="">
+                <option value="xz">新竹</option>
+                <option value="hm">黑猫（10个）</option>
+            </select>
+        </div>
+    </div>
+    
+    </select>
+    <div class="control-group">
+        <div class="controls">
+                <span>快递单号:</span><br/>
+                <textarea id='no_data' name='no_data' style='width:250px;height:300px'></textarea>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">导出</button>
+        </div>
+    </div>
+</form>
+{$data}
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

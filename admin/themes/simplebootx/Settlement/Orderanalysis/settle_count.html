@@ -1,0 +1,186 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="department_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="department" item="item">
+                    <option value="{$item.id_department}" <php>echo isset($_GET['department_id']) && $_GET['department_id']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                </foreach>
+            </select>  
+            <label class="control-label">物流:</label>
+            <select name="shipping_id">
+                <option value="">--所有--</option>
+                <php>
+                    foreach($shipping as $ship){
+                        $selected = $_GET['shipping_id']==$ship['id_shipping']?' selected="selected"':'';
+                        echo '<option value="'.$ship['id_shipping'].'"'.$selected.'>'.$ship['title'].'</option>';
+                    }
+                </php>
+            </select>
+            <label class="control-label">下单日期:</label>
+            <input type="text" name="start_time" class="js-datetime" value="<php>echo isset($_GET['start_time'])?str_replace('+',' ',$_GET['start_time']):'';</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="end_time" value="<php>echo isset($_GET['end_time'])?str_replace('+',' ',$_GET['end_time']):'';</php>" style="width: 120px;">
+            <label class="control-label">签收日期:</label>
+            <input type="text" name="signed_start_time" class="js-datetime" value="<php>echo isset($_GET['signed_start_time'])?str_replace('+',' ',$_GET['signed_start_time']):'';</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="signed_end_time" value="<php>echo isset($_GET['signed_end_time'])?str_replace('+',' ',$_GET['signed_end_time']):'';</php>" style="width: 120px;">
+            <button class="btn btn-primary searchButton">搜索</button><br>
+            <!--<button class="btn btn-primary exportSearchButton">导出搜索结果</button>-->
+            <label class="control-label">台币汇率:</label>
+            <input type="text" class="tb-hl count_hl" name="tb" value="<php>echo $_GET['tb']</php>" style="width:100px">
+            <label class="control-label">港币汇率:</label>
+            <input type="text" class="gb-hl count_hl" name="gb" value="<php>echo $_GET['gb']</php>" style="width:100px">
+            <label class="control-label">日元汇率:</label>
+            <input type="text" class="jpy-hl count_hl" name="jpy" value="<php>echo $_GET['jpy']</php>" style="width:100px">
+            <label class="control-label">新加坡元汇率:</label>
+            <input type="text" class="xjp-hl count_hl" name="xjp" value="<php>echo $_GET['xjp']</php>" style="width:100px">
+<!--            <a href="javascript:;" class="btn btn-primary countButton ">计算合计金额</a>
+            <a href="javascript:;" class="btn btn-primary resetButton ">重置</a>-->
+            <button class="btn btn-primary countButton">计算合计金额</button>
+            <button class="btn btn-primary resetButton">重置</button>
+        </div>
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th rowspan="2" style="line-height:70px;text-align:center">部门</th>
+            <th rowspan="2" style="line-height:70px;text-align:center">币种</th>
+            <th colspan="2" style="text-align:center">系统应结订单</th>
+            <th colspan="2" style="text-align:center">应结已结款订单</th>
+            <th colspan="2" style="text-align:center">应结未结款订单</th>
+        </tr>
+        <tr>
+            <td style="text-align:center">单数</td>
+            <td style="text-align:center">总金额</td>
+            <td style="text-align:center">单数</td>
+            <td style="text-align:center">总金额</td>
+            <td style="text-align:center">单数</td>
+            <td style="text-align:center">总金额</td>
+        </tr>
+        </thead>
+        <tbody>
+            <foreach name="list" item="item" key='key'>
+                
+                <php>
+                    $count = count($item)+2;
+                    $all_order_count = 0;$all_order_count_price = 0;
+                    $seet_count = 0;$seet_count_price = 0;
+                    $no_sett_count = 0;$no_sett_count_price = 0;
+                </php>
+                <tr>
+                    <td <php>echo 'rowspan="'.$count.'"'</php> style="text-align:center"><php>echo M('Department')->where(array('id_department'=>$key))->getField('title')</php></td>
+                </tr>
+                <foreach name='item' item='val' key='k'>
+                    <php>
+                        $all_order_count+=$val['all_order'];$all_order_count_price+=$val['amount_total'];
+                        $seet_count+=$val['sett_count'];$seet_count_price+=$val['sett'];
+                        $no_sett_count+=$val['no_sett_count'];$no_sett_count_price+=$val['no_sett'];
+                        //$where['code|symbol_left|symbol_right'] = $val['currency_code'];
+                        //$currency = M('Currency')->where($where)->getField('title');
+                    </php>
+                <tr>
+                    <td style="text-align:center"><php>echo $val['currency_code']</php></td>
+                    <td style="text-align:center">{$val.all_order}</td>
+                    <td style="text-align:center"><php>echo $val['amount_total']</php></td>
+                    <td style="text-align:center">{$val.sett_count}</td>
+                    <td style="text-align:center"><php>echo $val['sett']</php></td>
+                    <td style="text-align:center">{$val.no_sett_count}</td>
+                    <td style="text-align:center"><php>echo $val['no_sett']</php></td>   
+                </tr>                
+                </foreach>
+                <tr>
+                    <td style="text-align:center">总计</td>
+                    <td style="text-align:center"><php>echo $all_order_count</php></td>
+                    <td style="text-align:center" class="all_order_count_price"><php>echo $all_order_count_price</php></td>
+                    <td style="text-align:center"><php>echo $seet_count</php></td>
+                    <td style="text-align:center" class="seet_count_price"><php>echo $seet_count_price</php></td>
+                    <td style="text-align:center"><php>echo $no_sett_count</php></td>
+                    <td style="text-align:center" class="no_sett_count_price"><php>echo $no_sett_count_price</php></td>
+                    <input type='hidden' class='hid_all_order_count_price' name="hid_all_order_count_price" value="<php>echo $all_order_count_price</php>">
+                    <input type='hidden' class='hid_seet_count_price' name="hid_seet_count_price" value="<php>echo $seet_count_price</php>">
+                    <input type='hidden' class='hid_no_sett_count_price' name="hid_no_sett_count_price" value="<php>echo $no_sett_count_price</php>">
+                </tr>
+            </foreach>
+        </tbody>
+    </table>
+
+    <div class="pagination">{$page}</div>
+    </fieldset>
+    <div style="display: none"><php>   echo '耗时'.round($t2-$t1,3).'秒<br>';echo '耗时'.round($t3-$t2,3).'秒<br>';echo '耗时'.round($t4-$t3,3).'秒<br>';var_dump($sql);</php></div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.resetButton').click(function(){
+        $('.tb-hl').val('');
+        $('.gb-hl').val('');
+        $('.jpy-hl').val('');
+        $('.xjp-hl').val('');
+        window.location.reload();
+    });
+    
+//    $('.countButton').click(function(){
+//        
+//        var count = 0;
+//        $('.count_hl').each(function(key,value){
+//            if($(this).val() != '') {
+//                count++;
+//            }
+//        });
+//        
+//        if(count > 1) {
+//            alert('请填写一个汇率！');
+//            return false;
+//        }
+//        
+//        //存储没转换的总金额
+//        var hid_all_order_count_price = new Array(); 
+//        $('.hid_all_order_count_price').each(function(key,value){
+//            hid_all_order_count_price[key] = $(this).val();
+//        });
+//        var hid_seet_count_price = new Array(); 
+//        $('.hid_seet_count_price').each(function(key,value){
+//            hid_seet_count_price[key] = $(this).val();
+//        });
+//        var hid_no_sett_count_price = new Array(); 
+//        $('.hid_no_sett_count_price').each(function(key,value){
+//            hid_no_sett_count_price[key] = $(this).val();
+//        });
+//
+//        $.ajax({
+//            url:"{:U('Settlement/OrderAnalysis/get_count_price')}",
+//            type:"POST",
+//            dataType:'json',
+//            data:{
+//                'tb':$('.tb-hl').val(),
+//                'gb':$('.gb-hl').val(),
+//                'jpy':$('.jpy-hl').val(),
+//                'xjp':$('.xjp-hl').val(),
+//                'order_count_price':hid_all_order_count_price,
+//                'seet_count_price':hid_seet_count_price,
+//                'no_sett_count_price':hid_no_sett_count_price
+//            },
+//            success:function(result){
+//                if(result) {
+//                    $('.all_order_count_price').each(function(key,value){
+//                        $(this).text(result.oc[key]);
+//                    });
+//                    $('.seet_count_price').each(function(key,value){
+//                        $(this).text(result.sc[key]);
+//                    });
+//                    $('.no_sett_count_price').each(function(key,value){
+//                        $(this).text(result.nsc[key]);
+//                    });
+//                }
+//            }
+//        })
+//    })
+</script>
+</body>
+</html>

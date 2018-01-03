@@ -1,0 +1,37 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('Product/index/updatename')}">设置内部产品名</a></li>
+    </ul>
+    <form method="post" class="form-horizontal" action="{:U('Product/index/updatename')}">
+        <fieldset>
+
+            <div class="control-group">
+                <label class="control-label">ID:</label>
+                <div class="controls">
+                    <input type="text" name="id" value="">
+                    <span class="form-required">*</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">内部名:</label>
+                <div class="controls">
+                    <input type="text" name="inner_name" value="">
+                    <span class="form-required">*</span>
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">保存</button>
+            <a class="btn" href="{:U('Product/index/index')}">{:L('BACK')}</a>
+        </div>
+    </form>
+</div>
+
+<script src="__PUBLIC__/js/common.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('Loginmanage/apply_auth')}">{:L('申请权限')}</a></li>
+        <li class="active"><a href="{:U('Loginmanage/apply_result')}">{:L('申请结果')}</a></li>
+    </ul>
+    <div class="customerlayer" style="padding-top: 100px;">
+        <form action="" method="get" class="well form-search" style="margin-top: -80px;">
+            <table cellspacing="1">
+                <tbody>
+                <tr>
+                    <td class="th">申请时间：</td>
+                    <td>
+                        <input type="text" name="start_time" class="js-datetime date" value="{$_GET['start_time']}"/>-
+                        <input type="text" name="end_time" class="js-datetime date" value="{$_GET['end_time']}"/>
+                    </td>
+                    <td class="th">
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <button class="btn btn-primary searchButton">搜索</button>
+                        <a class="btn btn-default" href="{:U(User/Loginmanage/apply_result)}">重置</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+        <div class="ctab-body">
+            <div class="tableLayer" style="height: 450px;">
+                <table style="padding: 0;text-align: center;">
+                    <thead class="tableFloatingHeaderOriginal">
+                    <tr>
+                        <th>ID</th>
+                        <th>部门</th>
+                        <th>申请人</th>
+                        <th>申请时间</th>
+                        <th>申请使用时间</th>
+                        <th>申请原因</th>
+                        <th>主管审批状态</th>
+                        <th>研发审批状态</th>
+                        <th>最终审核结果</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <foreach name="lists" item="list">
+                        <tr>
+                            <td>{$list.id_apply}</td>
+                            <td>{$list.title}</td>
+                            <td>{$list.user_nicename}</td>
+                            <td><php>echo date('Y-m-d H:i:s',$list['create_time'])</php></td>
+                            <td><php>echo date('Y-m-d H:i',$list['use_start_time'])</php> - <php>echo date('Y-m-d H:i',$list['use_end_time'])</php></td>
+                            <td>{$list.apply_reson}</td>
+                            <td><php>echo $status[$list['director_status']];</php></td>
+                            <td><php>echo $status[$list['developing_status']];</php></td>
+                            <td><php>echo $status[$list['developing_status']];</php></td>
+                        </tr>
+                    </foreach>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="pagination" style="line-height: 30px;">{$Page}</div>
+</div>
+</body>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','addf_list');
+        $('.form-search').attr('action',"{:U('User/Loginmanage/apply_result')}");
+        $('.form-search') .submit();
+    });
+</script>

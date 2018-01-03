@@ -1,0 +1,181 @@
+<admintpl file="header" />
+</head>
+<body>
+
+<style>
+.fixedlayer {
+    position: fixed;
+    top: 0px;
+    height: 140px;
+    left: 20px;
+    right: 20px;
+    padding-top: 20px;
+    background-color: #fff;
+    z-index: 10;
+}
+.buttonLayer {margin-bottom: 10px;  background-color: #fff;}
+
+.customerlayer {height: 100%; padding-top: 140px; }
+.customerlayer .pagination { margin-top: 10px; margin-bottom: 0px; }
+.searchLayer {border: solid 1px #ddd; margin-bottom: 10px; }
+#id_warehouse{height: 30px;}
+.searchLayer input,.searchLayer select{height: 30px;}
+.searchLayer table {width: 100%; background-color: #fff; border-spacing: 1px !important; border-collapse: separate; font-family: "宋体"; table-layout: fixed; }
+.searchLayer table td {padding: 5px; margin: 1px; width: auto; }
+.searchLayer table td.th {background: #f1f1f1; width: 80px; }
+.searchLayer input[type="text"] {margin-bottom: 0px; border: none; box-shadow: none; border-bottom: solid 1px #ddd; border-radius: 0px; outline: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+.searchLayer select {margin-bottom: 0px; border-radius: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; outline: 0px;  line-height: 20px;}
+
+.tableLayer {width: 100%; overflow: scroll; height: 480px; }
+.tableLayer table{width: 100%}
+.tableLayer table th {border: solid 1px #ddd; padding: 10px; font-weight: bold; background: #f1f1f1; }
+.tableLayer table td {border: solid 1px #ddd; padding: 10px; }
+.ctab-panel {width: 100%; position: relative; margin-bottom: 10px; }
+.ctab-head {height: 40px; }
+.ctab-head > a {display: inline-block; color: #333; padding: 0px 10px; line-height: 40px; }
+.ctab-head > a.active {border: solid 1px #ddd; border-bottom: none; background-color: #fff; border-top: solid 2px #3daae9; }
+.ctab-body {border: solid 1px #ddd; padding: 10px; }
+.btn a{color: white;text-decoration: none;}
+.isimport{background-color: #33485d;}
+</style>
+<form method="post" action=""  id="form-search">
+<div class="fixedlayer">
+    <ul class="nav nav-tabs">
+        <li ><a href="{:U('Settlement/Import/payment')}?paymenttype={$pmtype}">{$pmtypestr}导入列表</a></li>
+        <li class="active"><a href="{:U('Import/payment_import')}?paymenttype={$pmtype}">导入{$pmtypestr}</a></li>       
+    </ul>
+    <div class="buttonLayer">
+        
+
+        
+    </div>
+    <div class="searchLayer">
+        
+        <input type="hidden" name="page" value="">
+        <table cellspacing="1">
+            <tr>
+                <td class="th">单据编号：</td>
+                <td>
+                    <input type="text" name="docno" class="" disabled="disabled" value="系统自动生成" >                    
+                </td>
+                <td class="th">单据日期：<span class="form-required" style="color:red">*</span</td>
+                <td><input type="text" name="billdate" class="js-date" value="{$cur_data}" autocomplete="off"></td>   
+                <td class="th">描述：</td>
+                <td colspan="7">
+                <input type="text" name="description" class="" value=""  placeholder="备注"> 
+                </td>  
+            </tr>
+          
+  
+        </table>
+        
+    </div>    
+</div>
+</form>
+<div class="wrap">
+
+    <div class="customerlayer">
+        <div class="ctab-panel">
+            <div class="ctab-head">
+                
+                <a href="#"   class="active">{$pmtypestr}明细</a>
+                <a href="#">导入{$pmtypestr}</a>
+            </div>        
+            <div class="ctab-body">
+                <div >
+                    <div class="tableLayer">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" class="allChecked" > </th>
+                                    <th>序号</th>
+                                    <th>订单id</th>
+                                    <th>快递单号</th>
+                                    <th>{$pmtypestr}金额</th>
+                                    <th>备注</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+      
+                            </tbody>
+                        </table>
+                    </div>
+                </div>            
+                <div  class="hide">
+                    <div class="control-group">
+                        <div class="controls">
+                        <textarea id="import_data" placeholder="直接从Excel复制三列:运单号、金额{$pmtype==1?'、备注':''}" style="width: 25%; height: 200px;"></textarea>
+                        <a id="import_btn" class="btn isimport">导入</a>
+                        <div id="warning"></div>
+                        </div>
+                    </div>   
+
+                </div>
+
+
+            </div>
+        </div>
+
+    
+    </div>
+
+</div>
+
+
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+    var  pmtype={$pmtype};
+    $('.ctab-head a').on('click',function(){
+        $(this).addClass("active").siblings().removeClass("active");
+        var index = $(this).index();
+        $(".ctab-body>div").eq(index).removeClass("hide").siblings().addClass("hide");
+    })
+    $('#import_btn').on('click', function(){ 
+        var claimsdata=[];
+        var data = $('#import_data').val().split("\n");
+        var  tmp = [];
+        var  match=/^\d+(\.\d+)?$/;
+        for(var i in data){
+            if(data[i].trim() === ''){
+                continue;
+            }
+            var itemobj={};
+            tmp = data[i].split("\t");
+            if(!match.test(tmp[1])){
+                alert('请填写正确的金额数！');
+                return false;
+            }             
+            itemobj.track_number=tmp[0];
+            itemobj.amount=tmp[1];
+            itemobj.remark=tmp[2];
+            claimsdata.push(itemobj);              
+        }
+        if(claimsdata.length==0){
+            alert('请填写导入信息！');
+            return false;
+        }
+        var billdate=$('input[name=billdate]').val();
+        var description=$('input[name=description]').val();
+        if(billdate==''){
+            alert('请选择单据时间！');
+            return false;            
+        }
+        $.ajax({
+            url:"{:U('Import/payment_import')}",
+            type:'POST',
+            dataType:'json',
+            data:{'claimsdata':claimsdata,'billdate':billdate,'description':description,'pmtype':pmtype},
+            success:function(data){
+                if(data.status == 1) {
+                    window.location.href="{:U('Import/payment_detail')}?csid="+data.csid;
+                }else{
+                    alert(data.message);
+                }
+            }
+        });        
+
+    });    
+</script>
+</body>
+</html>

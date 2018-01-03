@@ -1,0 +1,22 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="post" action="{:U('recover/update_recover')}" class="form-horizontal">
+            <label class="control-label">起始时间：</label>
+            <input type="text" name="start_time" class="js-datetime" value="{:I('request.start_time/s','')}" style="width: 120px;" autocomplete="off">-
+            <input autocomplete="off" type="text" class="js-datetime" name="end_time" value="{:I('request.end_time/s','')}" style="width: 120px;">
+            <button type="submit" class="btn btn-primary">{:L('确定')}</button>
+    </form>
+    <div>没有产品信息数量：{$no_pro_count} | 共恢复数量：{$pro_count}</div>
+    <foreach name="infor.error" item="err">
+        <div style="color:red;">{$err}</div>
+    </foreach>
+    <foreach name="infor.success" item="success">
+        <div style="color:green;">{$success}</div>
+    </foreach>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

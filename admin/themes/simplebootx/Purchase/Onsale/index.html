@@ -1,0 +1,97 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <fieldset>
+        <form method="get" action=""  class="well form-search">
+            <div class="control-group" style="line-height: 36px;">
+                <label class="control-label">部门:</label>
+                <select name="id_department" style="width:100px;">
+                    <option value="0">所有</option>
+                    <foreach name="department" item="item">
+                        <option value="{$key}" <php>echo isset($_GET['id_department']) && $_GET['id_department']==$key ? 'selected' : ''</php>>{$item}</option>
+                    </foreach>
+                </select>
+                <label class="control-label">仓库:</label>
+                <select name="id_warehouse" style="width:100px;">
+                    <option value="0">所有</option>
+                    <foreach name="warehouse" item="item">
+                        <option value="{$key}" <php>echo isset($_GET['id_warehouse']) && $_GET['id_warehouse']==$key ? 'selected' : ''</php>>{$item}</option>
+                    </foreach>
+                </select>
+                <label class="control-label">状态:</label>
+                <select name="status" style="width:100px;">
+                    <option value="0">所有</option>
+                    <foreach name="status" item="item">
+                        <option value="{$key}" <php>echo isset($_GET['status']) && $_GET['status']==$key ? 'selected' : ''</php>>{$item}</option>
+                    </foreach>
+                </select>
+                <label class="control-label">采购单号:</label>
+                    <input type="text" name="purchase_no" value="{$_GET['purchase_no']}">
+                <label class="control-label">内部采购单号:</label>
+                <input type="text" name="inner_purchase_no" value="{$_GET['inner_purchase_no']}">
+                <br>
+                <label class="control-label">建立日期:</label>
+                <input type="text" name="start_time" class="js-datetime" value="{$getData.start_time}" style="width: 120px;" autocomplete="off">-
+                <input autocomplete="off" type="text" class="js-datetime" name="end_time" value="{$getData.end_time}" style="width: 120px;">
+                <br/>
+                <button class="btn btn-primary searchButton">搜索</button>
+            </div>
+        </form>
+        <table class="table table-hover table-bordered table-list">
+            <thead>
+            <tr>
+                <th width="60">采购单号</th>
+                <th>内部采购单号</th>
+                <th>采购总数量</th>
+                <th>收货数量</th>
+                <th>已上架数量</th>
+                <th>采购员</th>
+                <th>建立日期</th>
+                <th>更新日期</th>
+                <th>所属仓库</th>
+                <th>部门</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+                <foreach name="list" item="item">
+                    <tr>
+                        <td>{$item.purchase_no}</td>
+                        <td>{$item.inner_purchase_no}</td>
+                        <td>{$item.total}</td>
+                        <td>{$item.total_received}</td>
+                        <td>{$item.total_onsale}</td>
+                        <td>{$item.user_name}</td>
+                        <td>{$item.created_at}</td>
+                        <td>{$item.updated_at}</td>
+                        <td>{$item.warehouse_name}</td>
+                        <td>{$item.department_name}</td>
+                        <td>{$item.status}</td>
+                        <td>
+                            <switch name="item['operation']">
+                                <case value="on_sale">
+                                    <a href="{:U('onsale/edit', array('id_purchase'=>$item['id_purchase']))}">采购上架</a>
+                                </case>
+                                <case value="view">
+                                    <a href="{:U('onsale/look', array('id_purchase'=>$item['id_purchase']))}">查看</a>
+                                </case>
+                            </switch>
+                        </td>
+                    </tr>
+                </foreach>
+            </tbody>
+        </table>
+
+        <div class="pagination">{$page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search').attr('action',"{:U('onsale/index')}");
+    });
+</script>
+</body>
+</html>

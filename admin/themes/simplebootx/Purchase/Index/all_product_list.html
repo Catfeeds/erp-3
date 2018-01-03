@@ -1,0 +1,44 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Index/product_list')}">产品列表</a></li>
+    </ul>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th width="50">ID</th>
+            <th>产品名</th>
+            <th>内部名</th>
+            <th>长(cm)</th>
+            <th>宽(cm)</th>
+            <th>高(cm)</th>
+            <th>重(kg)</th>
+            <th width="120">{:L('ACTIONS')}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="products" item="item">
+            <tr>
+                <td width="50">{$item.id_product}</td>
+                <td>{$item.title}</td>
+                <td>{$item.inner_name}</td>
+                <td>{$item.length}</td>
+                <td>{$item.width}</td>
+                <td>{$item.height}</td>
+                <td>{$item.weight}</td>
+                <td><a href="{:U('index/product_edit',array('id'=>$item['id_product']))}">编辑</a>
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+
+        <div class="pagination">{$Page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

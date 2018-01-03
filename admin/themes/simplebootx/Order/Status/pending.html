@@ -1,0 +1,461 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Order/Status/pending')}">审核列表</a></li>
+        <li><a href="{:U('Order/Status/warehouse_empty_log')}">仓库无SKU</a></li>
+    </ul>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="id_department" style="width:100px">
+                <option value="">全部</option>
+                <php> foreach($department_id as $dep_id){
+                    if(empty($department[$dep_id])) continue;
+                        $selected = $_GET['id_department']==$dep_id?' selected="selected"':'';
+                    echo '<option value="'.$dep_id.'" '.$selected.'>'.$department[$dep_id].'</option>';
+                    }
+                </php>
+            </select>
+            <label class="control-label">域名:</label>
+            <select name="id_domain">
+                <option value="0">所有</option>
+                <php>foreach($form_data['domain'] as $key=>$item){ </php>
+                <php>if($item['name']){</php>
+                <option value="{$key}" <php>if(isset($get_data['id_domain'])&& $get_data['id_domain']==$key){
+                echo 'selected="selected"';}</php>>{$item}<php></php></option>
+                <php>}</php>
+                <php>}</php>
+            </select>
+            <!--<label class="control-label">签收状态:</label>
+            <select name="track_status" style="width:100px;">
+                <option value="0">所有</option>
+                <php>foreach($form_data['track_status'] as $item){ </php>
+                <php>if($item['track_status']){</php>
+                <option value="{$item.track_status}"<php>if(isset($get['track_status'])&& $get['track_status']==$item['track_status']){echo ' selected="selected"';}</php>>{$item.track_status}</option>
+                <php>}</php>
+                <php>}</php>
+            </select>-->
+            <label class="control-label">地区:</label>
+            <select name="zone_id" style="width:100px;">
+                <option value="0">所有</option>
+                <php>
+                    if($form_data['zone']){
+                    foreach($form_data['zone'] as $zone_id=>$zone_name){
+                    $selected = $zone_name==$_GET['zone_id']?' selected="selected"':'';
+                    echo '<option value="'.$zone_id.'"'.$selected.'>'.$zone_name.'</option>';
+                    }
+                    }
+                </php>
+            </select>
+            <br />
+            <input type="checkbox" {$_GET['ismore']==1?'checked="checked"':''} name="ismore" value={$_GET['ismore']==1?'1':'0'} id="morecheck" style="margin-top:-2px;margin-right:-3px;">
+            <span style="color: red">是否模糊查询</span>
+            &nbsp;&nbsp;
+            <label class="control-label">关键词类型:</label>   
+            <select name="keywordtype" style="width:100px;">
+                <option {$_GET['keywordtype']=='id_increment'?'selected':''} value="id_increment">订单号</option>
+                <option {$_GET['keywordtype']=='track_number'?'selected':''} value="track_number">运单号</option>
+                <option {$_GET['keywordtype']=='id_domain'?'selected':''} value="id_domain">域名</option>
+                <option {$_GET['keywordtype']=='first_name'?'selected':''} value="first_name">姓名</option>
+                <option {$_GET['keywordtype']=='tel'?'selected':''} value="tel">电话</option>
+                <option {$_GET['keywordtype']=='address'?'selected':''} value="address">地址</option>
+                <option {$_GET['keywordtype']=='email'?'selected':''} value="email">邮箱</option>   
+                <option {$_GET['keywordtype']=='remark'?'selected':''} value="remark">备注</option>    
+                <option {$_GET['keywordtype']=='username'?'selected':''} value="username">广告专员</option>                          
+
+            </select>                    
+            <label class="control-label">关键词:</label>
+            <input type="text" name="keyword" style="width: 200px;" value="{:I('request.keyword/s','')}" placeholder="请输入关键字...">
+        <!--     <label class="control-label">来源:</label>
+            <input type="text" name="http_referer" style="width: 200px;" value="{$_GET['http_referer']}" placeholder="请输入URL"> -->
+            <br />
+            <label class="control-label">起始时间:</label>
+            <input type="text" name="start_time" class="js-datetime" value="{:I('request.start_time/s','')}" style="width: 120px;" autocomplete="off">-
+            <input autocomplete="off" type="text" class="js-datetime" name="end_time" value="{:I('request.end_time/s','')}" style="width: 120px;">
+            <input type="hidden" value="1" name="status_id">
+            <button class="btn btn-primary searchButton">搜索</button> &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+            
+        </div>
+    </form> 
+    <button class="btn btn-primary CheckAllOrderList" style="margin-left: 40%;margin-top: -155px;" class="js-ajax-dialog-btn">一键审核</button>
+    <fieldset>
+    
+    <div class="table-actions">
+       <!--<select name="shipping" style="width:130px;">
+           <option value="0">默认</option>
+            <php>
+                if(is_array($shipping)){
+                    foreach($shipping as $sp){
+                        echo '<option value="'.$sp['id'].'">'.$sp['title'].'</option>';
+                    }
+                }
+            </php>
+        </select>-->
+       待审总数：{$order_total}  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 今天待审数：{$today_total}
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <textarea style="width:530px;height: 20px;" placeholder="请填写备注信息" class="orderRemarkText" name="order_remark" rows="3" cols="18"></textarea>
+        <button orderid="{$order.id}" class="btn btn-primary btn-small submitOrderList" type="button"  data-subcheck="true">确定</button>
+    </div>
+    <table class="table table-hover table-bordered table-list order-table">
+        <thead>
+        <tr>
+            <th width="15"><label><input type="checkbox" class="js-check-all checkAllbox" data-direction="x" data-checklist="js-check-x"></label></th>
+            <th>订单号</th>
+            <th width="120">域名</th>
+            <th>地区</th>
+            <!--<th width="40">订单状态</th>-->
+            <th width="5">姓名</th>
+            <!-- <th>来源</th> -->
+            <th width="120">电话-送货地址</th>
+            <th width="120" >邮箱</th>
+            <th>总价</th>
+            <th width="5">产品名</th>
+            <th width="5">外文名</th>
+            <!--<th width="100">送货地址</th>-->
+            <!--<th>支付状态</th>-->
+            <!--<th>配送费</th>-->
+            <!--<th>邮编</th>-->
+            <th width="40">留言</th>
+            <th>后台备注</th>
+            <th>下单时间</th>
+            <th>重复数</th><th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="order_list" item="order">
+            <tr  style="<php>
+            switch($order['blacklist_level']){
+                case 1:case 2:
+                case 3:
+                    echo 'background:rgba(255, 229, 0, 0.3);';
+                case 4:
+                case 10:
+                    echo 'background:rgba(244, 54, 54, 0.5);';
+                break;
+            }
+            echo $order['order_repeat']>0?'color:red;':'';
+             if(in_array(trim($order['first_name']),$name_replace)){echo "color:purple";}
+            </php>"  shippingid="{$defaultShippingId}">
+                <td><input type="checkbox" shipping="" class="js-check" name="order_list_id" value="{$order.id_order}"></td>
+                <td width="50" id_order="{$order.id_order}">
+                     {$order.id_increment}<br />{$order.ip_address}</br>
+                 <php>
+                    $date = date('Y-m-d');
+                    $select = D("Common/orderInfo")->alias('oi')->field('COUNT(oi.ip) AS ip_total')
+                                ->where(array('oi.ip'=>$order['ip'],'oi.created_at'=>array('EGT', $date)))->find();
+                    echo '<br/>当天IP购买数量'.'('.$order['ip'].')：'.$select['ip_total'];
+                    echo $order['blacklist_level']>0?'<br />黑名单等级：'.$order['blacklist_level'].' (字段:'.$order['blacklist_field'].')':'';
+                    echo '<br/>';
+                </php>
+                </td>
+                <td><php>$domain = $form_data['domain'];
+                    //$domain_url =  $form_data['domain_address'];
+                    //if(isset($domain_url[$order['id_domain']])){
+                    //    echo '<a href="'.$domain_url[$order['id_domain']].'" target="_blank">'.$domain[$order['id_domain']].'</a>';
+                    //}else{
+                        echo $domain[$order['id_domain']];
+                    //}
+                    echo '<br/>'.$advertiser[$order['id_users']];</php></td>
+                <td><php>echo $all_zone[$order['id_zone']];</php></td>
+                <!--<td><php>echo $status_list[$order['id_order_status']];</php></td> -->
+                <td>{$order.first_name} {$order.last_name}</td>
+                <!-- <td width="80">{$order.http_referer}</td> -->
+                <td>{$order.tel}<br>{$order.province}  {$order.city} {$order.area} {$order.address}</td>
+                <td >{$order.email}</td>
+                <!--<td class="tel_email_show">-->
+                <!--&lt;!&ndash; <a href="#" title="{$order.tel_email_all}">{$order.tel_email_short}</a> &ndash;&gt;-->
+                <!--<span>{$order.tel_email_short}</span>-->
+                <!--<span style="display: none">{$order.tel_email_all}</span>-->
+                <!--</td>-->
+                <td>{$order.total_price}</td>
+                <td>
+                    <php>
+                        $tempProHtml = array();
+                        $get_html = array();
+                        $empty_flag = false;
+                        $temp_is_exit = false;
+                        foreach($order['products'] as $vp){
+                            $proId = $vp['id_product'];
+                            if(empty($vp['id_product_sku']) or empty($proId)){
+                                $empty_flag = true;
+                            }
+                            $parameter = array('id_zone'=>$order['id_zone'],'sku'=>$vp['sku'],'product_title'=>$vp['product_title']);
+                            $get_is_exit = D('Warehouse/Warehouse')->is_exist_warehouse($proId,$vp['id_product_sku'],$parameter);
+                            if($get_is_exit){
+                                $temp_is_exit .= $get_is_exit;
+                            }
+                            $tempProHtml[$proId]['title']  = $vp['product_title'];
+                            $tempProHtml[$proId]['qty']    = $vp['quantity'];
+                            $getAttr = $vp['sku_title']?$vp['sku_title'].'<span style="color:red;"> x </span>'.$vp['quantity'].'<br />':'';
+                            $get_html[$proId]['html'][] = $vp['sku_title']?'':'<span style="color:red;"> x </span>'.$vp['quantity'];
+                            $tempProHtml[$proId]['attr'][] = '<div style="padding-left:5px;">'.$getAttr.'</div>';
+                        }
+                        foreach($tempProHtml as $proId=>$product){
+                            $title = $tempProHtml[$proId]['title'];
+                            $qty = $tempProHtml[$proId]['qty'];
+                            $attrHtml = $tempProHtml[$proId]['attr']?implode('',$tempProHtml[$proId]['attr']):'';
+                            $tempQty = $attrHtml?'':'<span style="color:red;"> x </span>'.$qty;
+                            $num_html = $get_html[$proId]['html']?implode('',$get_html[$proId]['html']):'';
+                            $num_qty = $num_html ? '<span style="color:red;"> x </span>'.$qty : '';
+                            echo '<div>'.$tempProHtml[$proId]['title'].$tempQty.$num_qty.'
+                            <hr style="margin:2px 0;color:green;border: 1px solid;"/>'.$attrHtml.'</div><br />';
+                        }
+                        if($empty_flag){
+                            echo '<br /><br /><b><span style="color:red;">产品信息不完整</span></b>';
+                        }
+                        if($temp_is_exit){
+                        echo '<br /><b><span style="color:#57fb06;" class="warehouse_no_log">'.$temp_is_exit.' 不存在仓库,或SKU不可用</span></b>';
+                        }
+                    </php>
+                </td>
+                <td><php>
+                    $tempProHtml = array();
+                    $get_html = array();
+                    $empty_flag = false;
+                    foreach($order['products'] as $vp){
+                    $attr_title = unserialize($vp['attrs_title']);
+                    $attrs_title = implode('-',$attr_title);
+                    $proId = $vp['id_product'];
+                    if(empty($vp['id_product_sku']) or empty($proId)){
+                    $empty_flag = true;
+                    }
+                    $tempProHtml[$proId]['title']  = $vp['sale_title'];
+                    $tempProHtml[$proId]['qty']    = $vp['quantity'];
+                    $getAttr = $vp['sku_title']?($attrs_title?$attrs_title.'<span style="color:red;"> x </span>'.$vp['quantity'].'<br />':$vp['sku_title'].'<span style="color:red;"> x </span>'.$vp['quantity'].'<br />'):'';
+                    $get_html[$proId]['html'][] = $vp['sku_title']?'':($attrs_title?'':'<span style="color:red;"> x </span>'.$vp['quantity']);
+                    $tempProHtml[$proId]['attr'][] = '<div style="padding-left:5px;">'.$getAttr.'</div>';
+                    }
+                    foreach($tempProHtml as $proId=>$product){
+                    $title = $tempProHtml[$proId]['title'];
+                    $qty = $tempProHtml[$proId]['qty'];
+                    $attrHtml = $tempProHtml[$proId]['attr']?implode('',$tempProHtml[$proId]['attr']):'';
+                    $num_html = $get_html[$proId]['html']?implode('',$get_html[$proId]['html']):'';
+                    $num_qty = $num_html ? '<span style="color:red;"> x </span>'.$qty : '';
+                    $tempQty = $attrHtml?'':'<span style="color:red;"> x </span>'.$qty;
+                    echo '<div>'.$tempProHtml[$proId]['title'].$tempQty.$num_qty.'
+                    <hr style="margin:2px 0;color:green;border: 1px solid;"/>'.$attrHtml.'</div><br />';
+                    }
+                    if($empty_flag){
+                    echo '<br /><br /><span style="color:red;">产品信息不完整</span>';
+                    }
+                </php></td>
+                <!--<td>{$order.province}  {$order.city} {$order.area} {$order.address}</td>-->
+                <!--<td>{$order.payment_status}</td>-->
+                <!--<td>{$order.shipping_price}</td>
+                <td>{$order.zipcode}</td>-->
+                <td>{$order.remark}</td>
+                <td style="<php>echo $order['comment']?'background:#e6ffe6;':''</php>">{$order.comment}</td>
+                <td>{$order.created_at}</td>
+                <td><php>if($order['order_repeat']>0){
+                    echo '<a href="'.U('Ordercheck/index',array('action'=>'repeat','id'=>$order['id'])).'">'.$order['order_repeat'].'</a>';
+                    }else{echo $order['order_repeat'];}</php></td>
+                <td>
+                    <!--<select name="order_action" style="width:130px;">
+                        <option value="0">--请选择操作--</option>
+                        <option value="1">通过审核</option>
+                        <option value="2">无效订单</option>
+                    </select>-->
+                    <div class="childAction">
+                        <div class="deliveryInfo">
+                            <!--<select name="shipping" style="width:100px;">
+                                <php>
+                                    if(is_array($shipping)){
+                                    foreach($shipping as $sp){
+                                        $selected =  $sp['id']==$defaultShippingId?' selected="selected"':'';
+                                        echo '<option value="'.$sp['id'].'" '.$selected.'>'.$sp['title'].'</option>';
+                                    }
+                                    }
+                                </php>
+                            </select>-->
+                            <!--<input type="text" name="deliveryDate" placeholder="请选择配送时间" class="js-date"  style="width: 120px;">-->
+                        </div>
+                    </div>
+                    <textarea style="width:100px;height: 50px;" placeholder="请填写备注信息" class="orderRemarkText" name="order_remark" rows="3" cols="18"></textarea>
+                    <br />
+                    <button order_id="{$order.id_order}" class="btn btn-primary btn-small js-ajax-submit" type="button"  data-subcheck="true">确定</button><br />
+                    <!--<a href="javascript:viod(1);" orderid="{$order.id}" class=" updateOrderProduct" type="button">修改产品</a>&nbsp;|&nbsp;
+                    <a target="_blank" href="{:U('Admin/Order/editorder',array('id'=>$order['id']))}">修改配送地址</a>-->
+                </td>
+            </tr>
+
+        </foreach>
+        </tbody>
+    </table>
+    <div class="pagination">{$page}<input type="text" value="" name="displayRow" placeholder="输入每页显示数"><input type="button" class="btn btn-small submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定"></div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+
+    $('#morecheck').on('click',function(){
+        if($(this).attr('checked')){
+            $(this).val('1');
+        }else{
+            $(this).val('0');
+        }
+    });
+
+
+    //鼠标事件显示电话和邮箱
+    $(".tel_email_show").mouseover(function () {
+        $(this).children("span").eq(0).css("display","none");
+        $(this).children("span").eq(1).css("display","block");
+    });
+
+    $(".tel_email_show").mouseout(function () {
+        $(this).children("span").eq(0).css("display","block");
+        $(this).children("span").eq(1).css("display","none");
+    });
+    //console.debug(jQuery('.js-ajax-form'));
+    $('.submitDisplayRow').click(function(){
+        var getRow = $(this).parent().find('input[name=displayRow]').val();
+        if(getRow){$.post("{:U('Ordercheck/setpagerow')}",{'row':getRow},function(data){window.location.reload();});}
+    });
+    $("input[name=order_list_id]").attr("checked",false);
+    $(".checkAllbox").click(function(){
+        var setVal = $(this).attr('checked')=='checked'?true:false;
+        $("input[name=order_list_id]").attr("checked",setVal);
+        //$(".table-list :checkbox").attr("checked",setVal);
+    });
+    $('.submitOrderList').click(function(){
+        var curObj = $(this);var curParObj =  curObj.parent();
+        var order_id = [];
+        var tempShipping = {};
+        var alert_text = '';
+        $("input[name=order_list_id]:checked").each(function(){
+            var tempId = $(this).attr('value');
+            var empty_log= $(this).parent().parent().find('.warehouse_no_log').text();
+            if(empty_log){
+                $(this).attr("checked",false);
+                alert_text = alert_text+empty_log+' ';
+            }else{
+                order_id.push(tempId);
+                if(tempId!='undefined'){
+                    tempShipping[tempId] = $(this).attr('shipping');
+                }
+            }
+        });
+        if(alert_text && alert_text!=''){
+            alert(alert_text+' 请单击顶部查看SKU不在仓库列表');
+        }
+        if(order_id.length==0){alert('请至少选择一个订单');return false;}
+        var order_remark = curParObj.find('textarea').val();
+        //var shipping_id   = curParObj.find('select[name=shipping]').val();
+        $.post("{:U('Order/Status/approved')}",{'order_id':order_id,'order_remark':order_remark},function(data){
+            var getJson = $.parseJSON(data);
+            if(getJson.status){alert('操作成功');window.location.reload();}else{alert(getJson.message);}
+        });
+    });
+    /*$('select[name=order_action]').change(function(){
+        var getAction = $(this).val();
+        switch(getAction){
+            case '1':case 1:
+                $(this).parent().find('.deliveryInfo').show().siblings().hide();;
+                break;
+            case '2':case 2:
+                $(this).parent().find('.reason').show().siblings().hide();;
+                break;
+
+        }
+    });*/
+    $('.js-ajax-submit').click(function(){
+        var curObj = $(this);var curParObj =  curObj.parent();
+        var order_id = curObj.attr('order_id');
+        var order_remark = curParObj.find('textarea').val();
+        //var order_action = curParObj.find('select[name=order_action]').val();
+        //if(order_action==0){alert('请选择操作类型');return false;}
+        var invalid_order = curParObj.find('select[name=invalid_order]').val();
+        var shipping_id   = curParObj.find('select[name=shipping]').val();
+        //var delivery_date   = curParObj.find('input[name=deliveryDate]').val();
+        if(curParObj.parent().find('.warehouse_no_log').text()){
+            alert(curParObj.parent().find('.warehouse_no_log').text());return  false;
+        }
+        $.post("{:U('Order/Status/approved')}",{'order_id':order_id,//,'order_action':order_action
+            'order_remark':order_remark//,'invalid_order':invalid_order,'shipping_id':shipping_id,'delivery_date':delivery_date
+            },function(data){
+            var getJson = $.parseJSON(data);
+            alert(getJson.message);
+            if(getJson.status==1){
+                curParObj.parent().remove();
+            }
+            
+        });
+    });
+    $('.updateOrderProduct').click(function(){
+        var getOrderId = $(this).attr('orderid');
+        $('.productListBox').hide();
+        $('.orderProductList'+getOrderId).show();
+    });
+    $('.submitProductForm').click(function(){
+        var getForm = $(this).attr('getid');
+        var getSerialize = $('.'+getForm).serializeArray();
+        $('.'+getForm).find('.loading').show();
+        $.post("{:U('Ordercheck/updateproduct')}",getSerialize,function(data){
+            var getJson = $.parseJSON(data);
+            if(getJson.status){
+                alert('更新成功！');
+                $('.'+getForm).parent().parent().hide();
+            }else{
+                alert(getJson.message);
+            }
+            $('.'+getForm).find('.loading').hide();
+        })
+    });
+    function deleteHandsel(){
+        $('.deleteHandsel').click(function(){
+            var getDivId = $(this).attr('getid');
+            $('.'+getDivId).remove();
+        });
+    }
+    $('.searchHandselProduct').click(function(){
+        var curObj = $(this);var thisObjText = curObj.text();
+        var getKeyword = curObj.parent().find('input[name=handselProduct]').val();
+        if(getKeyword==''){alert('请输入产品ID或SKU。');return false;}
+        var getFormId = curObj.parent().find('.submitProductForm').attr('getid');
+        curObj.text('Loading...');
+        $.post("{:U('Product/getproduct')}",{'keyword':getKeyword,'select_attr':'1'},function(data){
+            var getJson = $.parseJSON(data);
+            if(getJson.status!=1){alert('没有搜索到产品');}
+            var product = getJson.data;
+            var handselBox = 'handselBox'+product.id;
+
+            var attrSku = product.attr_sku;var attrHtml = '';
+            if(attrSku){
+                for(var i=0;i<attrSku.length;i++){
+                    attrHtml += '<tr class="'+handselBox+'"><td>'+attrSku[i]['model']+'</td><td>'+attrSku[i]['label']+'</td>' +
+                            '<td><input placeholder="请输入数量" type="text" value="" name="handsel_qty['+product.id+']['+attrSku[i]['id']+']"></td></tr>';
+                }
+            }
+            var insertHtmlString = '<tr class="'+handselBox+'" style="font-weight: bold;background:#f5f5f5;">' +
+                    '<td colspan="30"><input type="hidden" name="handsel[]" value="'+product.id+'"> '+
+                    product.title+'   ('+product.sku+') ' +
+                    '<button type="button" class="btn btn-small deleteHandsel" getid="'+handselBox+'">删除</button>' +
+                    '</td></tr>'+attrHtml;
+
+            $('.'+getFormId+' table').append(insertHtmlString);
+            curObj.text(thisObjText);
+            deleteHandsel();
+        });
+    });
+    //一键审核   --- Lily 2017-11-09
+    $(".CheckAllOrderList").click(function(){
+       if (confirm('你確定要一键审核吗？')) {
+        action = 1;
+      $.post("{:U('Order/Status/approved')}",{"action":action},function(data){
+            var getJson = $.parseJSON(data);
+            if(getJson.status){ 
+                alert("操作成功");window.location.reload();
+            }else{
+                alert(getJson.message);
+            };
+        });
+  }
+    });
+</script>
+</body>
+</html>

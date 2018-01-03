@@ -1,0 +1,195 @@
+<admintpl file="header" />
+<style>
+    .fixedlayer {
+        position: fixed;
+        top: 0px;
+        height: 200px;
+        left: 20px;
+        right: 20px;
+        padding-top: 20px;
+        background-color: #fff;
+        z-index: 10;
+    }
+    .buttonLayer {margin-bottom: 10px;  background-color: #fff;}
+
+    .customerlayer {height: 100%; padding-top: 210px; }
+    .customerlayer .pagination { margin-top: 10px; margin-bottom: 0px; }
+    .searchLayer {border: solid 1px #ddd; margin-bottom: 10px; }
+    #id_warehouse{height: 30px;}
+    .searchLayer input,.searchLayer select{height: 30px;}
+    .searchLayer table {width: 100%; background-color: #fff; border-spacing: 1px !important; border-collapse: separate; font-family: "宋体"; table-layout: fixed; }
+    .searchLayer table td {padding: 5px; margin: 1px; width: auto; }
+    .searchLayer table td.th {background: #f1f1f1; width: 80px; }
+    .searchLayer input[type="text"] {margin-bottom: 0px; border: none; box-shadow: none; border-bottom: solid 1px #ddd; border-radius: 0px; outline: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+    .searchLayer select {margin-bottom: 0px; border-radius: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; outline: 0px;  line-height: 20px;}
+
+    .tableLayer {width: 100%; overflow: scroll; height: 480px; }
+    .tableLayer table{width: 100%}
+    .tableLayer table th {border: solid 1px #ddd; padding: 10px; font-weight: bold; background: #f1f1f1; }
+    .tableLayer table td {border: solid 1px #ddd; padding: 10px; }
+    .ctab-panel {width: 100%; position: relative; margin-bottom: 10px; }
+    .ctab-head {height: 40px; }
+    .ctab-head > a {display: inline-block; color: #333; padding: 0px 10px; line-height: 40px; }
+    .ctab-head > a.active {border: solid 1px #ddd; border-bottom: none; background-color: #fff; border-top: solid 2px #3daae9; }
+    .ctab-body {border: solid 1px #ddd; padding: 10px; }
+    .btn a{color: white;text-decoration: none;}
+    .isimport{background-color: #33485d;}
+</style>
+</head>
+<body>
+<div class="fixedlayer" style="height: 40px;">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Order/Statistics/every_day')}">每日统计</a></li>
+        <li><a href="{:U('Order/Statistics/every_day',array('department'=>'deartment_total'))}">每日部门统计</a></li>
+    </ul>
+</div>
+
+<div class="wrap">
+    <div class="customerlayer" style="margin-top: -160px;">
+        <form method="get" action=""  class="well form-search">
+            <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+            <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+            <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+            <div class="buttonLayer" style="width: 70px;height: 30px;display: inline-block;" >
+                <button class="btn btn-primary searchButton">搜索</button>
+               </div>
+            <div class="buttonLayer" style="width: 70px;height: 30px;display: inline-block;" >
+                <button class="btn btn-primary exportButton">导出</button>
+            </div>
+            <div class="searchLayer" style="padding-bottom: -10px;">
+                <table cellspacing="1">
+                    <tr>
+                        <td class="th">部门：</td>
+                        <td>
+                            <select name="id_department" style="width:200px;height:30px">
+                                <option value="">全部</option>
+                                <php> foreach($department_id as $dep_id){
+                                    if(empty($department[$dep_id])) continue;
+                                    $selected = $_GET['id_department']==$dep_id?' selected="selected"':'';
+                                    echo '<option value="'.$dep_id.'" '.$selected.'>'.$department[$dep_id].'</option>';
+                                    }
+                                </php>
+                            </select>                        </td>
+                        <td class="th">起始时间：</td>
+                        <td>
+                            <input type="text" name="start_time" class="js-datetime" value="<php>echo $_GET['start_time'];</php>" style="width: 133px;" autocomplete="off">-
+                            <input type="text" class="js-datetime" name="end_time" value="<php>echo $_GET['end_time'];</php>" style="width: 133px;">
+                            <input type="hidden" id = "start_time" value="{$start_time}">
+                            <input type="hidden" id = "end_time" value="{$end_time}">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+        <div class="ctab-panel">
+            <div class="ctab-head" style="height: 30px;">
+                <div class="pagination">{$page}</div>
+            </div>
+            <div class="ctab-body">
+                <div class="tableLayer" style="height: 600px;">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>总订单</th>
+                            <th>有效订单</th>
+                            <th>无效订单</th>
+                            <th>未处理</th>
+                            <th>待处理</th>
+                            <!--<th>配送中</th>-->
+                            <th>待审核</th>
+                            <th>未配货</th>
+                            <th>配货中</th>
+                            <th>缺货</th>
+                            <th>已配货</th>
+                            <th>配送中</th>
+                            <th>已签收</th>
+                            <th>已退货</th>
+                            <th>重复下单</th>
+                            <th>信息不完整</th>
+                            <th>恶意下单</th>
+                            <th>客户取消</th>
+                            <th>质量问题/产品破损</th>
+                            <th>没货取消</th>
+                            <th>隐藏订单</th>
+                            <th>测试订单</th>
+                            <th>拒收</th>
+                            <th>已打包</th>
+                            <th>理赔</th>
+                            <th>退货入库</th>
+                            <th>问题件</th>
+                            <th>部分缺货</th>
+                            <th>已审核</th>
+                            <th>已转寄入库</th>
+                            <th>匹配转寄中</th>
+                            <th>已匹配转寄</th>
+                            <th>转寄完成</th>
+                        </tr>
+                        </thead>
+                        <foreach name="list" item="item">
+                            <tr>
+                                <td>{$item.set_date}</td>
+                                <td>{$item.total}</td>
+                                <td>{$item.effective}</td>
+                                <td>{$item.invalid}</td>
+                                <td>{$item.status1}</td>
+                                <td>{$item.status2}</td>
+                                <td>{$item.status3}</td>
+                                <td>{$item.status4}</td>
+                                <td>{$item.status5}</td>
+                                <td>{$item.status6}</td>
+                                <td>{$item.status7}</td>
+                                <td>{$item.status8}</td>
+                                <td>{$item.status9}</td>
+                                <td>{$item.status10}</td><td>{$item.status11}</td>
+                                <td>{$item.status12}</td><td>{$item.status13}</td>
+                                <td>{$item.status14}</td><td>{$item.status15}</td>
+                                <td>{$item.status29}</td>
+                                <td>{$item.status30}</td>
+                                <td>{$item.status28}</td>
+                                <td>{$item.status16}</td>
+                                <td>{$item.status18}</td>
+                                <td>{$item.status19}</td>
+                                <td>{$item.status21}</td>
+                                <td>{$item.status23}</td>
+                                <td>{$item.status17}</td>
+                                <td>{$item.status22}</td>
+                                <td>{$item.status24}</td>
+                                <td>{$item.status25}</td>
+                                <td>{$item.status26}</td>
+                                <td>{$item.status27}</td>
+                            </tr>
+                        </foreach>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/jquery.stickytableheaders.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".tableLayer table").stickyTableHeaders({scrollableArea: $('.tableLayer')});
+    });
+    var start_time = $('input[name=start_time]').val();
+    var end_time = $('input[name=end_time]').val();
+    if(!start_time && !end_time)
+    {
+        var start = $("#start_time").val();
+        var end = $("#end_time").val();
+        $('input[name=start_time]').val(start);
+        $('input[name=end_time]').val(end);
+    }
+$('.exportButton').click(function(){ 
+        $('.form-search input[name=a]').attr('value','<php>echo ACTION_NAME;</php>');
+        $('.form-search').attr('action',"{:U('Statistics/every_day_export')}");
+     });
+    $('.searchButton').click(function(){ 
+        $('.form-search input[name=a]').attr('value','every_day');
+        $('.form-search').attr('action',"{:U('Statistics/every_day')}");
+     });
+</script>
+</body>
+</html>

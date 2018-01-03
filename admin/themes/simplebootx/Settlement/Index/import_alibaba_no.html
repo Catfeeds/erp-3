@@ -1,0 +1,45 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <ul class="nav nav-tabs">
+            <li ><a href="{:U('Settlement/Index/waiting_pay')}">采购单待付款列表</a></li>
+            <li class="active"><a href="{:U('Settlement/Index/import_alibaba_no')}">导入采购渠道订单号</a></li>
+        </ul>
+    </ul>
+    <fieldset>
+        <form method="post" action="{:U('Index/import_alibaba_no')}" enctype="multipart/form-data"  class="form-horizontal">
+            
+            <div class="control-group" style="line-height: 36px;">
+                <div class="control-group">
+                    <div class="controls">
+                        <p style="color:red;">更新采购预付款单</p>
+                        <p>直接从Excel复制一列:采购渠道订单号[阿里巴巴]，价格，部门。 </p>
+                        <p>PS:价格和采购价格不等 不会更新采购单状态</p>
+                        <br />
+                        <textarea name="data" style="width:300px;height:300px;">{$data}</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">{:L('导入')}</button>
+            </div>
+        </form>
+    </fieldset>
+    <present name="Think.post.data">
+        <div>共更新:{$total} 失败:{$infor.error|count} 成功:{$infor.success|count}</div>
+    </present>
+    <foreach name="infor.error" item="err">
+        <div style="color:red;">{$err}</div>
+    </foreach>
+    <foreach name="infor.warning" item="warning">
+        <div style="color:yellowgreen;">{$warning}</div>
+    </foreach>
+    <foreach name="infor.success" item="success">
+        <div style="color:green;">{$success}</div>
+    </foreach>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

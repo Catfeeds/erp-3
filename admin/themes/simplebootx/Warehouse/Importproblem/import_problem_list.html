@@ -1,0 +1,232 @@
+<admintpl file="header" />
+<style>
+    .fixedlayer {
+        position: fixed;
+        top: 0px;
+        height: 200px;
+        left: 20px;
+        right: 20px;
+        padding-top: 20px;
+        background-color: #fff;
+        z-index: 10;
+    }
+    .buttonLayer {margin-bottom: 10px;  background-color: #fff;}
+
+    .customerlayer {height: 100%; padding-top: 210px; }
+    .customerlayer .pagination { margin-top: 10px; margin-bottom: 0px; }
+    .searchLayer {border: solid 1px #ddd; margin-bottom: 10px; }
+    #id_warehouse{height: 30px;}
+    .searchLayer input,.searchLayer select{height: 30px;}
+    .searchLayer table {width: 100%; background-color: #fff; border-spacing: 1px !important; border-collapse: separate; font-family: "宋体"; table-layout: fixed; }
+    .searchLayer table td {padding: 5px; margin: 1px; width: auto; }
+    .searchLayer table td.th {background: #f1f1f1; width: 80px; }
+    .searchLayer input[type="text"] {margin-bottom: 0px; border: none; box-shadow: none; border-bottom: solid 1px #ddd; border-radius: 0px; outline: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+    .searchLayer select {margin-bottom: 0px; border-radius: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; outline: 0px;  line-height: 20px;}
+
+    .tableLayer {width: 100%; overflow: scroll; height: 480px; }
+    .tableLayer table{width: 100%}
+    .tableLayer table th {border: solid 1px #ddd; padding: 10px; font-weight: bold; background: #f1f1f1; }
+    .tableLayer table td {border: solid 1px #ddd; padding: 10px; }
+    .ctab-panel {width: 100%; position: relative; margin-bottom: 10px; }
+    .ctab-head {height: 40px; }
+    .ctab-head > a {display: inline-block; color: #333; padding: 0px 10px; line-height: 40px; }
+    .ctab-head > a.active {border: solid 1px #ddd; border-bottom: none; background-color: #fff; border-top: solid 2px #3daae9; }
+    .ctab-body {border: solid 1px #ddd; padding: 10px; }
+    .btn a{color: white;text-decoration: none;}
+    .isimport{background-color: #33485d;}
+</style>
+</head>
+<body>
+<form method="get" action="{:U('Importproblem/import_problem_list')}"  id="form-search">
+    <div class="fixedlayer">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="{:U('Importproblem/import_problem_list')}">问题订单列表</a></li>
+            <li class=""><a href="{:U('Importproblem/import_problem')}">导入问题订单</a></li>
+        </ul>
+        <div class="buttonLayer">
+            <span class="btn btn-primary  searchButton" >查询</span>
+            <span class="btn btn-primary  submitButton" >提交</span>
+            <span class="btn btn-primary  deleteButton" >作废</span>
+        </div>
+        <div class="searchLayer">
+            <table cellspacing="1">
+                <tr>
+                    <td class="th">订单号：</td>
+                    <td>
+                        <input type="text" name="id_increment" class=""  value=" {$get_data['id_increment'] ? $get_data['id_increment']: ''}" >
+                    </td>
+                    <td class="th">快递单号：</td>
+                    <td>
+                        <input type="text" name="track_number" class=""  value="{$get_data['track_number'] ? $get_data['track_number'] : ''}" >
+                    </td>
+                    <td class="th">创建日期：<span class="form-required" style="color:red">*</span</td>
+                    <td>
+                        <input class="js-date date" name="start_time" value="{$get_data['start_time']}" style="width: 133px;" autocomplete="off" type="text">-
+                        <input class="js-date date" name="end_time" value="{$get_data['end_time']}" style="width: 133px;" type="text" autocomplete="off">
+                    </td>
+
+                    <td class="th">状态：<span class="form-required" style="color:red">*</span></td>
+                    <td>
+                        <select name="status" id="" style="width: 200px;">
+                            <option value="0">全部</option>
+                            <option value="1"  {$get_data['status'] == 1 ? "selected" : ""}>未提交</option>
+                            <option {$get_data['status'] == 2 ? "selected" : ""}  value="2">已提交</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+        <div class="pagination" style="float: left">
+            <p>问题类型：<input type="text" class="problemName" id="problem_name"  placeholder="提交时请输入"/></p>
+        </div>
+        <div class="pagination" style="float: left;margin-left: 10px;">
+            {$page}<input type="text" value="" name="displayRow" placeholder="输入每页显示{$get_data['displayRow']}数">
+            <input type="button" class="btn btn-small submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">
+        </div>
+    </div>
+</form>
+<div class="wrap">
+
+    <div class="customerlayer">
+        <div class="ctab-panel">
+            <div class="ctab-body">
+                <div class="tableLayer">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th><input type="checkbox" class="allChecked" >序号</th>
+                            <th>编号</th>
+                            <th>订单号</th>
+                            <th>快递单号</th>
+                            <th>制单人</th>
+                            <th>提交人</th>
+                            <th>订单状态</th>
+                            <th>问题名称</th>
+                            <th>状态</th>
+                            <th>创建时间</th>
+                            <th>修改时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <foreach name="lists" item="list" key='key'>
+                            <tr>
+                                <th><input type="checkbox" class="{$list['status'] == '已提交' ? 'nocheked' : ''} checkItem"  value="{$list['id_import_problem']}"  {$list['status']=='已提交' ? "disabled" : ''}> {$key+1}</th>
+                                <th>{$list['id_import_problem']}</th>
+                                <th>{$list['id_increment']}</th>
+                                <th>{$list['track_number']}</th>
+                                <th>{$list['id_user_creat']}</th>
+                                <th>{$list['id_user_save']}</th>
+                                <th>{$list['id_order_status_before']}</th>
+                                <th>{$list['problem_name']}</th>
+                                <th>{$list['status']}</th>
+                                <th>{$list['created_at']}</th>
+                                <th>{$list['updated_at']}</th>
+                            </tr>
+                        </foreach>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+
+    $('.allChecked').on('click',function(){
+        if($(this).is(':checked')){
+            $('.tableLayer tbody').find('input[type=checkbox]').not('.nocheked').attr('checked',true);
+        }else{
+            $('.tableLayer tbody').find('input[type=checkbox]').not('.nocheked').attr('checked',false);
+        }
+    });
+
+    $('.checkItem').on('click',function(){
+        if(!$(this).is(':checked')){
+            $(this).attr('checked',false);
+        }else{
+            $(this).attr('checked',true);
+        }
+    });
+
+    $('.searchButton').on('click',function(){
+        $('#form-search').trigger('submit');
+    });
+
+    $('.submitButton').on('click',function(){
+        var  ids=[];
+        $('.checkItem[checked] ').each(function(){
+            ids.push($(this).val());
+        });
+        var problem_name = $("#problem_name").val();
+        if(ids.length==0){alert('请至少选择一个数据');return false;}
+        if (confirm('确定要提交选中单据？')) {
+            $.ajax({
+                url:"{:U('Importproblem/import_problem_commit')}",
+                type:'POST',
+                dataType:'json',
+                data:{'ids':ids,'problem_name':problem_name},
+                success:function(data){
+                    if(data.status == 1) {
+                        alert(data.message);
+                        $('.checkItem[checked] ').each(function(){
+                            $(this).attr('checked',false);
+                        });
+                        window.location.reload();
+                    }else{
+                        alert(data.message);
+                    }
+                }
+            });
+        }
+    });
+
+    $('.deleteButton').on('click',function(){
+        var  ids=[];
+        $('.checkItem[checked] ').each(function(){
+            ids.push($(this).val());
+        });
+
+        if(ids.length==0){alert('请至少选择一个数据');return false;}
+        if (confirm('确定要删除选中数据？')) {
+            $.ajax({
+                url:"{:U('Importproblem/import_problem_delete')}",
+                type:'POST',
+                dataType:'json',
+                data:{'ids':ids},
+                success:function(data){
+                    if(data.status == 1) {
+                        alert('删除成功！');
+                        $('.checkItem[checked] ').each(function(){
+                            $(this).attr('checked',false);
+                        });
+                        window.location.reload();
+                    }else{
+                        alert(data.message);
+                    }
+                }
+            });
+        }
+    });
+
+    $('.submitDisplayRow').click(function()
+    {
+        var getRow = $(this).parent().find('input[name=displayRow]').val();
+        if(getRow){
+            $.post("{:U('Importproblem/setpagerow')}",{'row':getRow},function()
+            {
+                window.location.reload();
+            });
+        }
+    });
+
+
+
+</script>
+</body>
+</html>

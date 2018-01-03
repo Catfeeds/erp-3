@@ -1,0 +1,229 @@
+<admintpl file="header" />
+<style type="text/css">
+    .pic-list li {
+        margin-bottom: 5px;
+    }
+</style>
+</head>
+<body>
+<div class="loading" style="display:none;position:absolute; left:0; top:0;width:100%; height:100%;z-index:20000;background-color:gray;opacity:0.5; -moz-opacity:0.5; filter:alpha(opacity=50);">
+    loading...
+</div>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Index/compareQuestion',array('question_order_id'=>$_POST['id']))}">问题件修改信息前后对比</a></li>
+    </ul>
+    <div class="row-fluid">
+        <div></div>
+        <div class="span9" style="margin-bottom: 20px;">
+            <h3>订单信息</h3>
+            <table class="table table-hover table-bordered table-list attributesListBox">
+            <php>  $order_before = json_decode($order['question_order_before'],true);
+                        $order_after = json_decode($order['question_order_after'],true);
+                        $domain_list = M("Domain")->where("id_domain=".$order_before[0]['id_domain'])->field("name")->find();
+                        $status_list = D('Order/OrderStatus')->get_status_label();
+                        $shipping = M('OrderShipping')->where("id_shipping=".$order_before[0]['id_shipping'])->find();
+                </php>
+                <tr style="background:#f5f5f5">
+                   <th>订单ID</th>
+                    <th>域名</th>
+                    <th>订单状态</th>
+                    <th>物流名称</th>
+                    <th>发货日期</th>
+                    <th>跟踪号</th>
+                    <th>签收情况</th>
+                    <th>建立时间</th>                   
+                </tr>
+                <tr>
+                <php>if(!$order_after['action']){</php>
+                   <td> 修改之前</td>
+                   <php>}</php>
+                    <td>{$order_before[0].id_increment}</td>
+                    <td><php>echo $domain_list['name']</php></td>
+                    <td><php>echo $status_list[$order_before[0]['id_order_status']]</php></td>
+                    <td>
+                        <if condition="$shipping NEQ ''">
+                            <php>echo $shipping['shipping_name'];</php>
+                        <else/>
+                            未分配
+                        </if>
+                    </td>
+                    <td>{$order_before[0].delivery_date}</td>
+                    <td><php>
+                        //$ship = D("Common/OrderShipping")->getShipInfo($order_before[0]['id'],'track_number,status_label');
+                        </php>
+                        <foreach name="ship" item="s">
+                            <div><a target="_blank" href="<php>echo str_replace('{}', $s['track_number'], $shopping_url);</php>">{$s.track_number} {$s.status_label}</a> </div>
+                        </foreach>
+                    </td>
+                    <td>
+                        <php>echo $trackLabel?implode(',',$trackLabel):''; </php>
+                    </td>
+                    <td>{$order_before[0].created_at}</td>
+                </tr>
+                 <php>if(!$order_after['action']){</php>
+                 <tr>  
+                    <td> 修改之后</td>
+                    <td>{$order_before[0].id_increment}</td>
+                    <td><php>echo $domain_list['name']</php></td>
+                    <td><php>echo $status_list[$order_after[0]['id_order_status']]</php></td>
+                    <td>
+                        <if condition="$shipping NEQ ''">
+                            <php>echo $shipping['shipping_name'];</php>
+                        <else/>
+                            未分配
+                        </if>
+                    </td>
+                    <td>{$order_before[0].delivery_date}</td>
+                    <td><php>
+                        //$ship = D("Common/OrderShipping")->getShipInfo($order_before[0]['id'],'track_number,status_label');
+                        </php>
+                        <foreach name="ship" item="s">
+                            <div><a target="_blank" href="<php>echo str_replace('{}', $s['track_number'], $shopping_url);</php>">{$s.track_number} {$s.status_label}</a> </div>
+                        </foreach>
+                    </td>
+                    <td>
+                        <php>echo $trackLabel?implode(',',$trackLabel):''; </php>
+                    </td>
+                    <td>{$order_before[0].created_at}</td>
+                </tr>
+                <php> }</php>
+               <!--  -->
+            </table>
+        </div>
+        <div class="span9" style="margin-bottom: 20px;">
+            <h3>用户信息</h3>
+            <table class="table table-hover table-bordered table-list attributesListBox">
+                <tr style="background:#f5f5f5">
+                    <th>对比</th>
+                    <th>姓名</th>
+                    <th>电话</th>
+                    <th>邮箱</th>
+                    <th>国家</th>
+                    <th>省份</th>
+                    <th>城市</th>
+                    <th>区域</th>
+                    <th>地址</th>
+                    <th>邮编</th>
+                    <th>留言</th>
+                    <th>后台备注</th>                    
+                </tr>
+                <tr>
+                    <td>修改之前</td>
+                    <td>{$order_before[0].first_name} {$order_before[0].last_name}</td>
+                    <td>{$order_before[0].tel}</td>
+                    <td>{$order_before[0].email}</td>
+                    <td>{$order_before[0].country}</td>
+                    <td>{$order_before[0].province}</td>
+                    <td>{$order_before[0].city}</td>
+                    <td>{$order_before[0].area}</td>
+                    <td>{$order_before[0].address}</td>
+                    <td>{$order_before[0].zipcode}</td>
+                    <td>{$order_before[0].remark}</td>
+                    <td>{$order_before[0].comment}</td>
+                </tr>
+                <php> if($order_after['action'] && $order_after['action']=='ajax'){</php>
+                 <tr>
+                    <td>修改之后</td>
+                    <td>{$order_after.first_name} {$order_after.last_name}</td>
+                    <td>{$order_after.tel}</td>
+                    <td>{$order_after.email}</td>
+                    <td>{$order_before[0].country}</td>
+                    <td>{$order_after.province}</td>
+                    <td>{$order_after.city}</td>
+                    <td>{$order_after.area}</td>
+                    <td>{$order_after.address}</td>
+                    <td>{$order_after.zipcode}</td>
+                    <td>{$order_before[0].remark}</td>
+                    <td>{$order_after.comment}</td>
+                </tr>
+                <php>}else{</php>
+                <tr>
+                    <td>修改之后</td>
+                    <td>{$order_after[0].first_name} {$order_after[0].last_name}</td>
+                    <td>{$order_after[0].tel}</td>
+                    <td>{$order_after[0].email}</td>
+                    <td>{$order_before[0].country}</td>
+                    <td>{$order_after[0].province}</td>
+                    <td>{$order_after[0].city}</td>
+                    <td>{$order_after[0].area}</td>
+                    <td>{$order_after[0].address}</td>
+                    <td>{$order_after[0].zipcode}</td>
+                    <td>{$order_after[0].remark}</td>
+                    <td>{$order_after.comment}</td>
+                </tr>
+                <php>}</php>
+               <!--  -->
+            </table>
+        </div>
+        <div class="span9" style="margin-bottom: 20px;">
+            <h3>产品信息</h3>修改之前
+            <table class="table table-hover table-bordered table-list attributesListBox">
+                <tbody><tr  style="background:#f5f5f5;font-size:16px;font-weight:bold;">
+                    <th>产品ID</th><th>Model</th><th>产品名称</th><th>产品属性</th><th>数量</th><th>单价</th><th>总价</th>
+                </tr></tbody>
+                <php>
+                    
+                    if($order_before['product']){
+                    foreach($order_before['product'] as $product){
+                </php>
+                <tr>
+
+                <td>{$product.id_product}</td>
+
+                <td>{$product.sku}</td><td>{$product.product_title}</td>
+                    <td>{$product.sku_title}</td><td>{$product.quantity}</td><td>{$product.price}</td><td>{$product.total}</td></tr>
+                <php>
+                    }
+                    }
+                </php>
+
+
+
+            </table>
+            <br/>
+            修改之后
+            <table class="table table-hover table-bordered table-list attributesListBox">
+                <tbody><tr  style="background:#f5f5f5;font-size:16px;font-weight:bold;">
+                    <th>产品ID</th><th>Model</th><th>产品名称</th><th>产品属性</th><th>数量</th><th>单价</th><th>总价</th>
+                </tr></tbody>
+                <php>
+                    if(!$order_after['action'] && $order_after['action']!='ajax'){
+                    if($order_after['product']){
+                    foreach($order_after['product'] as $product){
+                </php>
+                <tr>
+
+                <td>{$product.id_product}</td>
+
+                <td>{$product.sku}</td><td>{$product.product_title}</td>
+                    <td>{$product.sku_title}</td><td>{$product.quantity}</td><td>{$product.price}</td><td>{$product.total}</td></tr>
+                <php>
+                    }
+                    }
+                    }else{
+                    $after_products = D("Order/OrderItem")->get_item_list($order_after['id_order']);
+                    if($after_products){
+                    foreach($after_products as $product){
+                    
+                   
+                </php>
+                <tr>
+                 <td>{$product.id_product}</td>
+
+                <td>{$product.sku}</td><td>{$product.product_title}</td>
+                    <td>{$product.sku_title}</td><td>{$product.quantity}</td><td>{$product.price}</td><td>{$product.total}</td></tr>
+
+                    <php>}
+                    } } </php>
+            </table>
+        </div>
+     </div>
+    <!--<div class="form-actions">
+        <a class="btn" href="javascript :history.back(-1);">返回</a>
+    </div>-->
+</div>
+<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

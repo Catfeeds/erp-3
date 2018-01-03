@@ -1,0 +1,46 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Index/index')}">物流列表</a></li>
+        <li><a href="{:U('Index/create')}">建立物流</a></li>
+    </ul>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th width="50">ID</th><th>名称</th>
+            <th>跟踪地址</th>
+            <th>公司地址</th><th>联系电话</th><th>网络渠道</th><th>在物流注册账号</th>
+            <th>状态</th><th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="proList" item="item">
+            <tr>
+                <td width="50">{$item.id_shipping}</td>
+                <td width="50">{$item.title}</td>
+                <td>{$item.track_url}</td>
+                <td>{$item.address}</td>
+                <td>{$item.tel}</td>
+                <td>{$item.channels}</td>
+                <td>{$item.account}</td>
+                <td><php>echo $item['status']?'开启':'关闭';</php></td>
+                <td width="130">
+                    <a href="{:U('index/create',array(\'id\'=>$item[\'id_shipping\']))}">编辑</a>&nbsp;|&nbsp;
+                    <a class="js-ajax-delete" href="{:U('index/delete',array(\'id\'=>$item[\'id_shipping\']))}">删除</a>
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+
+    <div class="pagination">{$Page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+</script>
+</body>
+</html>

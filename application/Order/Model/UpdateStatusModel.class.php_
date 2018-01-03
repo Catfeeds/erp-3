@@ -1,0 +1,355 @@
+<?php
+namespace Order\Model;
+use Common\Model\CommonModel;
+class UpdateStatusModel{
+    /**
+     * 编辑订单 发送通知
+     * @param $params
+     */
+    public function editOrder(&$params){
+        /* @var $order \Common\Model\OrderModel*/
+        $order  = D("Common/Order");
+        $order_data = $order->find($params['id']);
+        if(in_array($order_data['status_id'],array(18,19))){
+            $title = '[紧急]配货中的订单被修改了';
+            $content = '
+            订单号:'.$params['id'].'被修改了修息,请及时跟进
+            ';
+            $userId  = 1;//通知的人
+            $mobile = '13888888888';
+            $message = array(
+                'user_id'=>$userId,
+                'title'=>$title,
+                'content'=>$content,
+                'level'=>2
+            );
+
+            $sms = array(
+                'name'=>$order_data['web_url'],
+                'mobile'=>$mobile,
+                'content'=>$content,
+                'type'=>1,
+            );
+            /* @var $user \Common\Model\UsersModel*/
+            $user  = D("Common/Users");
+            $sendUser = $user->getRoleUser(9);
+            if($sendUser){
+                foreach($sendUser as $u){
+                    $message['user_id'] = $u['id']?$u['id']:$userId;
+                    $sms['mobile'] = $u['user_tel']?$u['user_tel']:$mobile;
+                    create_message($message);
+                    create_sms($sms);
+                }
+            }
+        }
+
+    }
+
+    /**
+     * 取消订单，发送通知
+     * @param $params
+     */
+    public function cancel(&$params){
+        $id_order = $params['id'];
+        /* @var $order \Common\Model\OrderModel*/
+        $order  = D("Order/Order");
+        $order_data = $order->find($id_order);
+        $result = D("Order/Order")->where(array('id_order'=>$id_order))->save(array('id_order_status'=>$params['status_id']));
+
+        if($result){
+            /** @var \Order\Model\OrderRecordModel  $order_record */
+            $order_record = D("Order/OrderRecord");
+            $order_record->addHistory($id_order,$params['status_id'],4, $params['comment']);
+
+            if(in_array($order_data['id_order_status'],array(4,5,6,7,8))){
+                /* @var $order_item \Common\Model\OrderItemModel*/
+                $order_item  = D("Order/OrderItem");
+                $warehouse_model  = D("Common/WarehouseProduct");
+                $products = $order_item->where(array('id_order'=>$id_order))->select();
+                $id_warehouse = $order_data['id_warehouse'];
+                if($products && $id_warehouse){
+                    foreach($products as $item){
+                        $id_product = $item['id_product'];
+                        $id_product_sku = $item['id_product_sku'];
+                        $warehouse_where = array(
+                            'id_warehouse'=>$id_warehouse,
+                            'id_product'=>$id_product,
+                            'id_product_sku'=> $id_product_sku,
+                        );
+                        $find = $warehouse_model->where($warehouse_where)->find();
+                        $set_qty = $find['quantity']+$item['quantity'];
+                        $warehouse_model->where($warehouse_where)->save(array('quantity'=>$set_qty));
+                    }
+                }
+
+                $title = '[紧急]配货中的订单被修改了';
+                $content = '
+            订单号:'.$params['id'].'被取消了,请及时跟进
+            ';
+                $userId  = 1;//通知的人
+                $mobile = '13888888888';
+                $message = array(
+                    'user_id'=>$userId,
+                    'title'=>$title,
+                    'content'=>$content,
+                    'level'=>2,
+                );
+                $sms = array(
+                    'name'=>$order_data['web_url'],
+                    'mobile'=>$mobile,
+                    'content'=>$content,
+                    'type'=>1,
+                );
+                /* @var $user \Common\Model\UsersModel*/
+                $user  = D("Common/Users");
+                /*$sendUser = $user->getRoleUser(11);
+                if($sendUser){
+                    foreach($sendUser as $u){
+                        $message['user_id'] = $u['id']?$u['id']:$userId;
+                        $sms['mobile'] = $u['user_tel']?$u['user_tel']:$mobile;
+                        //create_message($message);
+                        //create_sms($sms);
+                    }
+                }*/
+            }
+        }
+
+
+        return true;
+    }
+
+    /**
+     * 审核通过订单  发送通知
+     * @param $params
+     */
+    public static function approved(&$params){
+        /* @var $order \Common\Model\OrderModel*/
+        $order  = D("Order/Order");
+        $order_data = $order->find($params['id_order']);
+        $result = self::lessInventory($params['id_order'],$order_data);//订单审核通过后 订单减库存
+        //        暂时屏蔽 自动变为缺货
+        $params['id_order_status'] = 4;
+        //某部门 自动变为缺货
+        //if(in_array($order_data['id_department'],array(4,5,7))){//4,5,
+            $params['id_order_status'] = $result['status']?4:6;// 库存不够把订单改为缺货订单 4 未配货 :6 缺货
+        //}
+        $params['id_warehouse'] = $result['id_warehouse']?end($result['id_warehouse']):0;
+        $order->where(array('id_order'=>$params['id_order']))->save($params);
+        /** @var \Order\Model\OrderRecordModel  $order_record */
+        $order_record = D("Order/OrderRecord");
+        if($params['id_order_status']==6){
+            $params['comment']    = '系统自动减库存,库存不足。'.$params['comment'];
+            $order_record->addHistory($params['id_order'],$params['id_order_status'],4, $params['comment']);
+        }
+    }
+
+    /**
+     * 减库存
+     * @param $orderId
+     * @return bool
+     */
+    public static function lessInventory($order_id,$order_data = false){
+        $message = '';
+        try {
+            $order_data = $order_data?$order_data:D("Order/Order")->find($order_id);
+            $order_item_data = D("Order/OrderItem")->where(array('id_order'=>$order_id))->select();
+            $temp_pro_sku  = array();
+            $M = new \Think\Model;
+            $ware_table = D("Warehouse/Warehouse")->getTableName();
+            $ware_pro_table = D("Warehouse/WarehouseProduct")->getTableName();
+            /* @var $user \Common\Model\UsersModel*/
+            $user  = D("Common/Users");
+            $temp_ware_ids = array();//一个订单只减同一个仓库的产品，这个逻辑没有说
+            //TODO: 减库存算法问题
+            //1. 如果一单多品并且在不同的仓库里,现在的算法会更新两个仓库, 但是返回只取最后一个仓库
+            //2. 仓库为1, 订单为3时, "'wp.quantity'=>array('GT',0)"就会把库存减为负数
+            $flag = true;
+            if ($order_item_data) {
+                $temp_stock     = array();
+                $temp_warehouse = array();
+                $temp_data      = array();
+                foreach ($order_item_data as $item) {
+                    $qty = $item['quantity'];
+                    $child_sku_id = $item['id_product_sku'];
+                    $product_id = $item['id_product'];
+                    $where_ware_pro = array(
+                        'wp.id_product' => $product_id,
+                        'wp.id_product_sku' => $child_sku_id,
+                        'wp.quantity' => array('EGT', $qty),
+                        'w.id_zone' => $order_data['id_zone']
+                    );
+                    $join_string = $ware_table.' AS w LEFT JOIN '.$ware_pro_table.' as wp  ON w.id_warehouse=wp.id_warehouse';
+                    $stock = $M->table($join_string)->field('wp.quantity,wp.id_warehouse_product,wp.id_warehouse')
+                        ->where($where_ware_pro)->order('w.priority desc')->find();
+                    //设置当个地区没有仓库时， 去查询默认仓库，去减库存  如果都没有，就变缺货
+                    if(!$stock && $order_data['id_zone']!=1){
+                        unset($where_ware_pro['w.id_zone']);
+                        $order_data['id_zone'] = 1;
+                        $where_ware_pro['wp.id_warehouse'] = 1;
+                        $stock = $M->table($join_string)->field('wp.quantity,wp.id_warehouse_product,wp.id_warehouse')
+                            ->where($where_ware_pro)->order('w.priority')->find();
+                    }
+                    if($stock){
+                        $temp_warehouse[$stock['id_warehouse']] = $stock['id_warehouse'];
+                        $temp_ware_ids['id_warehouse'] = $stock['id_warehouse'];
+                        $id_warehouse_product = $stock['id_warehouse_product'];
+                        $final_quantity       = $stock['quantity']- $qty;
+                        $temp_stock[$id_warehouse_product] = $final_quantity;
+
+                        $temp_data[$id_warehouse_product] = array(
+                            'id_increment' => $order_data['id_increment'],
+                            'id_order'  => $item['id_order'],
+                            'id_warehouse' => $stock['id_warehouse'],
+                            'id_warehouse_product' => $stock['id_warehouse_product'],
+                            'quantity' => $qty,
+                            'final_quantity' => $final_quantity,
+                            'id_product' => $product_id,
+                            'id_product_sku' => $child_sku_id,
+                            'sku' => $item['sku'],
+                        );
+                    }else{
+                        $temp_pro_sku[] = $item['product_title'].'('.$item['sku'].')';
+                        $flag = 0;
+                        if($order_data['id_zone']==1){
+                            break;
+                        }
+                    }
+                }
+                if(count($temp_warehouse)>1){
+                    $flag = 0;
+                }
+                if($flag){
+                    /** @var \Order\Model\OrderRecordModel  $order_record */
+                    $order_record = D("Order/OrderRecord");
+                    foreach($temp_stock as $ware_pro_id=>$set_qty){
+                        $set_where = array('id_warehouse_product' => $ware_pro_id );
+                        $save_data = array('quantity'=>$set_qty);
+                        D("Common/WarehouseProduct")->where($set_where)->save($save_data);
+                        $get_warehouse_id = end($temp_warehouse);
+                        $comment    = '仓库ID: '.$get_warehouse_id.' 库存更新为：'.$set_qty;
+                        $parameter  = array(
+                            'id_order' => $order_id,
+                            'id_order_status' => 4,//库存满足，4订单一定是未配货状态
+                            'type' => 1,
+                            'user_id' => 1,
+                            'comment' => $comment,
+                        );
+                        //仓位减库存
+                        $result = self::less_warehouse_allocation_stock($temp_data[$ware_pro_id]);
+                        if($result['status']){
+                            $parameter['comment']  = $parameter['comment'].'  '.$result['comment'];
+                        }
+                        $order_record->addOrderHistory($parameter);
+                    }
+                }
+                /*if($temp_pro_sku){
+                    $title = '订单：'.$order_id.' 产品缺货通知';
+                    $content = implode(',',$temp_pro_sku).' 缺货';
+                    $userId  = 1;//通知的人
+                    $mobile = '13788888888';
+                    $message = array(
+                        'user_id'=>$userId,
+                        'title'=>$title,
+                        'content'=>$content,
+                        'level'=>1,
+                    );
+                    $sms = array(
+                        'name'=>$order_data['web_url'],
+                        'mobile'=>$mobile,
+                        'content'=>$content,
+                        'type'=>1,
+                    );
+
+                    $sendUser = $user->getRoleUser(4);
+                    if($sendUser){
+                        foreach($sendUser as $u){
+                            $mobile = trim($u['user_tel'])?trim($u['user_tel']):$mobile;
+                            $message['user_id'] = $u['id']?$u['id']:$userId;
+                            $sms['mobile'] = $mobile;
+                            create_message($message);
+                            create_sms($sms);
+                        }
+                    }
+                    //create_sms($sms);
+                }*/
+            }else{
+                $flag = 0;
+            }
+        } catch (\Exception $e) {
+            print_r($e->getMessage());
+            $message = $e->getMessage();
+        }
+        return array('status'=>$flag,'id_warehouse'=>$temp_ware_ids,'message'=>$message);
+    }
+
+    public static function less_warehouse_allocation_stock($data){
+        $status = false;
+        $comment = '';
+        try{
+            $M = new \Think\Model;
+            $ware_stock_table = D("Common/WarehouseAllocationStock")->getTableName();
+            $ware_stock_loc_table = D("Common/WarehouseGoodsAllocation")->getTableName();
+            $where = array(
+                'was.id_product' => $data['id_product'],
+                'was.id_product_sku' => $data['id_product_sku'],
+                'wga.id_warehouse' => $data['id_warehouse'],
+                'was.quantity' => array('GT',0),//array('EGT',$data['quantity']),//查找库存大于0的货位
+            );
+            $join_string = $ware_stock_table.' AS was LEFT JOIN '.$ware_stock_loc_table.' as wga  ON was.id_warehouse_allocation=wga.id_warehouse_allocation';
+            $stock = $M->table($join_string)->field('was.id,was.quantity,wga.id_warehouse,wga.goods_name')
+                ->where($where)->order('was.updated_at asc')->select();
+            if($stock){
+                $goods_name = array();
+                $flag       = true;
+                foreach($stock as $item){
+                    $final_quantity = $item['quantity']-$data['quantity'];
+                    //如果第一个结果 就够减库存，减完库存跳出循环
+                    if($final_quantity >= 0 && $flag){
+                        D("Common/WarehouseAllocationStock")
+                            ->where(array('id'=>$item['id']))
+                            ->save(array('quantity'=>$final_quantity));
+                        $goods_name[] = $item['goods_name'].' 拣数量'.$data['quantity'];
+                        break;
+                    }else{
+                        //第一个库存不够 或多次减库存的时候
+                        $flag = false;
+
+                        if($final_quantity >= 0){
+                            D("Common/WarehouseAllocationStock")
+                                ->where(array('id'=>$item['id']))
+                                ->save(array('quantity'=>$final_quantity));
+                            $goods_name[] = $item['goods_name'].' 拣数量'.$data['quantity'];
+                            break;
+                        }else{
+                            //每次减不够时， 减去当前减掉的库存
+                            $data['quantity'] = $data['quantity']-$item['quantity'];
+                            $goods_name[] = $item['goods_name'].' 拣数量'.$item['quantity'];
+                            D("Common/WarehouseAllocationStock")
+                                ->where(array('id'=>$item['id']))
+                                ->save(array('quantity'=>0));
+                        }
+                    }
+                }
+                if($goods_name){
+                    $set_good_name = implode(',',$goods_name);
+                    $stock_data = array(
+                        'id_order' => $data['id_order'],
+                        'id_product' => $data['id_product'],
+                        'id_product_sku' => $data['id_product_sku'],
+                        'sku' => $data['sku'],
+                        'desc' => $set_good_name,
+                    );
+                    D("Common/OrderWaveLessstock")->data($stock_data)->add();
+
+                    /** @var \Order\Model\OrderRecordModel  $order_record */
+                    $order_record = D("Order/OrderRecord");
+                    $comment = ' 货位:'.$set_good_name;
+                    $status = true;
+                }
+            }
+        }catch (\Exception $e){
+            add_system_record(sp_get_current_admin_id(), 4, 4, '仓位 减库存错误：'.$e->getMessage());
+        }
+        return array('status'=>$status,'comment'=>$comment);
+    }
+}

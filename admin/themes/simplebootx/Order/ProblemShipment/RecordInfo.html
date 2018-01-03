@@ -1,0 +1,154 @@
+<admintpl file="header" />
+<style type="text/css">
+    .pic-list li {
+        margin-bottom: 5px;
+    }
+</style>
+</head>
+<body>
+<div class="loading" style="display:none;position:absolute; left:0; top:0;width:100%; height:100%;z-index:20000;background-color:gray;opacity:0.5; -moz-opacity:0.5; filter:alpha(opacity=50);">
+    loading...
+</div>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#">操作详情</a></li>
+    </ul>
+    <div class="row-fluid">
+        <div class="span3">
+            <h3>订单信息</h3>
+            <table class="table table-bordered">
+                <tr>
+                    <th width="80">订单ID</th>
+                    <td>{$order.id_increment}</td>
+                </tr>
+                <tr>
+                    <th>域名</th>
+                    <td>{$order.id_domain}</php></td>
+                </tr>
+                <tr style="">
+                    <th>订单状态</th>
+                    <td>{$order.id_order_status}</td>
+                </tr>
+                <tr style="">
+                    <th>物流名称</th>
+                    <td>
+                        <if condition="$shipping_name NEQ ''">
+                            {$shipping_name}
+                        <else/>
+                            未分配
+                        </if>
+                    </td>
+                </tr>
+                <tr style="">
+                    <th>发货日期</th>
+                    <td>{$order.delivery_date}</td>
+                </tr>
+                <tr>
+                    <th>跟踪号</th>
+                    <td><php>
+                        //$ship = D("Common/OrderShipping")->getShipInfo($order['id'],'track_number,status_label');
+                        </php>
+                        <foreach name="ship" item="s">
+                            <div><a target="_blank" href="<php>echo str_replace('{}', $s['track_number'], $shopping_url);</php>">{$s.track_number} {$s.status_label}</a> </div>
+                        </foreach>
+
+                    </td>
+                </tr>
+                <tr style="">
+                    <th>签收情况</th>
+                    <td><php>echo $trackLabel?implode(',',$trackLabel):''; </php></td>
+                </tr>
+                <tr>
+                    <td>建立时间</td><td>{$order.created_at}</td>
+                </tr>
+            </table>
+            <h3>用户信息</h3>
+            <table class="table table-bordered">
+                <tr>
+                    <th>姓名</th>
+                    <td>{$order.first_name} {$order.last_name}</td>
+                </tr>
+                <tr>
+                    <th>电话</th>
+                    <td>{$order.tel}</td>
+                </tr>
+                <tr>
+                    <th>邮箱</th>
+                    <td>{$order.email}</td>
+                </tr>
+                <tr>
+                    <th>国家</th><td>{$order.country}</td>
+                </tr>
+                <tr>
+                    <th>省份</th><td>{$order.province}</td>
+                </tr>
+                <tr>
+                    <th>城市</th><td>{$order.city}</td>
+                </tr>
+                <tr>
+                    <th>区域</th><td>{$order.area}</td>
+                </tr>
+                <tr>
+                    <th>地址</th><td>{$order.address}</td>
+                </tr>
+                <tr>
+                    <th>邮编</th><td>{$order.zipcode}</td>
+                </tr>
+                <tr>
+                    <th>留言</th><td>{$order.remark}</td>
+                </tr>
+                <tr>
+                    <th>后台备注</th><td>{$order.comment}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="span9" style="margin-bottom: 20px;">
+            <h3>产品信息</h3>
+            <table class="table table-hover table-bordered table-list attributesListBox">
+                <tbody><tr  style="background:#f5f5f5;font-size:16px;font-weight:bold;">
+                    <th>产品ID</th><th>Model</th><th>产品名称</th><th>产品属性</th><th>数量</th><th>单价</th><th>总价</th>
+                </tr></tbody>
+                <php>
+                    if($products){
+                    foreach($products as $product){
+                </php>
+                <tr><td>{$product.id_product}</td><td>{$product.sku}</td><td>{$product.product_title}</td>
+                    <td>{$product.sku_title}</td><td>{$product.quantity}</td><td>{$product.price}</td><td>{$product.total}</td></tr>
+                <php>
+                    }
+                    }
+                </php>
+
+
+
+            </table>
+        </div>
+        <div class="span9">
+            <h3>操作记录</h3>
+            <table class="table table-hover table-bordered table-list attributesListBox">
+                <tbody><tr  style="background:#f5f5f5;font-size:16px;font-weight:bold;">
+                   <th>用户</th><th>详细</th><th>时间</th><th>备注</th>
+                </tr></tbody>
+                <php>
+                    if($history && is_array($history)){
+                    foreach($history as $hist){
+                </php>
+                <tr>
+                    <td>
+              
+                            {$hist.user_nicename}
+                        
+                        </td>
+                    <td>{$hist.desc}</td><td>{$hist.created_at}</td><td>{$hist.remark}</td></tr>
+                <php>}}</php>
+            </table>
+        </div>
+    </div>
+    <!--<div class="form-actions">
+        <a class="btn" href="javascript :history.back(-1);">返回</a>
+    </div>-->
+</div>
+<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

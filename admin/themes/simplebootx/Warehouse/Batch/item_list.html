@@ -1,0 +1,304 @@
+<admintpl file="header"/>
+</head>
+<body>
+<div class="wrap">
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th colspan="16">                
+                <form method="get" action="{:U('Warehouse/Batch/item_list')}">
+                    批次单号：<php>echo $_GET['wave_number']</php> &nbsp;&nbsp;<a href="{:U('Warehouse/Batch/export_order_list',array('wave_number'=>$_GET['wave_number']))}" class="btn btn-primary exportSearchButton">导出订单</a>
+                    <input type="hidden" type="text" name="wave_number" value="{$getData['wave_number']}">
+                    <input type="text" name="keyword" style="width: 200px;margin-bottom:0" value="{$getData.keyword}" placeholder="请输入订单号...">
+                    <button class="btn btn-primary searchButton">搜索</button>
+                    <a href="javascript:;" class="btn btn-primary removeButton">移除</a>
+                </form>
+            </th>            
+        </tr>
+        <tr>
+            <th width="15"><label><input type="checkbox" class="js-check-all checkAllbox" data-direction="x" data-checklist="js-check-x" style="margin:0"></label></th>
+            <td width="30">序号</td>
+            <td>订单号</td>
+            <td>地区</td>
+            <td width="60">订单状态</td>
+            <td width="60">物流</td>
+            <td width="50">姓名</td>
+            <td >电话</td>
+            <td>总价</td>
+            <td width="230">产品名称</td>
+            <td width="230">内部产品名称</td>
+            <th>外文产品名</th>
+            <td>送货地址</td>
+            <td width="100">留言</td>
+            <td>下单时间</td>
+            <td width="100">快递单号</td>
+            <td width="100">操作</td>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="item">            
+            <tr>
+                <td><input type="checkbox" class="js-check" name="order_list_id" value="{$item.id_order}" data-id='{$item.id}'></td>
+                <td>{$key+1}</td>
+                <td>{$item.id_increment}</td>
+                <td>{$zoneList[$item['id_zone']]}</td>
+                <td>{$orderStaus[$item['id_order_status']]}</td>
+                <td>{$shipList[$item['id_shipping']]}</td>
+                <td>{$item.first_name} </td>
+                <td>{$item.tel}</td>
+                <td>{$item.price_total}</td>
+                <td>
+                    <foreach name="item['productTitles']" item="pro">  
+                    {$pro.product_title}
+                    <hr style="margin:2px 0;color:green;border: 1px solid;"/>
+                    {$pro.sku_title}<span style="color:red;"> x </span>{$pro.quantity}
+                    </div><br />
+                    </foreach> 
+                </td>
+
+                <td>
+                    <foreach name="item['productTitles']" item="pro">  
+                    {$pro.inner_name}
+                    <hr style="margin:2px 0;color:green;border: 1px solid;"/>
+                    {$pro.sku_title}<span style="color:red;"> x </span>{$pro.quantity}
+                    </div><br />
+                    </foreach> 
+                </td>                
+                <td>
+                    <foreach name="item['productTitles']" item="pro">  
+                    {$pro.sale_title}
+                    <hr style="margin:2px 0;color:green;border: 1px solid;"/>
+                    {$pro.sku_title}<span style="color:red;"> x </span>{$pro.quantity}
+                    </div><br />
+                    </foreach> 
+                </td>              
+       
+                <td>{$item.province} {$item.city} {$item.area} {$item.address}</td>
+                <td>{$item.remark}</td>
+                <td>{$item.created_at}</td>
+                <td>{$item.track_number}</td>
+                <td>
+                    <a target="_blank" class="btn btn-small" href="{:U('warehouse/order/info',array('id'=>$item['id_order']))}">详情</a>
+                    <a class="btn btn-small deletes" data-id='{$item.id}' order-data='{$item.id_order}' href="javascript:;">移除</a>
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+    <div class="pagination">{$page}</div>
+    <div class="control-group well form-search" style="line-height: 36px;margin-bottom: 40px">
+        <label class="control-label">分配物流:</label>
+        <if condition="$batchinfo['id_shipping']">
+            {$shipList[$batchinfo['id_shipping']]}
+        <else/>
+            <select name="id_shipping" id="slect" style="width:100px">
+                <option value="0">请选择</option>
+                <foreach name="shipList" item="item" key='key'>                
+                    <option value="{$key}" >{$item}</option>
+                </foreach>
+            </select>
+        </if>
+    
+
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <label class="control-label attr" style='display:none'>订单产品属性:</label>
+        <if condition="$is_shipping_name eq ''">
+            <select title="" class="selectAttr" name="attr_id" style="width:100px;display:none">
+                <option value="">请选择</option>
+                <option value="1">特货</option>
+                <option value="2">普货</option>
+            </select>
+        </if>
+        <if condition="($is_shipping_id eq 39 OR $is_shipping_id eq 33) AND $is_shipping_name neq ''">
+            <label class="control-label">订单产品属性:</label>
+            <php>echo !empty($attr_id) ? ($attr_id==1?'特货':'普货') : '无';</php>
+        </if>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <label class="control-label">运单模板:</label>
+        <select name="waybills" id="slect_waybill" style="width:100px">
+            <option value="0">请选择</option>
+            <foreach name="waybilled" item="items">                
+                <option value="{$items.id}">{$items.title}</option>
+            </foreach>
+        </select>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <if condition="$wave_info['need_match_shipping']">
+            <a class="btn btn-primary match" data-shipping-num="{$Think.get.wave_number}" href="javascript:;">匹配运单号</a>
+        <elseif condition="$wave_info['need_send_order'] eq 1"/>
+            <a class="btn btn-primary send_order" data-shipping-num="{$Think.get.wave_number}" data-shipping-id="{$wave_info['id_shipping']}" href="javascript:;">发送订单到物流</a>
+        </if>
+
+        <div><span class="span_erg" style="color:red;margin-left:0"></span></div>
+        <br><br>
+        <div class="three" style="text-align:center">
+
+            <a class="btn btn-primary pdf_print_wbt" href="javascript:;">PDF打印面单</a>&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="btn btn-primary" href="{:U('Batch/index')}">返回</a>
+        </div>
+    </div>    
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">    
+var  wave_number="{$_GET['wave_number']}";
+    $(".checkAllbox").click(function(){
+        var setVal = $(this).attr('checked')=='checked'?true:false;
+        $("input[name=order_list_id]").attr("checked",setVal);
+        //$(".table-list :checkbox").attr("checked",setVal);
+    });
+    $('#slect').change(function(){
+        var shipping_id = $('#slect').val();
+        if(shipping_id == 33 || shipping_id == 39 || shipping_id == 58 || shipping_id == 64 || shipping_id == 66) {
+            $('.selectAttr').show();
+            $('.attr').show();
+        } else {
+            $('.selectAttr').hide();
+            $('.attr').hide();
+        }
+        $.ajax({
+            url:"{:U('wave/get_waybill')}",
+            type:'post',
+            dataType:'html',
+            data:{'shipping_id':shipping_id},
+            success:function(shtml){
+                $('#slect_waybill').html(shtml);
+            }
+        })
+    });
+    
+    $('.page_print_wbt').click(function(){
+        var waybill_id = $('#slect_waybill').val();
+        if(waybill_id <= 0) {
+           $('.span_erg').html('请选择运单模板！');
+           return false;
+       } else {
+           var url="{:U('Waybill/Print/set_page',array('num'=>$_GET['num']))}/template_id/"+waybill_id;
+           window.open(url);
+       }
+    });
+    $('.wbt').click(function(){
+        var waybill_id = $('#slect_waybill').val();
+        if(waybill_id <= 0) {
+            $('.span_erg').html('请选择运单模板！');
+            return false;
+        } else {
+            var url="{:U('Waybill/List/page_print',array('num'=>$_GET['num']))}?template_id="+waybill_id;
+            window.open(url);
+        }
+    });
+    $('.pdf_print_wbt').click(function(){
+        var waybill_id = $('#slect_waybill').val();
+        if(waybill_id <= 0) {
+            $('.span_erg').html('请选择运单模板！');
+            return false;
+        } else {
+            var url="{:U('waybill/Pdf/page_print')}?isbatch=1&num={$_GET['wave_number']}&template_id="+waybill_id;
+            window.open(url);
+
+        }
+    });
+    $('.match').click(function(){
+        $(this).html('Loading...');
+       var shipping_id = $('#slect').val(); 
+       var attr_id = $('.selectAttr').val();
+       var number = $(this).attr('data-shipping-num');
+
+       if(shipping_id <= 0) {
+           $('.span_erg').html('请选择物流！');
+           return false;
+       }
+       if(attr_id <= 0 && (shipping_id == 33 || shipping_id == 39)) {
+           $('.span_erg').html('请选择订单产品类型！');
+           return false;
+       }
+       
+       $.ajax({
+            url:"{:U('wave/match_shipping')}",
+            type:'post',
+            dataType:'json',
+            data:{'shipping_id':shipping_id,'number':number,'attr_id':attr_id},
+            success:function(data){
+                if(data.status==1) {
+                    //$('.span_erg').html(data.message);
+                    alert(data.message);
+                    window.location.reload();
+                } else {
+                    $('.span_erg').html(data.message);
+                }
+            }
+       });
+       $(this).html('匹配运单号');
+    });
+
+    $('.send_order').click(function(){
+        var get_button = $(this);
+        var get_button_text = get_button.html();
+        var number = $(this).attr('data-shipping-num');
+        var shipping_id = $(this).attr('data-shipping-id');
+        get_button.html('Loading...');
+        $.ajax({
+            url:"{:U('wave/send_order')}",
+            type:'post',
+            dataType:'json',
+            data:{number:number, shipping_id:shipping_id},
+            success:function(data){
+                if(data.status==1) {
+                    //$('.span_erg').html(data.message);
+                    location.reload();
+                    alert('发送成功，请打印面单');
+                    //window.location.reload();
+                } else {
+                    $('.span_erg').html(data.message);
+                }
+                get_button.html(get_button_text);
+            }
+        });
+    });
+    $('.deletes').click(function(){
+        if (confirm('确定移除？')) {
+            var id_order = $(this).attr('order-data');
+            $.ajax({
+               url:"{:U('Batch/removed')}",
+               type:'post',
+               dataType:'json',
+               data:{'wave_number':wave_number,'id_order':id_order},
+               success:function(data){
+                   if(data.flag==1) {
+                       alert(data.msg);
+                       window.location.reload();
+                   } else {
+                       alert(data.msg);
+                       window.location.reload();
+                   }
+               }
+            });
+        }
+    });
+    $('.removeButton').click(function(){
+        var order_id = [];
+        $("input[name=order_list_id]:checked").each(function(){            
+            order_id.push($(this).attr('value'));
+        });           
+        if(order_id.length==0){alert('请至少选择一个订单');return false;}
+        if (confirm('确定要移除？')) {
+            $.ajax({
+               url:"{:U('Batch/removed')}",
+               type:'post',
+               dataType:'json',
+               data:{'wave_number':wave_number,'order_id':order_id},
+               success:function(data){
+                   if(data.flag==1) {
+                       alert(data.msg);
+                       window.location.reload();
+                   } else {
+                       alert(data.msg);
+                       window.location.reload();
+                   }
+               }
+            });
+        }
+    });
+</script>
+</body>
+</html>

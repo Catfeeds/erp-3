@@ -1,0 +1,246 @@
+<admintpl file="header" />
+</head>
+<body>
+
+<style>
+    .fixedlayer {
+        position: fixed;
+        top: 0px;
+        height: 260px;
+        left: 20px;
+        right: 20px;
+        padding-top: 20px;
+        background-color: #fff;
+        z-index: 10;
+    }
+    .buttonLayer {margin-bottom: 10px;  background-color: #fff;}
+
+    .customerlayer {height: 100%; padding-top: 260px; }
+    .fixedlayer .pagination { margin-top: 10px; margin-bottom: 0px; }
+    .searchLayer {border: solid 1px #ddd; margin-bottom: 10px; }
+    #id_warehouse{height: 30px;}
+    .searchLayer input,.searchLayer select{height: 30px;}
+    .searchLayer table {width: 100%; background-color: #fff; border-spacing: 1px !important; border-collapse: separate; font-family: "宋体"; table-layout: fixed; }
+    .searchLayer table td {padding: 5px; margin: 1px; width: auto; }
+    .searchLayer table td.th {background: #f1f1f1; width: 80px; }
+    .searchLayer input[type="text"] {margin-bottom: 0px; border: none; box-shadow: none; border-bottom: solid 1px #ddd; border-radius: 0px; outline: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+    .searchLayer select {margin-bottom: 0px; border-radius: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; outline: 0px;  line-height: 20px;}
+
+    .tableLayer {width: 100%; overflow: scroll; height: 480px; }
+    .tableLayer table{width: 100%}
+    .tableLayer table th {border: solid 1px #ddd; padding: 10px; font-weight: bold; background: #f1f1f1; }
+    .tableLayer table td {border: solid 1px #ddd; padding: 10px; }
+    .ctab-panel {width: 100%; position: relative; margin-bottom: 10px; }
+    .ctab-head {height: 40px; }
+    .ctab-head > a {display: inline-block; color: #333; padding: 0px 10px; line-height: 40px; }
+    .ctab-head > a.active {border: solid 1px #ddd; border-bottom: none; background-color: #fff; border-top: solid 2px #3daae9; }
+    .ctab-body {border: solid 1px #ddd; padding: 10px; }
+    .btn a{color: white;text-decoration: none;}
+</style>
+<form method="get" action=""  id="form-search">
+    <div class="fixedlayer">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#">查询条件</a></li>
+        </ul>
+        <div class="buttonLayer">
+            <button class="btn btn-primary searchButton" >查询</button>
+            <span class="btn btn-primary exportButton">导出</span>
+            <span class="btn btn-primary creatViewButton">生成采购汇总单</span>
+        </div>
+        <div class="searchLayer">
+
+            <input type="hidden" name="page" value="">
+            <table cellspacing="1">
+                <tr>
+                    <td class="th">采购单号：</td>
+                    <td><input type="text" name="purchase_no" class="" value="<php>echo $_GET['purchase_no']</php>"></td>
+                    <td class="th">SKU：</td>
+                    <td><input type="text" name="sku" class="" value="<php>echo $_GET['sku']</php>"></td>
+
+                    <td class="th">采购内部日期：</td>
+                    <td >
+                        <input type="text" name="start_time" class="js-datetime" value="{$Think.get.start_time}" style="width: 135px;min-height: 30px;" autocomplete="off">-
+                        <input autocomplete="off" type="text" class="js-datetime" name="end_time" value="{$Think.get.end_time}" style="width: 135px;min-height: 30px;">
+                    </td>
+
+                </tr>
+                <tr>
+                    <td class="th">业务部门：</td>
+                    <td >
+                        <select name="id_department" id="id_department">
+                            <option value="">--选择--</option>
+                            <foreach name="departments" item="department" key="id" >
+                                <option value="{$id}" <php>echo isset($_GET['id_department']) && $_GET['id_department']==$id ? 'selected' : ''</php>>{$department}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <td class="th">供应商：</td>
+                    <td>
+                        <select name="id_supplier" id="id_supplier">
+                            <option value="">--选择--</option>
+                            <foreach name="supplier" item="supplier" key="id" >
+                                <option value="{$id}" <php>echo isset($_GET['id_supplier']) && $_GET['id_supplier']==$id ? 'selected' : ''</php>>{$supplier}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <td class="th">状态：</td>
+                    <td>
+                        <select name="status" id="status">
+                            <option value="">--选择--</option>
+                            <foreach name="status" item="title" key="id" >
+                                <option value="{$id}" <php>echo isset($_GET['status']) && $_GET['status']==$id ? 'selected' : ''</php>>{$title}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="th">采购日期：</td>
+                    <td >
+                        <input type="text" name="cstart_time" class="js-datetime" value="{$Think.get.cstart_time}" style="width: 135px;min-height: 30px;" autocomplete="off">-
+                        <input autocomplete="off" type="text" class="js-datetime" name="cend_time" value="{$Think.get.cend_time}" style="width: 135px;min-height: 30px;">
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+        <div class="pagination">{$page}
+            <input type="text" value="<php>echo $_GET['displayRow']</php>" name="displayRow" placeholder="输入每页显示数">
+            <input type="button" class="btn btn-small submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">
+        </div>
+    </div>
+</form>
+<div class="wrap">
+
+    <div class="customerlayer">
+        <!--  -->
+
+        <!--  -->
+        <div class="ctab-panel">
+
+            <div class="ctab-body">
+                <div class="tableLayer">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>采购日期</th>
+                            <th>采购人</th>
+                            <th>部门</th>
+                            <th>采购单号</th>
+                            <th>状态</th>
+                            <th>产品名称</th>
+                            <th>属性</th>
+                            <th>SKU</th>
+                            <th>采购数量</th>
+                            <th>图片</th>
+                            <th>采购总数</th>
+                            <th>单价</th>
+                            <th>总价</th>
+                            <th>备注</th>
+                            <th>付款日期</th>
+                            <th>付款金额</th>
+                            <th>预付金额</th>
+                            <th>付款方式</th>
+                            <th>供应厂商</th>
+                            <th>入库数量</th>
+                            <th>入库日期</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <foreach name="list" item="item" key='key'>
+                            <tr>
+                                <td <php>echo !empty($item['pur_pro']) ? 'rowspan="'.count($item['pur_pro']).'"' : ''</php>>{$item.inner_purchase_time}</td>
+                                <td <php>echo !empty($item['pur_pro']) ? 'rowspan="'.count($item['pur_pro']).'"' : ''</php>>{$item.user}</td>
+                                <td <php>echo !empty($item['pur_pro']) ? 'rowspan="'.count($item['pur_pro']).'"' : ''</php>>{$item.department}</td>
+                                <td <php>echo !empty($item['pur_pro']) ? 'rowspan="'.count($item['pur_pro']).'"' : ''</php>>{$item.purchase_no}</td>
+                                <td <php>echo !empty($item['pur_pro']) ? 'rowspan="'.count($item['pur_pro']).'"' : ''</php>>{$item.status}</td>
+                                <td><php>echo !empty($item['pur_pro']) ? $item['pur_pro'][0]['pro_name'] : ''</php></td>
+                                <td><php>echo !empty($item['pur_pro']) ? $item['pur_pro'][0]['option_value'] : ''</php></td>
+                                <td><php>echo !empty($item['pur_pro']) ? $item['pur_pro'][0]['sku'] : ''</php></td>
+                                <td><php>echo !empty($item['pur_pro']) ? $item['pur_pro'][0]['quantity'] : ''</php></td>
+                                <td>
+                                    <notempty name="item['pur_pro'][0]['img']['photo']">
+                                        <img id="photo-{$key}-preview" src="{:sp_get_image_preview_url($item['pur_pro'][0]['img']['photo'][0]['url'])}"   style="height:36px;width: 36px;">
+                                    </notempty>
+                                </td>
+                                <td <php>echo !empty($item['pur_pro']) ? 'rowspan="'.count($item['pur_pro']).'"' : ''</php>>{$item.total}</td>
+                                <td <php>echo !empty($item['pur_pro']) ? 'rowspan="'.count($item['pur_pro']).'"' : ''</php>>
+                                    <php>echo round(($item['price']-$item['price_shipping'])/$item['total'],2)</php>
+                                </td>
+                                <td <php>echo !empty($item['pur_pro']) ? 'rowspan="'.count($item['pur_pro']).'"' : ''</php>>{$item.price}</td>
+                                <td <php>echo !empty($item['pur_pro']) ? 'rowspan="'.count($item['pur_pro']).'"' : ''</php>>{$item.remark}</td>
+                                <td <php>echo !empty($item['pur_pro']) ? 'rowspan="'.count($item['pur_pro']).'"' : ''</php>>{$item.date_settlement}</td>
+                                <td><php>echo !empty($item['pur_pro']) ? $item['pur_pro'][0]['amount_settl'] : ''</php></td>
+                                <td <php>echo !empty($item['pur_pro']) ? 'rowspan="'.count($item['pur_pro']).'"' : ''</php>>{$item.prepay}</td>
+                                <td <php>echo !empty($item['pur_pro']) ? 'rowspan="'.count($item['pur_pro']).'"' : ''</php>>{$item.payment}</td>
+                                <td <php>echo !empty($item['pur_pro']) ? 'rowspan="'.count($item['pur_pro']).'"' : ''</php>>{$item.supplier}</td>
+                                <td><php>echo !empty($item['pur_pro']) ? $item['pur_pro'][0]['dh_qty'] : ''</php></td>
+                                <td <php>echo !empty($item['pur_pro']) ? 'rowspan="'.count($item['pur_pro']).'"' : ''</php>>{$item.intime}</td>
+                            </tr>
+                            <php>
+                                if(!empty($item['pur_pro'])){
+                                unset($item['pur_pro'][0]);
+                                $html = '';
+                                foreach($item['pur_pro'] as $k=>$v) {
+                                $html .= '<tr>';
+                                $html .= '<td>'.$v['pro_name'].'</td>';
+                                $html .= '<td>'.$v['option_value'].'</td>';
+                                $html .= '<td>'.$v['sku'].'</td>';
+                                $html .= '<td>'.$v['quantity'].'</td>';
+                                $html .= '<td><img src="'.sp_get_image_preview_url($v['img']['photo'][0]['url']).'" style="height:36px;width: 36px;"></td>';
+
+                                $html .= '<td>'.$v['amount_settl'].'</td>';
+                                $html .= '<td>'.$v['dh_qty'].'</td>';
+                                $html .= '</tr>';
+                                }
+                                echo $html;
+                                }
+                            </php>
+                        </foreach>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<script src="__PUBLIC__/js/common.js"></script>
+<!--<script src="__PUBLIC__/js/jquery.stickytableheaders.js"></script>-->
+<script type="text/javascript">
+//    $(document).ready(function(){
+//        $(".tableLayer table").stickyTableHeaders({scrollableArea: $('.tableLayer')});
+//    });
+    $('.searchButton').on('click',function(){
+        $('#form-search').attr('target',"");
+        $('#form-search').attr('action',"{:U('settlement/Statement/purchase_table')}");
+        $('#form-search').trigger('submit');
+
+    });
+    $('.submitDisplayRow').on('click',function(){
+        $('#form-search').attr('target',"");
+        $('#form-search').attr('action',"{:U('settlement/Statement/purchase_table')}");
+        $('#form-search').trigger('submit');
+    });
+
+    $('.exportButton').click(function(){
+        $('#form-search').attr('target',"");
+        $('#form-search').attr('action',"{:U('settlement/Statement/purchase_table_export')}");
+        $('#form-search').trigger('submit');
+    });
+
+    $('.creatViewButton').click(function(){
+        $('#form-search').attr('target',"_blank");
+        $('#form-search').attr('action',"{:U('settlement/Statement/purchase_table2')}");
+        $('#form-search').trigger('submit');
+        return false;
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="fixedlayer" style="height:20px">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Purchase/Print/index')}">采购订单打印条码</a></li>
+    </ul>
+</div>
+
+<div class="wrap">
+    <div class="customerlayer" style="margin-top:-80px">
+        <div class="searchLayer" style="padding:20px;background-color: #ecf0f1;">
+            <form method="get" action=""  class="form-search" >
+                <table cellspacing="1">
+                    <tr>
+                        <td class="th">部门：</td>
+                        <td>
+                            <select name="id_department" style="width:100px;height:30px">
+                            <option value="0">所有</option>
+                            <foreach name="data['departments']" item="item">
+                                <option value="{$item.id_department}" <php>echo isset($_GET['id_department']) && $_GET['id_department']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                            </foreach>
+                            </select>
+                        </td>
+                        <td class="th">仓库：</td>
+                        <td>
+                            <select name="id_warehouse" style="width:120px;height:30px">
+                                <option value="0">所有</option>
+                                <foreach name="data['warehouses']" item="item">
+                                    <option value="{$item.id_warehouse}" <php>echo isset($_GET['id_warehouse']) && $_GET['id_warehouse']==$item['id_warehouse'] ? 'selected' : ''</php>>{$item.title}</option>
+                                </foreach>
+                            </select>
+                        </td>
+                        <td class="th">供应商：</td>
+                        <td>
+                            <select name="id_supplier" style="width:120px;height:30px">
+                                <option value="0">所有</option>
+                                <foreach name="data['suppliers']" item="item">
+                                    <option value="{$item.id_supplier}" <php>echo isset($_GET['id_supplier']) && $_GET['id_supplier']==$item['id_supplier'] ? 'selected' : ''</php>>{$item.title}</option>
+                                </foreach>
+                            </select>
+                        </td>
+                        <td class="th">制单时间：</td>
+                        <td colspan="2" style="white-space:nowrap;">
+                            <php>$date = date('Y-m-d', strtotime('-7 days'));</php>
+                            <input type="text" name="start_time" class="js-datetime" value="<php>echo isset($_GET['start_time'])&&$_GET['start_time']?$_GET['start_time']:$date;</php>" style="width: 120px;" autocomplete="off">-
+                            <input type="text" class="js-datetime" name="end_time" value="<php>echo isset($_GET['end_time'])&&$_GET['end_time']?$_GET['end_time']:date('Y-m-d',strtotime('+1 day'));</php>" style="width: 120px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="th">采购单号：</td>
+                        <td>
+                            <input type="text" name="purchase_no" value="{$_GET['purchase_no']}"/>
+                        </td>
+                    </tr>
+                </table>
+                <br/>
+                <button class="btn btn-primary searchButton">搜索</button>
+                <button class="btn btn-primary exportPDFButton">打印条码</button>
+             </form>
+        </div>
+        <!--  -->
+        <div class="ctab-panel">
+            <div class="ctab-head">
+                <a href="{:U('Purchase/Print/index')}" class="active">采购订单打印条码</a>
+            </div>
+            <div class="ctab-body">
+                <div class="tableLayer">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" value="" id="all">ID</th>
+                                <th>制单日期</th>
+                                <th>所属仓库</th>
+                                <th>所属部门</th>
+                                <th>供应商</th>
+                                <th>采购单号</th>
+                                <th>采购的产品</th>
+                                <th>属性值</th>
+                                <th>产品的sku</th>
+                                <th>条形码</th>
+                                <th>缩略图</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <foreach name="data['views']" item="item">
+                            <tr>
+                                <td><input name="sku_no[]" class="single" type="checkbox" value="{$item['id_product_sku']}">{$item['id_purchasein']}</td>
+                                <td>{$item['billdate']}</td>
+                                <td>{$item['id_warehouse']}</td>
+                                <td>{$item['id_department']}</td>
+                                <td>{$item['id_supplier']}</td>
+                                <td>{$item['purchase_no']}</td>
+                                <td>{$item['inner_name']}</td>
+                                <td>{$item['option_value']}</td>
+                                <td>{$item['sku']}</td>
+                                <td>{$item['barcode']}</td>
+                                <td><img src="/data/upload/{$item['thumbs']}"/></td>
+                                <td><a  target="_blank" class="btn btn-small" href="{:U('/Product/Pdf/page_print',array('skuid'=>$item['id_product_sku']))}">打印条码</a></td>
+                            </tr>
+                        </foreach>
+                        </tbody>
+                    </table>
+                </div>
+               <div class="pagination">{$page}</div>
+                   <!--<input type="text" value="" name="displayRow" placeholder="输入每页显示数">-->
+                    <!--<input type="button" class="btn btn-small submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">-->
+                <!--</div>-->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('Purchase/Print/index')}");
+        $('.form-search') .submit();
+    });
+    $("#all").click(function(){
+        if(this.checked){
+            $("td :checkbox").prop("checked", true);
+        }else{
+            $("td :checkbox").prop("checked", false);
+        }
+    });
+    $('.exportPDFButton').click(function(){
+        var sku_no = '';
+        $('input:checkbox[class=single]:checked').each(function(i,item){
+            sku_no+= (item['value']+",");
+        });
+        length = sku_no.length;
+        if(!length){
+            alert('未选择要打印的条码');
+            return false;
+        }
+        sku_no = sku_no.substring(0,length-1);
+        //console.log("{:U('Pdf/page_print/skuid')}/"+sku_no);
+        var url = "{:U('/Product/Pdf/page_print')}?skuid="+sku_no;
+        window.open(url);
+        return false;
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Warehouse/index/index')}">仓库列表</a></li>
+        <li><a href="{:U('Warehouse/index/edit')}">添加仓库</a></li>
+    </ul>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th width="50">ID</th><th>区域</th>
+            <th>优先级</th><th>标题</th><th>地址</th><th>状态</th><th>类型</th><th>时间</th><th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="item">
+            <tr>
+                <td width="50">{$item.id_warehouse}</td>
+                <td width="50">{$item.zone}</td>
+                <td>{$item.priority}</td>
+                <td>{$item.title}</td>
+                <td>{$item.address}</td>
+                <td><php>echo $item['status']?'开启':'关闭';</php></td>
+                <td><php>echo $item['forward']?'转寄仓':'一般';</php></td>
+                <td>{$item.updated_at}</td>                
+                <td width="130">
+                    <if condition="$item['id_warehouse'] neq 1">
+                        <a href="{:U('Warehouse/index/edit',array(\'id\'=>$item[\'id_warehouse\']))}">编辑</a>&nbsp;|&nbsp;
+                        <a class="js-ajax-delete" href="{:U('Warehouse/index/delete',array(\'id\'=>$item[\'id_warehouse\']))}">删除</a>
+                    </if>
+                </td>                
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+
+    <!--<div class="pagination">{$page}</div>-->
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+</script>
+</body>
+</html>

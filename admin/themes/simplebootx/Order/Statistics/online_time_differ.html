@@ -1,0 +1,55 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="id_department">
+                <option value="">全部</option>
+                <php> foreach($department as $department_id=>$dep_title){
+                    if(empty($department_id)) continue;
+                        $selected = $_GET['id_department']==$department_id?' selected="selected"':'';
+                    echo '<option value="'.$department_id.'" '.$selected.'>'.$dep_title.'</option>';
+                    }
+                </php>
+            </select>
+            <label class="control-label">建立日期:</label>
+            <input type="text" name="start_time" class="js-datetime" value="<php>echo $_GET['start_time'];</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="end_time" value="<php>echo $_GET['end_time'];</php>" style="width: 120px;">
+            <button class="btn btn-primary searchButton">搜索</button>
+        </div>
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th>部门</th>
+            <foreach name="shipping" item="item">
+                <th>{$item}</th>
+            </foreach>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="department_data" item="item" key="key">
+            <tr>
+                <td><php>echo $department[$key];</php></td>
+                <foreach name="shipping" item="ship" key="shipping_id">
+                    <td><php>echo $item[$shipping_id];</php></td>
+                </foreach>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+    <div>以上是上线的天数，默认是一个月内的。</div>
+    <div class="pagination">{$page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+</script>
+</body>
+</html>

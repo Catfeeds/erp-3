@@ -1,0 +1,160 @@
+<admintpl file="header" />
+<style type="text/css">
+    .pic-list li {
+        margin-bottom: 5px;
+    }
+</style>
+</head>
+<body>
+<div class="loading" style="display:none;position:absolute; left:0; top:0;width:100%; height:100%;z-index:20000;background-color:gray;opacity:0.5; -moz-opacity:0.5; filter:alpha(opacity=50);">
+    loading...
+</div>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Index/info',array('id'=>$_GET['id']))}">订单详情</a></li>
+    </ul>
+    <div class="row-fluid">
+        <div></div>
+        <div class="span9" style="margin-bottom: 20px;">
+            <h3>订单信息</h3>
+            <table class="table table-hover table-bordered table-list attributesListBox">
+                <tr style="background:#f5f5f5">
+                    <th>订单ID</th>
+                    <th>域名</th>
+                    <th>订单状态</th>
+                    <th>物流名称</th>
+                    <th>发货日期</th>
+                    <th>跟踪号</th>
+                    <th>签收情况</th>
+                    <th>建立时间</th>                   
+                </tr>
+                <tr>
+                    <td>{$order.id_increment}</td>
+                    <td>{$order.id_domain}</td>
+                    <td>{$order.id_order_status}</td>
+                    <td>
+                        <if condition="$shipping_name NEQ ''">
+                            {$shipping_name}
+                        <else/>
+                            未分配
+                        </if>
+                    </td>
+                    <td>{$order.delivery_date}</td>
+                    <td><php>
+                        //$ship = D("Common/OrderShipping")->getShipInfo($order['id'],'track_number,status_label');
+                        </php>
+                        <foreach name="ship" item="s">
+                            <div><a target="_blank" href="<php>echo str_replace('{}', $s['track_number'], $shopping_url);</php>">{$s.track_number} {$s.status_label}</a> </div>
+                        </foreach>
+                    </td>
+                    <td>
+                        <php>echo $trackLabel?implode(',',$trackLabel):''; </php>
+                    </td>
+                    <td>{$order.created_at}</td>
+                </tr>
+               <!--  -->
+            </table>
+        </div>
+        <div class="span9" style="margin-bottom: 20px;">
+            <h3>用户信息</h3>
+            <table class="table table-hover table-bordered table-list attributesListBox">
+                <tr style="background:#f5f5f5">
+                    <th>姓名</th>
+                    <th>电话</th>
+                    <th>邮箱</th>
+                    <th>国家</th>
+                    <th>省份</th>
+                    <th>城市</th>
+                    <th>区域</th>
+                    <th>地址</th>
+                    <th>邮编</th>
+                    <th>留言</th>
+                    <th>后台备注</th>                    
+                </tr>
+                <tr>
+                    <td>{$order.first_name} {$order.last_name}</td>
+                    <td>{$order.tel}</td>
+                    <td>{$order.email}</td>
+                    <td>{$order.country}</td>
+                    <td>{$order.province}</td>
+                    <td>{$order.city}</td>
+                    <td>{$order.area}</td>
+                    <td>{$order.address}</td>
+                    <td>{$order.zipcode}</td>
+                    <td>{$order.remark}</td>
+                    <td>{$order.comment}</td>
+                </tr>
+               <!--  -->
+            </table>
+        </div>
+        <div class="span9" style="margin-bottom: 20px;">
+            <h3>网站信息</h3>
+            <table class="table table-hover table-bordered table-list attributesListBox">
+                <tbody><tr  style="background:#f5f5f5;font-size:16px;font-weight:bold;">
+                    <th>屏幕深度</th><th>是否禁用js</th><th>浏览区语言</th><th>http头</th><th>下单页面停留时间</th>
+                </tr></tbody>
+                <tr>
+                    <td>{$web_infos.colorDepth}</td>
+                    <td><php>echo isset($web_infos['disableJs'])&&$web_infos['disableJs']==0?'否':'是'</php></td>
+                    <td>{$web_infos.browserLan}</td>
+                    <td><php>
+                        foreach($web_infos['httpHeads'] as $k=>$v) {
+                        echo $k.'：'.$v.'<br>';
+                        }
+                    </php></td>
+                    <td><php>echo $web_infos['orderSubmitTimer']?$web_infos['orderSubmitTimer'].'s':'';</php></td>
+                </tr>
+            </table>
+        </div>
+        <div class="span9" style="margin-bottom: 20px;">
+            <h3>产品信息</h3>
+            <table class="table table-hover table-bordered table-list attributesListBox">
+                <tbody><tr  style="background:#f5f5f5;font-size:16px;font-weight:bold;">
+                    <th>产品ID</th><th>Model</th><th>产品名称</th><th>产品属性</th><th>数量</th><th>单价</th><th>总价</th>
+                </tr></tbody>
+                <php>
+                    if($products){
+                    foreach($products as $product){
+                </php>
+                <tr><td>{$product.id_product}</td><td>{$product.sku}</td><td>{$product.product_title}</td>
+                    <td>{$product.sku_title}</td><td>{$product.quantity}</td><td>{$product.price}</td><td>{$product.total}</td></tr>
+                <php>
+                    }
+                    }
+                </php>
+
+
+
+            </table>
+        </div>
+        <div class="span9">
+            <h3>订单状态记录</h3>
+            <table class="table table-hover table-bordered table-list attributesListBox">
+                <tbody><tr  style="background:#f5f5f5;font-size:16px;font-weight:bold;">
+                    <th>状态</th><th>用户</th><th>详细</th><th>时间</th>
+                </tr></tbody>
+                <php>
+                    if($history && is_array($history)){
+                    foreach($history as $hist){
+                </php>
+                <tr><td>{$label[$hist['id_order_status']]}</td>
+                    <td>
+                        <if condition="($hist.user_nicename EQ '')">
+                            {$hist.user_login}
+                        <else/>
+                            {$hist.user_nicename}
+                        </if>
+                        </td>
+                    <td>{$hist.desc}</td><td>{$hist.created_at}</td></tr>
+                <php>}}</php>
+            </table>
+        </div>
+    </div>
+    <!--<div class="form-actions">
+        <a class="btn" href="javascript :history.back(-1);">返回</a>
+    </div>-->
+</div>
+<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

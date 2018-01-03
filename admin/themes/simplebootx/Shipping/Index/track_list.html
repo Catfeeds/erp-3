@@ -1,0 +1,55 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Index/track_list')}">运单号库列表</a></li>
+    </ul>
+    <form method="get" action=""  class="well form-search js-ajax-form">
+        <label class="control-label">物流:</label>
+        <select name="id_shipping" style="width:200px" id="id_shipping">
+            <option value="">全部</option>
+            <php> foreach($shippings as $shipping){
+                $selected = $_GET['id_shipping']==$shipping['id_shipping']?' selected="selected"':'';
+                echo '<option value="'.$shipping['id_shipping'].'" '.$selected.'>'.$shipping['title'].'</option>';
+                }
+            </php>
+        </select>
+        运单号：
+        <input type="text" name="track_number" placeholder="请输入你要搜索的运单号" value="{:I('request.track_number/s','')}" />
+        <button class="btn btn-primary searchButton">搜索</button>
+        <a href="{:U('Import/batch_import_track')}" class="btn btn-primary" style="float:right">导入运单号库</a>
+    </form>
+    <div class="well">
+        全部运单号：{$shipping_track_count} | 未使用运单号：{$not_use}
+    </div>
+    <fieldset>
+        <table class="table table-hover table-bordered table-list">
+            <thead>
+            <tr>
+                <th>物流</th>
+                <th>运单号</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <foreach name="datas" item="data">
+                <tr>
+                    <td>{$data.title}</td>
+                    <td>{$data.track_number}</td>
+                    <td><php> echo $data['track_status']==0?'未使用':'<span style="color:red">'.'已使用'.'</span>';</php></td>
+
+                    <td>
+                        <a class="js-ajax-delete btn" href="{:U('Index/delete_track',array('id_shipping_track'=>$data['id_shipping_track'],'id_shipping'=>$_GET['id_shipping']))}">删除</a>
+                </tr>
+            </foreach>
+            </tbody>
+        </table>
+        <div class="pagination">{$Page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

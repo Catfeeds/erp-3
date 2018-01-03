@@ -1,0 +1,247 @@
+﻿erp_ad 广告信息表
+
+erp_advert 广告信息表
+
+erp_advert_data 广告数据表
+
+erp_asset 资源表
+
+erp_auth_access 权限规则表
+
+erp_auth_rule 权限规则表
+
+erp_blacklist 黑名单表
+
+erp_category 产品分类表
+
+erp_check_category 查重产品分类表
+
+erp_check_record 查重记录追踪表
+
+erp_comments	评论表
+
+erp_common_action_log 访问记录表
+
+erp_country		国家表
+
+erp_currency	货币表
+
+erp_department 部门表
+
+erp_department_group 部门小组表
+
+erp_department_users 部门与员工表
+
+erp_domain	域名表
+
+erp_domain_product	域名与产品表
+
+erp_forward
+
+erp_group_users 部门与员工表 
+
+erp_guestbook	留言表
+
+erp_import_problem	问题订单表
+
+erp_inventory
+
+erp_inventoryitem
+
+erp_inventoryitemp
+
+erp_links 友情链接表
+
+erp_mail_queue	邮件队列表
+
+erp_menu 后台菜单表
+
+erp_message 消息表
+
+erp_message_users 消息与员工表
+
+erp_nav 前台导航表
+
+erp_nav_cat 前台导航分类表
+
+erp_oauth_user 第三方用户表
+
+erp_options 全站配置表
+
+erp_order 订单表(主表)
+
+erp_order_check_statistics 
+
+erp_order_forward
+
+erp_order_info 订单信息 
+
+erp_order_item 订单与产品 
+
+erp_order_outitem 销售单主表 
+
+erp_order_product_record 订单产品记录追踪表 
+
+erp_order_record 订单操作记录表
+
+erp_order_return 订单退货信息表
+
+erp_order_returnitem 销售退货单明细
+
+erp_order_settlement 订单结算信息表
+
+erp_order_shipping 订单物流信息表
+
+erp_order_status 订单状态表
+
+erp_order_wave 波次单表
+
+erp_order_wave_lessstock 减库存记录 
+
+erp_order_wave_print 波次单打印次数表
+
+erp_orderout 销售单主表
+
+erp_other_inout 
+
+erp_other_inoutitem
+
+erp_payment_import
+
+erp_period 
+
+erp_plugins 插件表
+
+erp_posts 文章表 
+
+erp_problem_order 问题件
+
+erp_product 产品表
+
+erp_product_check 查重产品表
+
+erp_product_classify 产品属性表
+
+erp_product_option 属性分类表
+
+erp_product_option_value 属性值表
+
+erp_product_record 产品操作记录追踪表
+
+erp_product_sku 产品子SKU表
+
+erp_product_supplier 产品与供应商表
+
+erp_product_transfer 
+
+erp_product_transferitem
+
+erp_purchase 采购表(主表)
+
+erp_purchase_import  
+
+erp_purchase_in 采购单表(主表)
+
+erp_purchase_in_order 内部采购单号表
+
+erp_purchase_initem 采购单明细表
+
+erp_purchase_product 采购产品信息表 
+
+erp_purchase_record 采购单操作记录表
+
+erp_purchase_settlement  采购单结算信息表
+
+erp_purchase_status 采购单状态表
+
+erp_region 地区表
+
+erp_returns_order 
+
+erp_role 角色表
+
+erp_role_user 用户角色对应表
+
+erp_route url路由表
+
+erp_shipping 合作物流表
+
+erp_shipping_grap 物流信息抓取表
+
+erp_shipping_track 
+
+erp_slide 幻灯片表
+
+erp_slide_cat 幻灯片分类表
+
+erp_supplier 供应商信息表
+
+erp_system_record 系统记录表
+
+erp_transfer  调拨单信息表(主表)
+
+erp_transferitem 调拨单明细表
+
+erp_user_favorites 用户收藏表
+
+erp_users 系统用户表
+
+erp_users_allow_ip IP变更允许名单 
+
+erp_warehouse 仓库表
+
+erp_warehouse_allocation_in  
+
+erp_warehouse_allocation_inout 货位上下架主表 
+
+erp_warehouse_allocation_out 
+
+erp_warehouse_allocation_stock 货位库存表
+
+erp_warehouse_cargochannel 货位通道表
+
+erp_warehouse_goods_allocation 货位名称表
+
+erp_warehouse_goods_area 货位区域编码表
+
+erp_warehouse_goods_sku 为sku指定货位表
+
+erp_warehouse_import
+
+erp_warehouse_import_data
+
+erp_warehouse_product 仓库与产品表
+
+erp_warehouse_record 上架/收货记录表
+
+erp_warehouse_return 退货入库信息表
+
+erp_warehouse_return_product 退货入库产品表
+
+erp_wave_import 波次单导入表
+
+erp_waybill_template 运单模板列表
+
+erp_zipcode_area 邮编区域代码
+
+erp_zipcode_transfer  
+
+erp_zone  地区表
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

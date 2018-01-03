@@ -1,0 +1,122 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Advert/Index/all_cost')}">费用列表</a></li>
+        <li><a href="{:U('Advert/Index/add_cost')}">添加费用</a></li>
+        <!--<li><a href="{:U('Order/settleaccounts')}">结款更新</a></li>
+        <li><a href="{:U('Order/updatetrackstatus')}">签收更新</a></li>
+        <li><a href="{:U('Order/sendtracknumber')}">发送快递单号</a></li>
+        <li style="display: none;"><a href="{:U('Order/importtracknumber')}">导入快递号</a></li>-->
+    </ul>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">姓名:</label>
+            <select name="id_users" style="width:100px">
+                <option value="">全部</option>
+                <foreach name="datas['users']" item="user">
+                    <option value="{$user}" <if condition="$_GET['id_users'] EQ $user">selected</if>>{$users[$user]['user_nicename']}</option>
+                </foreach>
+            </select>
+
+
+            <label class="control-label">域名:</label>
+            <input type="text" name="domain" style="width: 200px;" value="{:I('request.domain/s','')}" placeholder="请输入域名...">
+
+            <label class="control-label">广告名:</label>
+            <select name="advert_name">
+                <option value="">全部</option>
+                <foreach name="datas['advert_name']" item="name">
+                    <option value="<php>echo URLencode($name);</php>" <if condition="$_GET['advert_name'] EQ $name">selected</if>>{$name}</option>
+                </foreach>
+
+            </select>
+            <label class="control-label">选择地区：</label>
+
+                <select title="" name="zones" style="margin-bottom: 0;" id="zones">
+                    <option value="0">所有</option>
+                    <foreach name="zones" item="zone">
+                        <option value="{$key}" <if condition="$_GET['zones'] EQ $key">selected</if> >{$zone}</option>
+                    </foreach>
+                </select>
+            <label class="control-label">转化日期:</label>
+            <input type="text" name="start_conversion_at" class="js-datetime" value="{:I('request.start_conversion_at/s','')}" style="width: 120px;" autocomplete="off">-
+            <input autocomplete="off" type="text" class="js-datetime" name="end_conversion_at"  value="{:I('request.end_conversion_at/s','')}" style="width: 120px;">
+
+            <br/>
+            <button class="btn btn-primary searchButton">搜索</button>
+
+            <button class="btn btn-primary exportButton">导出</button>
+        </div>
+    </form>
+
+    <fieldset>
+    <table class="table table-hover table-bordered table-list order-table">
+        <thead>
+        <tr>
+            <th>转化日期</th>
+            <th>姓名</th>
+            <th>域名</th>
+            <th>广告名</th>
+            <th>链接</th>
+            <th>地区</th>
+            <th>类型</th>
+    <!--        <th>转化量</th>
+            <th>单次转化费</th>-->
+            <th>总费用</th>
+    <!--        <th>CPM</th>
+            <th>CTR</th>-->
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="costs" item="cost">
+            <tr>
+                <td>{$cost['conversion_at']}</td>
+                <if condition="$cost['id_users_today'] EQ null">
+                    <td>{$users[$cost['id_users']]['user_nicename']}</td>
+                <else /><td>{$users[$cost['id_users_today']]['user_nicename']}</td>
+                </if>
+
+                <td>{$departments[$costs[$key]['id_domain']]}</td>
+                <td>{$cost['advert_name']}</td>
+                <td>{$cost['url']}</td>
+                <td>{$cost['title']}</td>
+                <td>{$cost['type']}</td>
+                <td>{$cost['expense']}</td>
+
+                <td> <a href="{:U('Index/edit_advert_data',array('id_advert_data'=>$cost['id_advert_data']))}" class="btn btn-small">编辑</a></td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+        <div class="pagination">{$Page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    //console.debug(jQuery('.js-ajax-form'));
+    $('.submitDisplayRow').click(function(){
+        var getRow = $(this).parent().find('input[name=displayRow]').val();
+        if(getRow){
+            $.post("{:U('Ordercheck/setpagerow')}",{'row':getRow},function(data){
+                window.location.reload();
+            });
+        }
+    });
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','all_cost');
+        $('.form-search').attr('action',"{:U('Advert/Index/all_cost')}");
+    });
+    $('.exportButton').click(function(){
+        $('.form-search input[name=a]').attr('value','export_cost');
+        $('.form-search').attr('action',"{:U('Advert/Index/export_cost')}");
+    });
+
+</script>
+</body>
+</html>

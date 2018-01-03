@@ -1,0 +1,83 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="fixedlayer" style="height: 40px;">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Purchase/Index/get_purchase_order')}">生成内部采购单号</a></li>
+    </ul>
+</div>
+<div class="wrap">
+    <div class="customerlayer" style="height: 300px;margin-top: -80px;" >
+    <form method="get" action=""  class="well form-search">
+        <div class="searchLayer" style="padding:20px;background-color: #ecf0f1;">
+            <table cellspacing="1" style="background: #ecf0f1;">
+                <tr>
+                    
+                    <td class="th" align="right">部门：</td>
+                    <td style="width:300px;">
+                        <select name="depart_id" id="depart_id" style="width:160px;height:30px">
+                            <option value="0">所有</option>
+                            <foreach name="department" item="item">
+                                <option value="{$item.id_department}" <php>echo isset($_GET['depart_id']) && $_GET['depart_id']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                            </foreach>
+                        </select>
+                        <button class="btn btn-primary searchButton">点击生成</button>
+                    </td>
+                    <td align="left">
+                <notempty name="oid_purchase">
+                    <span>添加成功，内部采购单号为:<span style="color: red;">{$oid_purchase}</span></span>。&nbsp;&nbsp;
+                    <span>收货地址为:({$oid_purchase})燕山大道1号天恒石材市场8号厂房C区</span>
+                </notempty>
+                
+                    </td>
+                </tr>
+               
+ 
+            </table>
+            <br/>
+            
+        </div>
+
+    </form>
+    <!-- 显示所有的内部采购单号 -->
+    <fieldset>
+    <table class="table table-hover table-bordered table-list order-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>内部采购单号</th>
+                <th>部门</th>
+                <th>生成时间</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <foreach name="lists" item="item">
+
+                    <tr>
+                        
+                        <td>{$item.id}</td>
+                        <td>{$item.oid_purchase}</td>
+                        <td>{$item.title}</td>
+                        <td>{$item.create_time}</td>
+                        <if condition="$item.status eq 1">
+                           <td>未用</td> 
+                        <else />
+                           <td> 已用</td> 
+                        </if>
+                        
+                        <td>{$item.user_nicename}</td>
+                    </tr>
+
+            </foreach>
+        </tbody>
+    </table>
+    <div class="pagination">{$Page}
+    </fieldset>
+    <!--  -->
+</div>
+    </div>
+
+</body>
+</html>

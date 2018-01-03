@@ -1,0 +1,148 @@
+<admintpl file="header" />
+<style>
+    input{min-height:30px;}
+    .tableLayer table th,.tableLayer table td{word-wrap:break-word;word-break:break-all; padding: 10px 5px;white-space: normal;}
+    .att tr,.att tr td,.att tr td input{height:30px;font-size: 14px;}
+    .att tr td.th{width: 80px;}
+</style>
+</head>
+<body>
+<div class="fixedlayer">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#">仓库日进销存单列表</a></li>
+    </ul>
+    <div class="buttonLayer">
+    </div>
+</div>
+
+<div class="wrap">
+    <div class="customerlayer" style="padding-top: 90px;">
+        <!--  -->
+        <div class="searchLayer">
+            <form method="get" action=""  class="well form-search">
+                <table cellspacing="1" class="att">
+               <tr>
+                        <td class="th">部门：</td>
+                        <td>
+                            <input type="text" value="{$_GET['department_id']}"/>
+                        </td>
+                        <td class="th">sku：</td>
+                        <td>
+                            <input type="text" value="{$sku.sku}"/>
+                        </td>
+                        <td class="th">单据类型：</td>
+                        <td>
+                            <select name="billtype_de" style="height: 30px;">
+                                <option value="">全部</option>
+                                <php> foreach($billtype as $v){
+                                    $selected = $_GET['billtype_de']==$v?' selected="selected"':'';
+                                    echo '<option value="'.$v.'" '.$selected.'>'.$v.'</option>';
+                                    }
+                                </php>
+                            </select>
+                            <!--<input type="text" name="billtype" value="{$_GET['billtype']}"/>-->
+                        </td>
+
+                    </tr>
+                </table>
+                <div class="buttonLayer">
+                    <button class="btn btn-primary searchButton">搜索</button>
+                     <span class="btn btn-primary exportButton">导出</span>
+                     <button class="btn btn-primary" onclick='change();''>返回</button>
+                </div>
+             </form>
+        </div>
+        <!--  -->
+        <div class="ctab-panel">
+            <!--<div class="ctab-head">
+                <a href="{:U('warehouse/inout/indexofin')}" class="active">仓库日进销存单列表</a>
+            </div>-->
+            <div class="pagination">
+                日期：<php>echo date("Y-m-d");</php>
+            </div>
+            <div class="ctab-body">
+                <div class="tableLayer" style="height: auto; table-layout: :fixed;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>仓库编号</th>
+                                <th width="13%">产品名</th>
+                                <th width="10%">内部名</th>
+                                <!-- <th width="10%">部门名称</th> -->
+                                 <th>出入库日期</th>
+                                <th>单据编号</th>
+                                <th>sku</th>
+                                <th>单据类型</th>
+                                <th>出入库人</th>
+                               <th><php>if($_GET['action']=='wa_in'){echo "入库数";}else if($_GET['action']=='wa_out'){echo "出库数";}</php></th>
+                               <th><php>if($_GET['action']=='wa_in'){echo "入库金额";}else if($_GET['action']=='wa_out'){echo "出库金额";}</php></th>
+                                <th <php>if($_GET['action']=="wa_out"){ echo "hidden";}</php>>上架数量</th>
+                          <!--      <th>操作</th>-->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <foreach name="list" item="vlist">
+                                <tr  <php> if(empty($vlist['is_hide'])){echo "hidden";}</php>  >
+                                    <td style="text-align: center">{$vlist['id']}</td>
+                                    <td style="text-align: center">{$vlist.wtitle}</td>
+                                    <td style="text-align: center">{$vlist.title}</td>
+                                    <td style="text-align: center"> {$vlist.inner_name}</th>
+                                     <td style="text-align: center">{$vlist.billdate}</td>
+                                    <!-- <td style="text-align: center"> {$vlist.dt_title}</th> -->
+                                    <td style="text-align: center"> {$vlist.docno}</th>
+                                    <td style="text-align: center"> {$vlist.sku}</th>
+                                    <td style="text-align: center"> {$vlist.billtype}</th>
+                                    <td style="text-align: center">{$vlist['user_nicename']}</td>
+                                    <td style="text-align: center"><php>if($_GET['action']=='wa_in'){ echo $vlist['qtychange']<'0'?'0':$vlist['qtychange'];}else if($_GET['action']=='wa_out'){echo abs($vlist['qtychange']);}</php></td>
+                                    <td style="text-align: center">{$vlist.amtchange}</td>
+                                    <td style="text-align: center" <php>if($_GET['action']=="wa_out"){ echo "hidden";}</php>>{$vlist.qty_alloc}</td>
+                                    <!--<td>
+
+                                    </td>-->
+                                </tr>
+                            </foreach>
+                        </tbody>
+                    </table>
+                </div>
+            <!--    <div class="pagination">{$Page}</div>-->
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/jquery.stickytableheaders.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        /*$(".tableLayer table").stickyTableHeaders({scrollableArea: $('.tableLayer')});*/
+    });
+   $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('warehouse/index/storage_ftp_detail',array('id'=>$_GET['id'],'sku'=>$_GET['sku'],'action'=>$_GET['action'],'department_id'=>$_GET['department_id']))}");
+        $('.form-search') .submit();
+    });
+    $('.submitDisplayRow').click(function(){
+        var getRow = $(this).parent().find('input[name=displayRow]').val();
+        if(getRow){
+            $.post("{:U('inout/setpagerow')}",{'row':getRow},function(data){
+                window.location.reload();
+            });
+        }
+    });
+    $('.exportButton').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('warehouse/index/export_storageFtp',array('action'=>$_GET['action'],'id'=>$_GET['id']))}");
+        $('.form-search') .submit();
+    });    
+    function change(){
+        // console.log(123);alert(12);
+        // window.location.href="{:U('warehouse/index/storage_ftp_list')}";
+         $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('warehouse/index/storage_ftp_list',array('p'=>$_GET['pn'],'title'=>$_GET['title'],'inner_name'=>$_GET['inner_name'],'id'=>$_GET['id'],'sku'=>$_GET['sku'],'action'=>$_GET['action']))}");
+        $('.form-search') .submit();
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<admintpl file="header" />
+<style>
+    input{min-height:30px;}
+</style>
+</head>
+<body>
+<div class="fixedlayer">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#">打印货架条码</a></li>
+    </ul>
+    <div class="buttonLayer">
+    </div>
+</div>
+
+<div class="wrap">
+    <div class="customerlayer" style="padding-top: 90px;">
+        <!--  -->
+        <div class="searchLayer">
+            <form method="get" action=""  class="well form-search">
+                <table style="border: 1px solid #EEEEEE;">
+                    <tr>
+                        <td class="th">区域：</td>
+                        <td>
+                            <select name="bar_code_area" id="bar_code_area" style="height: 30px;">
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                        </td>
+                        <td>
+                            <span>共有<tt style="color: red;">A、B、C</tt>三个区域，系统默认为A，可手动选择</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="th">第N个货架：</td>
+                        <td>
+                            <select name="storage_rack_n" id="storage_rack_n" style="height: 30px;">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                                <option value="17">17</option>
+                                <option value="18">18</option>
+                                <option value="19">19</option>
+                                <option value="20">20</option>
+                                <option value="21">21</option>
+                                <option value="22">22</option>
+                                <option value="23">23</option>
+                                <option value="24">24</option>
+                                <option value="25">25</option>
+                                <option value="26">26</option>
+                                <option value="27">27</option>
+                                <option value="28">28</option>
+                                <option value="29">29</option>
+                                <option value="30">30</option>
+                                <option value="31">31</option>
+                                <option value="32">32</option>
+                                <option value="33">33</option>
+                                <option value="34">34</option>
+                                <option value="35">35</option>
+                                <option value="36">36</option>
+                                <option value="37">37</option>
+                                <option value="38">38</option>
+                                <option value="39">39</option>
+                                <option value="40">40</option>
+                                <option value="41">41</option>
+                                <option value="42">42</option>
+                                <option value="43">43</option>
+                                <option value="44">44</option>
+                                <option value="45">45</option>
+                                <option value="46">46</option>
+                                <option value="47">47</option>
+                                <option value="48">48</option>
+                                <option value="49">49</option>
+                                <option value="50">50</option>
+                                <option value="51">51</option>
+                                <option value="52">52</option>
+                                <option value="53">53</option>
+                                <option value="54">54</option>
+                                <option value="55">55</option>
+                                <option value="56">56</option>
+                                <option value="57">57</option>
+                                <option value="58">58</option>
+                                <option value="59">59</option>
+                                <option value="60">60</option>
+                                <option value="61">61</option>
+                                <option value="62">62</option>
+                                <option value="63">63</option>
+                                <option value="64">64</option>
+                                <option value="65">65</option>
+                                <option value="66">66</option>
+                                <option value="67">67</option>
+                                <option value="68">68</option>
+                                <option value="69">69</option>
+                                <option value="70">70</option>
+                                <option value="71">71</option>
+                                <option value="72">72</option>
+                                <option value="73">73</option>
+                                <option value="74">74</option>
+                                <option value="75">75</option>
+                                <option value="76">76</option>
+                                <option value="77">77</option>
+                                <option value="78">78</option>
+                                <option value="79">79</option>
+                                <option value="80">80</option>
+                                <option value="81">81</option>
+                                <option value="82">82</option>
+                                <option value="83">83</option>
+                                <option value="84">84</option>
+                                <option value="85">85</option>
+                                <option value="86">86</option>
+                                <option value="87">87</option>
+                                <option value="88">88</option>
+                                <option value="89">89</option>
+                                <option value="90">90</option>
+                                <option value="91">91</option>
+                                <option value="92">92</option>
+                                <option value="93">93</option>
+                                <option value="94">94</option>
+                                <option value="95">95</option>
+                                <option value="96">96</option>
+                                <option value="97">97</option>
+                                <option value="98">98</option>
+                                <option value="99">99</option>
+                                <option value="100">100</option>
+                            </select>
+                        </td>
+                        <td>
+                            <span>共有<tt style="color: red;">100</tt>个货架，区域后的数字代表货架数</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="th">货架第N层：</td>
+                        <td>
+                            <select name="storage_rack_nc" id="storage_rack_nc" style="height: 30px;">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </td>
+                        <td>
+                            <span>货架共有<tt style="color: red;">4</tt>层，区域后第2个数字代表货架层数</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="th">第N个货位：</td>
+                        <td>
+                            <select name="location_n" id="location_n" style="height: 30px;">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select>
+                        </td>
+                        <td>
+                            <span>货位共有<tt style="color: red;">8</tt>个，条码的最后一个数字对应货位数</span>
+                        </td>
+                    </tr>
+                </table>
+                <div class="buttonLayer" style="text-align: center; padding: 30px;">
+                    <button class="btn btn-primary exportPDFButton">打印条形码</button>
+                    <!--<button class="btn btn-primary exportButton">导出</button>
+                    <button class="btn btn-primary fzButton" style="float:right;margin-left: 10px;">封账</button>
+                    <button class="btn btn-primary yjButton" style="float:right;margin-left: 10px;">月结</button>-->
+                </div>
+             </form>
+        </div>
+        <!--  -->
+        <!--<div class="ctab-panel">
+            <div class="pagination">{$Page}
+                <input type="text" value="" name="displayRow" placeholder="输入每页显示数">
+                <input type="button" class="btn btn-small submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">
+            </div>
+            <div class="ctab-body">
+            </div>
+        </div>-->
+
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/jquery.stickytableheaders.js"></script>
+<script type="text/javascript">
+    $('.exportPDFButton').click(function(){
+    var bar_code_area = '',
+        storage_rack_n = '',
+        storage_rack_nc = '',
+        location_n = '';
+        bar_code_area = $("#bar_code_area").val();//区域号
+        storage_rack_n = $("#storage_rack_n").val();//第N个货架
+        storage_rack_nc = $("#storage_rack_nc").val();//货架第N层
+        location_n = $("#location_n").val();//第N个货位
+    var url = "/Product/Pdf/code_page_print?bar_code_area="+bar_code_area+"&storage_rack_n="+storage_rack_n+"&storage_rack_nc="+storage_rack_nc+"&location_n="+location_n;
+    window.open(url);
+    return false;
+});
+</script>
+</body>
+</html>

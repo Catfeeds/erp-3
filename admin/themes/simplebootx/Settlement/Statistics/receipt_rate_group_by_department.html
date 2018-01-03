@@ -1,0 +1,75 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <input type="hidden" name="show" value="display">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">物流:</label>
+            <select name="shipping_id">
+                <option value="">--所有--</option>
+                <php>
+                    foreach($shipping as $ship){
+                        $selected = $_GET['shipping_id']==$ship['id_shipping']?' selected="selected"':'';
+                        echo '<option value="'.$ship['id_shipping'].'"'.$selected.'>'.$ship['title'].'</option>';
+                    }
+                </php>
+            </select>
+            <label class="control-label">发货日期:</label>
+            <input type="text" name="start_time" class="js-datetime" value="<php>echo isset($_GET['start_time'])?str_replace('+',' ',$_GET['start_time']):'';</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="end_time" value="<php>echo isset($_GET['end_time'])?str_replace('+',' ',$_GET['end_time']):'';</php>" style="width: 120px;">
+            <button class="btn btn-primary searchButton">搜索</button>
+            <button class="btn btn-primary exportSearchButton">导出数据</button>
+        </div>
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th>部门</th>
+            <th>发货单数</th>
+            <th>签收单</th>
+            <th>签收率</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+            <foreach name="list" item="item" key='key'>
+                <tr>
+                    <td>{$item.title}</td>
+                    <td>{$item['count_delivered']}</td>
+                    <td>{$item['count_signed']}</td>
+                    <td>{$item['rate_signed']}</td>
+                    <td data-department_id ="{$item['id_department']}" class="check_detail" style="cursor:pointer">查看</td>
+                </tr>
+            </foreach>
+        </tbody>
+    </table>
+
+    <!--<div class="pagination">{$page}</div>-->
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+
+    $('.searchButton').click(function(){
+        $('.form-search input[name="show"]').val('display');
+    });
+    $('.exportSearchButton').click(function(){
+        $('.form-search input[name="show"]').val('export_excel');
+    });
+
+    $('.check_detail').on('click', function(){
+        var formSearch = $('.form-search');
+        formSearch.append('<input type="hidden" name="department_id">');
+        formSearch.attr('action', "{:U('Settlement/Statistics/receipt_rate_group_by_date')}");
+        formSearch.find('[name="a"]').val('receipt_rate_group_by_date');
+        formSearch.find('[name="department_id"]').val($(this).attr('data-department_id'));
+        formSearch.submit();
+    });
+</script>
+</body>
+</html>

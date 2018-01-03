@@ -1,0 +1,89 @@
+<admintpl file="header" />
+</head>
+<style>
+.table-list th,.table-list td{text-align: center;}
+</style>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="isexport" id="isexport" value='0'>
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="id_department" id="id_department" style="width:140px">
+                <option value="">请选择部门</option>
+                <foreach name="departmentList" item="item" key="id_department">
+                    <option value="{$id_department}" <php>echo isset($_GET['id_department']) && $_GET['id_department']==$id_department ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">建立日期:</label>
+            <input type="text" name="start_time" class="js-date" value="{$getData['start_time']}"  style="width: 120px;" autocomplete="off">
+            <br />
+            <label class="control-label" style="color: red"><input type="checkbox" {$_GET['ismore']==1?'checked="checked"':''} name="ismore" value={$_GET['ismore']==1?'1':'0'} id="morecheck" style="margin-top:-2px;margin-right:0px;">是否模糊查询关键字 </label>
+            &nbsp;
+            <label class="control-label">关键词类型:</label>   
+            <select name="keywordtype" style="width:100px;">
+                <option {$_GET['typeval']=="1"?'selected':''} value="p.inner_name">内部名</option>
+                <option {$_GET['typeval']=="2"?'selected':''} value="p.id_product">产品ID</option>
+                <option {$_GET['typeval']=="3"?'selected':''} value="d.name">域名</option>  
+            </select>     
+            <label class="control-label">关键词:</label>
+       
+            <input type="text" name="keyword" style="width: 200px;" value="{:I('request.keyword/s','')}" placeholder="请输入关键字...">&nbsp;&nbsp;&nbsp;
+
+            <button class="btn btn-primary searchButton">搜索</button>
+            <span class="exportSearchButton btn btn-primary"> 导出</span>
+        </div>
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list" style=" margin-bottom: 100px;">
+        <thead>
+        <tr>
+            <th>日期</th>
+            <th>域名</th>            
+            <th>内部名</th>
+            <th>产品ID</th>
+            <th>部门</th>
+            <th>出单量</th>
+        
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="repList" item="item" key="director">
+            <tr>
+                <td>{$item['created_at']|substr=0,10}</td>
+                <td>{$item['domain']}</td>
+                <td>{$item['inner_name']}</td>
+                <td>{$item['id_product']}</td>
+                <td>{$departmentList[$item['id_department']]}</td>
+                <td> {$item['ordercnt']}</td>
+               
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('#morecheck').on('click',function(){
+        if($(this).attr('checked')){
+            $(this).val('1');
+        }else{
+            $(this).val('0');
+        }
+    });
+    $('.searchButton').click(function(){
+        $('#isexport').val('0');
+        $('.form-search').attr('action',"{:U('Index/product_report')}");
+        $('.form-search').trigger('submit');
+
+    });
+    $('.exportSearchButton').click(function(){
+        $('#isexport').val('1');
+        $('.form-search').attr('action',"{:U('Index/product_report')}");
+        $('.form-search').trigger('submit');
+    });
+</script>
+</body>
+</html>

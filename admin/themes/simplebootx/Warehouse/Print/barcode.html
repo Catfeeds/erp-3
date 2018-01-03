@@ -1,0 +1,40 @@
+<admintpl file="header" />
+<script src="/public/js/jquery.barcode/jquery-barcode.js"></script>
+<script src="/public/js/jquery.ui/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+<style>
+    .draggable { width: 90px; height: 90px; padding: 0.5em; float: left; margin: 0 10px 10px 0; }
+    #draggable, #draggable2 { margin-bottom:20px; }
+    #draggable { cursor: n-resize; }
+    #draggable2 { cursor: e-resize; }
+    #containment-wrapper { width: 95%; height:150px; border:2px solid #ccc; padding: 10px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+    <div class="test_print"></div><br />
+    <div class="test_print2"></div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    var config = {'set_value':'567567-23-767','set_div':'.test_print','showHRI':true};
+    generateBarcode(config);
+    var config2 = {'set_value':'888888-88-888','set_div':'.test_print2','barWidth':2,'barHeight':80};
+    generateBarcode(config2);
+</script>
+
+<div id="containment-wrapper" style="position: relative;">
+    <div id="droppable" style="width: 100px;"  class="show_offset">请放置到这里！</div>
+</div>
+
+
+<script>
+    $( "#droppable" ).draggable({ containment:  "parent", scroll: true,
+        drag: function (event, ui) {
+            console.debug(jQuery('.show_offset').html(event.target.offsetLeft+'=='+event.target.offsetTop));
+        }
+    });
+</script>
+</body>
+</html>

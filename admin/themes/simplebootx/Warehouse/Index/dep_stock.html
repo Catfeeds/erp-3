@@ -1,0 +1,43 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('index/dep_stock')}">部门库存列表</a></li>
+    </ul>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th width="200px">部门名称</th>
+            <th>仓库名称</th>
+            <th>库存</th>
+        </tr>
+        </thead>
+        <tbody>
+        <php>
+
+        </php>
+        <!--<foreach name="list" item="item">-->
+            <php>foreach($list as $item){</php>
+                <php>$i=0;$num= count($item);foreach($item as $k=>$value){</php>
+                    <tr>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="<php>echo $num;</php>">{$value.department}</td>
+                        </if>
+
+                        <td>{$warehouse[$k]}</td>
+                        <td>{$value.count_qty}</td>
+                    </tr>
+                  <php>$i++;</php>
+                <php>}</php>
+            <php>}</php>
+        </tbody>
+    </table>
+
+    <!--<div class="pagination">{$page}</div>-->
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

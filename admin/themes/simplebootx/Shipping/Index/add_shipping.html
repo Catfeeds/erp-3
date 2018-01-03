@@ -1,0 +1,94 @@
+<admintpl file="header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('index/add_shipping')}">{:L('添加物流')}</a></li>
+    </ul>
+    <form class="form-horizontal js-ajax-form" action="{:U('index/add_shipping')}" method="post">
+        <fieldset>
+
+            <div class="control-group">
+                <label class="control-label">{:L('名称')}</label>
+                <div class="controls">
+                    <input type="text" name="title"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('跟踪地址')}</label>
+                <div class="controls">
+                    <input type="text" name="track_url"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('公司地址')}</label>
+                <div class="controls">
+                    <input type="text" name="address"/>
+
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('联系电话')}</label>
+                <div class="controls">
+                    <input type="text" name="tel"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('网络渠道')}</label>
+                <div class="controls">
+                    <input type="text" name="channels"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('在物流注册账号')}</label>
+                <div class="controls">
+                    <input type="text" name="register_account"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('首重')}</label>
+                <div class="controls">
+                    <input type="text" name="first_weight"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('首重费用')}</label>
+                <div class="controls">
+                    <input type="text" name="first_weight_price"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('续重')}</label>
+                <div class="controls">
+                    <input type="text" name="continued_weight"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('续重费用')}</label>
+                <div class="controls">
+                    <input type="text" name="continued_weight_price"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">{:L('状态')}</label>
+                <div class="controls">
+                    <select name="status" aria-invalid="false">
+                        <option value="1">开启</option>
+                        <option value="0">关闭</option>
+                    </select>
+                </div>
+            </div>
+
+        </fieldset>
+        <div class="form-actions">
+        	<input type="hidden" name="id_shipping" value="{$_GET['id_shipping']}"/>
+            <button type="submit" class="btn btn-primary js-ajax-submit">{:L('ADD')}</button>
+            <a class="btn" href="{:U('shipping_list')}">{:L('BACK')}</a>
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

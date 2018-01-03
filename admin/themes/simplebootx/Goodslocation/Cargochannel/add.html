@@ -1,0 +1,76 @@
+<admintpl file="header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li  class="active"><a href="{:U('Cargochannel/add')}">{:L('添加货位通道')}</a></li>
+    </ul>
+    <form class="form-horizontal js-ajax-form" action="{:U('Cargochannel/add_post')}" method="post">
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label">仓库</label>
+                <div class="controls">
+                    <select name="warehouse_id" id="slect">
+                        <foreach name="warehouse" item="item">
+                            <option value="{$key}" <if condition="$key EQ $warehouse_id">selected</if>>{$item}</option>
+                        </foreach>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('货位区域')}</label>
+                <div class="controls local">
+                    <select name="local_id" class="local_id" required>
+                        <option value="">请选择</option>
+                        <foreach name="warehouse_location" item="location" key='k'>
+                            <option value="{$k}">{$location}</option>
+                        </foreach>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group channel">
+                <label class="control-label">{:L('货位通道')}</label>
+                <div class="controls local">
+                    <input type="text" name="channel_name[]" required/>
+                    <a href="javaScript:;" class="add">添加</a>
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-actions">
+            <input type="submit" class="btn btn-primary js-ajax-submit" id="add_sub" value="保存">
+            <a class="btn " href="{:U('Cargochannel/index')}">{:L('BACK')}</a>
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $(function(){
+        $('#slect').change(function () {
+            var warehouse_id = $('#slect').val();
+            $.ajax({
+                url: "{:U('Cargochannel/get_goods_location')}",
+                type: 'post',
+                dataType: 'html',
+                data: {'warehouse_id': warehouse_id},
+                success: function (shtml) {
+                    $('.local_id').replaceWith(shtml);
+                }
+            })
+        });
+
+        $('.add').click(function(){
+            var html = '<div class="controls local">';
+            html += '<input type="text" name="channel_name[]" />';
+            html += '<a href="javaScript:;" class="re_btn_other"> 删除</a>';
+            html += '</div>';
+            $('.channel').append(html);
+        });
+
+        $('.re_btn_other').live('click', function () {
+            $(this).parent().remove();
+        });
+
+    });
+</script>
+</body>
+</html>

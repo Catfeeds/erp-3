@@ -1,0 +1,357 @@
+<admintpl file="header" />
+</head>
+<!--&lt;!&ndash; 多选插件 &#45;&#45;&ndash;&gt;-->
+<!--<link rel="stylesheet" href="__PUBLIC__/js/sumoselect/sumoselect.css">-->
+<!--<script src="__PUBLIC__/js/sumoselect/jquery.sumoselect.min.js"></script>-->
+<!--&lt;!&ndash; 多选插件 &#45;&#45;&ndash;&gt;-->
+
+<!-- 折叠型三级目录 ---->
+<link rel="stylesheet" href="__PUBLIC__/js/bundle/zTreeStyle.css">
+<script src="__PUBLIC__/js/bundle/jquery-ui.min.js"></script>
+<script src="__PUBLIC__/js/bundle/jquery.ztree.core.js"></script>
+<script src="__PUBLIC__/js/bundle/jquery.ztree.excheck.js"></script>
+<script src="__PUBLIC__/js/common.js"></script>
+<!-- 折叠型三级目录 ---->
+
+</head>
+<style>
+    .content-row-2>div{
+        border-left: 1px solid rgba(0,0,0,0.1);
+        border-top:1px solid rgba(0,0,0,0.1);
+        height:60px;
+    }
+    .content-row{
+        margin-top:10px;
+        border: 1px solid rgba(0,0,0,0.1);
+        height:180px;
+    }
+    .content-block{
+        border-right: 1px solid rgba(0,0,0,0.1);
+    }
+    a.disable{
+        color:grey;
+    }
+
+    #treeDemo{
+        position: absolute;
+        background: white;
+        margin-left: 455px;
+        overflow-y: auto;
+    }
+
+    /*.list_content{*/
+    /*text-align:center;*/
+    /*}*/
+</style>
+<body>
+<div class="wrap">
+    <fieldset>
+        <form method="get" action=""  class="well form-search">
+            <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+            <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+            <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+            <div class="control-group" style="line-height: 36px;">
+                <label class="control-label">列表:</label>
+                <input type="checkbox" id="slect_def1" style="margin:0" <php>echo !isset($_GET['show_type']) || (isset($_GET['slect_check']) && $_GET['slect_check'])==1 ? 'checked' : ''</php>/>查重
+                <input type="checkbox" id="slect_def2" style="margin:0" <php>echo isset($_GET['slect_rep']) && $_GET['slect_rep']==2 ? 'checked' : ''</php>/>已备案
+                <input type="checkbox" id="slect_def3" style="margin:0" <php>echo isset($_GET['slect_xiao']) && $_GET['slect_xiao']==6 ? 'checked' : ''</php>/>已销档
+                <input type="hidden" name="slect_check" value="">
+                <input type="hidden" name="slect_rep" value="">
+                <input type="hidden" name="slect_xiao" value="">
+                &nbsp;&nbsp;
+                <label class="control-label">展示样式:</label>
+                <select name="show_type" id="slect_show" style="width:140px">
+                    <option value="3" <php>echo isset($_GET['show_type']) && $_GET['show_type']==3 ? 'selected' : ''</php>>列表展示</option>
+                    <option value="4" <php>echo isset($_GET['show_type']) && $_GET['show_type']==4 ? 'selected' : ''</php>>图片展示</option>
+                </select>
+                <label class="control-label">分类:</label>
+                <select  id="category" >
+                </select>
+                <ul id = "treeDemo" class = "ztree"> </ul>
+                <input type="hidden" name="category" value="<php> echo $category </php>">
+                &nbsp;
+                <label class="control-label">部门:</label>
+                <select name="department_id" id="department_id" style="width:140px">
+                    <option value="">请选择部门</option>
+                    <foreach name="department" item="item" key="id_department">
+                        <option value="{$id_department}" <php>echo isset($_GET['department_id']) && $_GET['department_id']==$id_department ? 'selected' : ''</php>>{$item}</option>
+                    </foreach>
+                </select>
+                &nbsp;
+                <label class="control-label">来源:</label>
+                <select name="source" id="source_id" style="width:140px">
+                    <option value="">请选择来源</option>
+                    <option value="-1" <php>echo isset($_GET['source']) && $_GET['source']==-1 ? 'selected' : ''</php>>新品</option>
+                    <option value="1" <php>echo isset($_GET['source']) && $_GET['source']==1 ? 'selected' : ''</php>>销档</option>
+                </select>
+                &nbsp;
+                <notempty name="users_data">
+                <label class="control-label">广告专员:</label>
+                <select name="id_user" style="width:140px">
+                    <option value="0">所有</option>
+                    <foreach name="users_data" item="user" >
+                        <option value="{$key}" <if condition="$_GET['id_user'] EQ $key">selected</if>>{$user}</option>
+                    </foreach>
+                </select>
+                </notempty>
+                &nbsp;
+
+                <label class="control-label">关键字:</label>
+                <input type="text" name="pro_title" style="width: 200px;" value="<php>echo $_GET['pro_title']</php>" placeholder="请输入关键字..."><br>
+                <button class="btn btn-primary searchButton">搜索</button>
+                <button class="btn btn-primary searchExportButton">导出搜索结果</button>
+            </div>
+        </form>
+        <div class="pro_res">
+            <php>
+                if($_GET['show_type'] == 3 || !isset($_GET['show_type'])) {
+            </php>
+            <foreach name="list" item="item">
+                <div class="pic_res" style="margin-bottom: 20px;height: 200px;display:inline-flex;">
+                    <div class="pic" style="margin-right: 5px;">
+                        <img id="photo-{$key}-preview" src="<php>echo $item['img']</php>" style="height:200px;width:200px;">
+                    </div>
+                    <div class="pic_de" style="margin-right: 5px;<php> echo $item['status']==0?'color:red':''</php>">
+                        <table border="1" height="200px">
+                            <tr>
+                                <td style="text-align: center;width: 270px;">查重时间：{$item.check_time}<br><php>echo ($_GET['slect_rep']==2 && $item['id_domain'] > 0) || ($_GET['slect_xiao']==6 && $item['id_domain'] > 0) ? '备案时间：'.$item['record_time'] : ''</php></td>
+                                <td style="text-align: center;width: 270px;">{$item.cate_name}</td>
+                                <td style="text-align: center;width: 270px;">{$item.title}</td>
+                                <td style="text-align: center;width: 270px;">{$item.source}</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center;">{$item.department}</td>
+                                <td style="text-align: center">{$item.user_name}</td>
+                                <td style="text-align: center"><php>echo !empty($item['extra_domain']) ? $item['extra_domain']: '无域名'</php></td>
+                                <td style="text-align: center">{$item.inner_name}</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center">
+                                    <php>
+                                        echo !empty($item['purchase_url'])?'<a target="_blank" href="'.$item['purchase_url'].'">采购链接</a>': '采购链接'
+                                    </php>
+                                </td>
+                                <td style="text-align: center">
+                                    <php>
+                                        echo !empty($item['sale_url'])?'<a target="_blank" href="'.$item['sale_url'].'">业务链接</a>':'业务链接'
+                                    </php>
+                                </td>
+                                <td style="text-align: center">{$item.style}</td>
+                                <td style="text-align: center">{$item.remark}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="_right">
+                        <if condition="$item.status eq 1 or $item.status eq 3">
+                            <a href="{:U('Product/check/edit',array('id'=>$item['id_checked']))}" class="btn btn-primary" style="margin-bottom: 5%;">编辑</a><br>
+                        </if>
+                    </div>
+                </div>
+            </foreach>
+            <php>
+                }
+            </php>
+            <php>
+                if($_GET['show_type'] == 4) {
+            </php>
+            <foreach name="list" item="item">
+                <div class="pic_res" style="display: inline-block;margin-right: 3%;width: 480px;">
+                    <div class="pic">
+                        <img id="photo-{$key}-preview" src="<php>echo $item['img']</php>" style="height:300px;width:467px;">
+                    </div>
+                    <div class="pic_de" style="margin-bottom: 5px;<php> echo $item['status']==0?'color:red':''</php>">
+                        <table border="1" class="table table-hover table-bordered table-list">
+                            <tr>
+                                <td style="text-align: center">查重时间：{$item.check_time}</td>
+                                <td style="text-align: center">{$item.cate_name}</td>
+                                <td style="text-align: center">{$item.title}</td>
+                                <td style="text-align: center">{$item.source}</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center">{$item.department}</td>
+                                <td style="text-align: center">{$item.user_name}</td>
+                                <td style="text-align: center"><php>echo !empty($item['extra_domain']) ? $item['extra_domain'] : '无域
+                                    名'</php></td>
+                                <td style="text-align: center">{$item.inner_name}</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center">
+                                    <php>
+                                        echo !empty($item['purchase_url'])?'<a target="_blank" href="'.$item['purchase_url'].'">采购链接</a>': '采购链接'
+                                    </php>
+                                </td>
+                                <td style="text-align: center">
+                                    <php>
+                                        echo !empty($item['sale_url'])?'<a target="_blank" href="'.$item['sale_url'].'">业务链接</a>':'业务链接'
+                                    </php>
+                                </td>
+                                <td style="text-align: center">{$item.style}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" style="text-align: center">{$item.remark}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    < class="_right" style="margin-bottom: 5px;">
+                    <if condition="$item.status eq 1 or $item.status eq 3">
+                            <a href="{:U('Product/check/edit',array('id'=>$item['id_checked']))}" class="btn btn-primary">编辑</a>
+                        </if>
+                    </div>
+                </div>
+            </foreach>
+            <php>
+                }
+            </php>
+        </div>
+        <div class="pagination">{$page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+    $('.searchExportButton').click(function(){
+        var category = $('input[name="category"]').val();
+        if ( category == null)
+        {
+            var category = getSelectedID();
+        }
+        if (category == null)
+        {
+            var category = getSelectedID();
+        }
+        if($("#slect_def1").prop("checked")) {
+            $('input[name="slect_check"]').val(1);
+        }
+        if($("#slect_def2").prop("checked")){
+            $('input[name="slect_rep"]').val(2);
+        }
+        if($("#slect_def3").prop("checked")){
+            $('input[name="slect_xiao"]').val(6);
+        }
+        if($("#slect_def1").prop("checked") && $("#slect_def2").prop("checked")) {
+            $('input[name="slect_check"]').val(1);
+            $('input[name="slect_rep"]').val(2);
+        }
+        if($("#slect_def2").prop("checked") && $("#slect_def3").prop("checked")) {
+            $('input[name="slect_rep"]').val(2);
+            $('input[name="slect_xiao"]').val(6);
+        }
+        if($("#slect_def1").prop("checked") && $("#slect_def3").prop("checked")) {
+            $('input[name="slect_check"]').val(1);
+            $('input[name="slect_xiao"]').val(6);
+        }
+        if($("#slect_def1").prop("checked") && $("#slect_def2").prop("checked") && $("#slect_def3").prop("checked")) {
+            $('input[name="slect_check"]').val(1);
+            $('input[name="slect_rep"]').val(2);
+            $('input[name="slect_xiao"]').val(6);
+        }
+        $('input[name="category"]').val(category);
+        $('.form-search').attr('action',"{:U('check/exprot_check')}");
+    });
+
+    $('#slect_show').change(function(){
+        $('.searchButton').click();
+    });
+
+    $('.fe').click(function(){
+        var data_id = $(this).attr('data-id');
+        $.ajax({
+            url:"{:U('check/per_ret')}",
+            type:'post',
+            dataType:'json',
+            data:{'id_checked':data_id},
+            success:function(result){
+                if(result.code==1) {
+                    alert(result.msg);
+                    window.location.reload();
+                }
+            }
+        })
+    });
+
+
+    $('.searchButton').on('click', function(){
+        var category = getSelectedID();
+        if($("#slect_def1").prop("checked")) {
+            $('input[name="slect_check"]').val(1);
+        }
+        if($("#slect_def2").prop("checked")){
+            $('input[name="slect_rep"]').val(2);
+        }
+        if($("#slect_def3").prop("checked")){
+            $('input[name="slect_xiao"]').val(6);
+        }
+        if($("#slect_def1").prop("checked") && $("#slect_def2").prop("checked")) {
+            $('input[name="slect_check"]').val(1);
+            $('input[name="slect_rep"]').val(2);
+        }
+        if($("#slect_def2").prop("checked") && $("#slect_def3").prop("checked")) {
+            $('input[name="slect_rep"]').val(2);
+            $('input[name="slect_xiao"]').val(6);
+        }
+        if($("#slect_def1").prop("checked") && $("#slect_def3").prop("checked")) {
+            $('input[name="slect_check"]').val(1);
+            $('input[name="slect_xiao"]').val(6);
+        }
+        if($("#slect_def1").prop("checked") && $("#slect_def2").prop("checked") && $("#slect_def3").prop("checked")) {
+            $('input[name="slect_check"]').val(1);
+            $('input[name="slect_rep"]').val(2);
+            $('input[name="slect_xiao"]').val(6);
+        }
+        $('input[name="category"]').val(category);
+        $('.form-search').attr('action',"{:U('check/ad_index')}");
+    });
+
+    //ajax请求分类数据
+    $.post("{:U('check/ajax_category')}").success(function (ret) {
+        var data = JSON.parse(ret);
+        var setting = {
+            check: {
+                enable: true,
+                chkStyle: "checkbox",
+                chkboxType: {"Y": "ps", "N": "ps"}
+            },
+            data: {
+                simpleData: {
+                    enable: true,
+                    idKey: "id",
+                    pIdKey: "pId",
+                    rootPId: 0
+                }
+            }
+        };
+        var tree = $.fn.zTree.init($("#treeDemo"), setting, data);
+        $("#treeDemo").hide();
+        $("#category").click(function () {
+            $("#treeDemo").css('top', $("#category").css('top').replace("px", "") + 40 + "px");
+            $("#treeDemo").css('left', $("#category").css('left'));
+            $("#treeDemo").css('width', $("#category").css('width').replace("px", "") - 10 + "px");
+            $("#treeDemo").slideDown(150);
+        });
+
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.id == "category") return;
+            if (e.target && $(e.target).parents("ul").hasClass("ztree")) return;
+            $("#treeDemo").slideUp(150);
+        }, false);
+
+        window.getSelectedID = function () {
+            var tree = $.fn.zTree.getZTreeObj("treeDemo");
+            var arr = tree.getCheckedNodes();
+            return arr.map(function (e) {
+                return e.id
+            }).join(",");
+        }
+
+        window.setSelectedID = function (str) {
+            var ids = str.split(",");
+            var tree = $.fn.zTree.getZTreeObj("treeDemo");
+            tree.checkAllNodes(false);
+            ids.forEach(function (id) {
+                var node = tree.getNodeByParam('id', id);
+                tree.checkNode(node, true);
+            });
+        }
+    });
+
+
+</script>

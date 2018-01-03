@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<!-- Set render engine for 360 browser -->
+	<meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- HTML5 shim for IE8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <![endif]-->
+
+	<link href="__PUBLIC__/simpleboot/themes/{:C('SP_ADMIN_STYLE')}/theme.min.css" rel="stylesheet">
+    <link href="__PUBLIC__/simpleboot/css/simplebootadmin.css" rel="stylesheet">
+    <link href="__PUBLIC__/js/artDialog/skins/default.css" rel="stylesheet" />
+    <link href="__PUBLIC__/simpleboot/font-awesome/4.4.0/css/font-awesome.min.css"  rel="stylesheet" type="text/css">
+	<script src="__PUBLIC__/js/artDialog.js?skin=default"></script>
+    <style>
+		form .input-order{margin-bottom: 0px;padding:3px;width:40px;}
+		.table-actions{margin-top: 5px; margin-bottom: 5px;padding:0px;}
+		.table-list{margin-bottom: 0px;}
+		.fixedlayer {
+		position: fixed;
+		top: 0px;
+		height: 90px;
+		left: 20px;
+		right: 20px;
+		padding-top: 20px;
+		background-color: #fff;
+		z-index: 10;
+	}
+	.buttonLayer {margin-bottom: 10px;  background-color: #fff;}
+
+	.customerlayer {height: 100%; padding-top: 120px; }
+	.customerlayer .pagination { margin-top: 10px; margin-bottom: 0px; }
+	.searchLayer {border: solid 1px #ddd; margin-bottom: 10px; }
+	.searchLayer table {width: 100%; background-color: #fff; border-spacing: 1px !important; border-collapse: separate; font-family: "宋体"; table-layout: fixed; }
+	.searchLayer table td {padding: 5px; margin: 1px; width: auto; }
+	.searchLayer table td.th {background: #f1f1f1; width: 95px; white-space: nowrap}
+	.searchLayer input[type="text"] {margin-bottom: 0px; border: none; box-shadow: none; border-bottom: solid 1px #ddd; border-radius: 0px; outline: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+	.searchLayer select {margin-bottom: 0px; border-radius: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; outline: 0px; height: 20px; line-height: 20px;}
+
+	.tableLayer {width: 100%; overflow: scroll; height: 650px; }
+	.tableLayer table{width:100%;overflow:scroll}
+	.tableLayer table th {border: solid 1px #ddd; padding: 10px; font-weight: bold; background: #f1f1f1;white-space:nowrap;}
+	.tableLayer table td {border: solid 1px #ddd; padding: 10px;white-space:nowrap;}
+	.ctab-panel {width: 100%; position: relative; margin-bottom: 10px; }
+	.ctab-head {height: 40px; }
+	.ctab-head > a {display: inline-block; color: #333; padding: 0px 10px; line-height: 40px; }
+	.ctab-head > a.active {border: solid 1px #ddd; border-bottom: none; background-color: #fff; border-top: solid 2px #3daae9; }
+	.ctab-body {border: solid 1px #ddd; padding: 10px; }
+	</style>
+
+	<!--[if IE 7]>
+	<link rel="stylesheet" href="__PUBLIC__/simpleboot/font-awesome/4.4.0/css/font-awesome-ie7.min.css">
+	<![endif]-->
+	<script type="text/javascript">
+	//全局变量
+	var GV = {
+	    ROOT: "__ROOT__/",
+	    WEB_ROOT: "__WEB_ROOT__/",
+	    JS_ROOT: "public/js/",
+	    APP:'{$Think.MODULE_NAME}'/*当前应用名*/
+	};
+	</script>
+    <script src="__PUBLIC__/js/jquery.js"></script>
+    <script src="__PUBLIC__/js/wind.js"></script>
+    <script src="__PUBLIC__/simpleboot/bootstrap/js/bootstrap.min.js"></script>
+    <script>
+    	$(function(){
+    		$("[data-toggle='tooltip']").tooltip();
+    	});
+
+//		var maxTime = 1800; // seconds
+//		var time = maxTime;
+//		$('body').on('keydown mousemove mousedown', function(e){
+//			time = maxTime; // reset
+//		});
+//		var intervalId = setInterval(function(){
+//			time--;
+//			if(time <= 0) {
+//				ShowInvalidLoginMessage();
+//				clearInterval(intervalId);
+//			}
+//		}, 1000)
+//		function ShowInvalidLoginMessage(){
+//			// 清除cookie
+//			// 提示用户
+//			// 该干嘛干嘛
+//			alert('超过30分钟无操作，自动退出！');
+//			top.location.href="http://erp.stosz.com/admin/public/logout";
+//		}
+    </script>
+<if condition="APP_DEBUG">
+	<style>
+		#think_page_trace_open{
+			z-index:9999;
+		}
+	</style>
+</if>

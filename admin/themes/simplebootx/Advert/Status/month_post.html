@@ -1,0 +1,98 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="department_id" style="width:100px;">
+                <option value="1000">所有</option>
+                <foreach name="department" item="item">
+                    <option value="{$key}" <php>echo $selectdepartment==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+            <!--
+            <label class="control-label">小组:</label>
+            <select name="group_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="group" item="item">
+                    <option value="{$key}" <php>echo isset($_GET['group_id']) && $_GET['group_id']==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select> -->
+            <label class="control-label">地区:</label>
+            <select name="zone_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="zones" item="item">
+                    <option value="{$key}" <php>echo isset($_GET['zone_id']) && $_GET['zone_id']==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">日期筛选:</label>
+            <input type="text" name="start_time" class="js-datetime" value="<php>echo isset($_GET['start_time'])?str_replace('+',' ',$_GET['start_time']):'';</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="end_time" value="<php>echo isset($_GET['end_time'])?str_replace('+',' ',$_GET['end_time']):'';</php>" style="width: 120px;">
+            <button class="btn btn-primary searchButton">搜索</button><br>
+        </div>
+
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th style="text-align:center">姓名</th>
+            <th style="text-align:center">有效单</th>
+            <th style="text-align:center">营业额</th>
+            <th style="text-align:center">客单价</th>
+            <th style="text-align:center">广告费</th>
+            <th style="text-align:center">平均广告费</th>
+            <th style="text-align:center">总采购成本</th>
+            <th style="text-align:center">总运费成本</th>
+            <th style="text-align:center">ROI</th>
+            <th>有效单占比</th>
+            <th style="text-align:center">投资回报率</th>
+            <th style="text-align:center">利润率</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="lists" item="list">
+            <if condition="$list.effective neq 0">
+                <tr>
+                    <td>{$list.name}</td>
+                    <td>{$list.effective}</td>
+                    <td>{$list.effective_price}</td>
+                    <td><php>echo round($list['effective_price']/$list['effective'],2);</php></td>
+                    <td><php>echo !empty($list['expense']) ? round($list['expense'],2) : 0;</php></td>
+                    <td><php>echo round($list['expense']/$list['effective'],2);</php></td>
+                    <td>{$list.purchase_price_all}</td>
+                    <td>{$list['freight']}</td>
+                    <td><php>echo round($list['effective_price']/$list['expense'],2);</php></td>
+                    <td><php>echo round($list['effective']/$list['total_order'],5)*100;</php></td>
+                    <td>
+                        <php>
+                            $tReturns = ($list['effective_price']/($list['expense']+($list['freight'])+($list['purchase_price']*$list['quantity'])));
+                            echo round($tReturns,2)*100;
+                            //5688/(0+(0*2)+(5288*2))
+                         </php>
+                    </td>
+                    <td>
+                        <php>
+                            $Returns = (($list['effective_price']-$list['expense']-$list['freight'])-($list['purchase_price']*$val['quantity']))/($list['effective_price']*0.8);
+                            echo round($Returns,2)*100;
+                            //((5688-0-0*2)-(5288*2))/(5688*0.8) 4550.8
+                        </php>
+                    </td>
+                </tr>
+            </if>
+        </foreach>
+        </tbody>
+    </table>
+
+    <!--<div class="pagination">{$page}</div>-->
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

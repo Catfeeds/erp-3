@@ -1,0 +1,72 @@
+<admintpl file="header" />
+</head>
+<body>
+    <div class="loading" style="display:none;position:absolute; left:0; top:0;width:100%; height:100%;z-index:20000;background-color:gray;opacity:0.5; -moz-opacity:0.5; filter:alpha(opacity=50);">
+        loading...
+    </div>
+	<div class="wrap">
+        <ul class="nav nav-tabs">
+            <li><a href="{:U('Department/index/index')}">部门列表</a></li>
+            <li class="active"><a>添加小组</a> </li>
+        </ul>
+		<form method="post" enctype="multipart/form-data" class="form-horizontal js-ajax-form" action="{:U('Department/index/save_group_post')}">
+			<fieldset>
+                <php>if(isset($gdata['id_department'])){</php>
+                 <input type="hidden" name="id" value="<php>echo $gdata['id_department'];</php>">
+                <php>}</php>
+                <div class="control-group">
+                    <label class="control-label">上级部门:</label>
+                    <div class="controls">
+                        <select name="parent_id">
+                            <foreach name="department" item="item">
+                                <option value="{$item.id_department}" <php>echo $_GET['did']==$item['id_department']?'selected="selected"':'';</php>>{$item.title}</option>
+                            </foreach>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">名称:</label>
+                    <div class="controls">
+                        <input type="text" name="title" value="<php>echo isset($gdata['title'])?$gdata['title']:'';</php>">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">负责人:</label>
+                    <div class="controls">
+                        <select name="id_users">
+                            <option value="0">--</option>
+                            <foreach name="user" item="item">
+                                <option value="{$item.id}" <php>echo $gdata['id_users']==$item['id']?'selected="selected"':'';</php>>{$item.user_nicename}</option>
+                            </foreach>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">组员:</label>
+                    <div class="controls">
+                        <select name="group_user_id[]" multiple="multiple" style="width:80%;height:300px;">
+                            <option value="0">--</option>
+                            <foreach name="user" item="item">
+                                <option value="{$item.id}" <php> echo in_array($item['id'],$groupuser)?'selected="selected"':'';</php>>
+                                {$item.user_nicename}
+                                </option>
+                            </foreach>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="control-group" hidden>
+                    <label class="control-label">是否为业务部门:</label>
+                     <input  name="type" value="2" />
+                </div>
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">保存</button>
+				<a class="btn" href="{:U('Index/index')}">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

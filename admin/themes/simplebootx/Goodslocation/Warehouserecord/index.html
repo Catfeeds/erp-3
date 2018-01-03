@@ -1,0 +1,65 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a>货位库存操作记录</a></li>
+    </ul>
+    <form method="get" action=""  class="well form-search">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">仓库:</label>
+            <select name="id_warehouse">
+                <option value="">所有</option>
+                <foreach name="warehouses" item="item">
+                    <option value="{$key}" <php>if($key == $_GET['id_warehouse']) echo selected;</php> >{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">货位名称:</label>
+            <input type="text" name="allocation" value="{$_GET['allocation']}"/>
+            <label class="control-label">SKU或条形码:</label>
+            <input type="text" name="sku" value="{$_GET['sku']}" />
+            <label class="control-label">产品名:</label>
+            <input type="text" name="product_name" value="{$_GET['product_name']}"/>
+            <label class="control-label">操作人:</label>
+            <input type="text" name="user_name" value="{$_GET['user_name']}"/>
+            <button class="btn btn-primary searchButton" id="searchBtn">搜索</button>
+        </div>
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list order-table">
+        <thead>
+        <tr>
+            <th>SKU</th>
+            <th>条形码</th>
+            <th>产品名</th>
+            <th>仓库</th>
+            <th>属性</th>
+            <th>货位</th>
+            <th>修改前库存</th>
+            <th>修改后库存</th>
+            <th>修改人</th>
+            <th>修改时间</th>
+        </tr>
+        </thead>
+        <tbody>
+            <foreach name="list" item="record">
+                <tr>
+                    <td>{$record.sku}</td>
+                    <td>{$record.barcode}</td>
+                    <td>{$record.product_name}</td>
+                    <td>{$record.warehouse_name}</td>
+                    <td>{$record.sku_options}</td>
+                    <td>{$record.allocation}</td>
+                    <td>{$record.num_before}</td>
+                    <td>{$record.num_after}</td>
+                    <td>{$record.user_name}</td>
+                    <td>{$record.created_at}</td>
+                </tr>
+            </foreach>
+        </tbody>
+    </table>
+        <div class="pagination">{$page}</div>
+    </fieldset>
+</div>
+</body>
+</html>

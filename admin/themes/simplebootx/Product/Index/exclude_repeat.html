@@ -1,0 +1,81 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+<fieldset>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+        <label class="control-label">分类筛选:</label>
+        <select name="first_cate" id="slect" style="width:140px">
+            <option value="">请选择一级分类</option>
+            <foreach name="category" item="item">                
+                <option value="{$item.id_category}" <php>echo isset($_GET['first_cate']) && $_GET['first_cate']==$item['id_category'] ? 'selected' : ''</php>>{$item.title}</option>
+            </foreach>
+        </select>
+        &nbsp;&nbsp;
+        <select name="secd_cate" id="slect_secd_cate" style="width:140px">
+            <option value="">请选择二级分类</option>
+            <foreach name="secd_cates" item="item">                
+                <option value="{$item.id_category}" <php>echo isset($_GET['secd_cate']) && $_GET['secd_cate']==$item['id_category'] ? 'selected' : ''</php>>{$item.title}</option>
+            </foreach>
+        </select>
+        &nbsp;&nbsp;
+        <select name="three_cate" id="slect_three_cate" style="width:140px">
+            <option value="">请选择三级分类</option>
+            <foreach name="three_cates" item="item">                
+                <option value="{$item.id_category}" <php>echo isset($_GET['three_cate']) && $_GET['three_cate']==$item['id_category'] ? 'selected' : ''</php>>{$item.title}</option>
+            </foreach>
+        </select>
+        &nbsp;&nbsp;
+        <label class="control-label">产品名称:</label>
+        <input type="text" name="pro_title" style="width: 200px;" value="<php>echo $_GET['pro_title']</php>" placeholder="请输入产品名称...">
+        <button class="btn btn-primary searchButton">搜索</button>
+        </div>
+    </form>  
+    <div class="pro_res">
+        <foreach name="product" item="item">
+            <div class="pic_res" style="width:550px;display: inline-block;">
+                <div class="pic" style="height:200px;width: 200px;margin: auto">
+                <img id="photo-{$key}-preview" src="{:sp_get_image_preview_url($item['img']['photo'][0]['url'])}" style="height:200px;width:200px;">
+                </div>
+                <div class="pic_de" style="margin-top:10px;height:70px;text-align:center">
+                    部门：{$item.department}<br>
+                    产品名称：<a href="{:U('product/index/index',array('product_name'=>$item['title']))}" style="color:#000">{$item.title}</a>
+                </div>
+            </div>
+        </foreach>
+    </div>
+    <div class="pagination">{$page}</div>
+</fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+    $('#slect').change(function(){
+        var id_category = $(this).val();
+        $.ajax({
+            url:"{:U('index/get_category')}",
+            type:'post',
+            dataType:'html',
+            data:{'id_category':id_category},
+            success:function(shtml){
+                $('#slect_secd_cate').html(shtml);
+                $('#slect_three_cate').html('<option value="">请选择三级分类</option>');
+            }
+        })
+    });
+    $('#slect_secd_cate').change(function(){
+        var id_category = $(this).val();
+        $.ajax({
+            url:"{:U('index/get_three_category')}",
+            type:'post',
+            dataType:'html',
+            data:{'id_category':id_category},
+            success:function(shtml){
+                $('#slect_three_cate').html(shtml);
+            }
+        })
+    });
+</script>

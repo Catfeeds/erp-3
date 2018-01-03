@@ -1,0 +1,98 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('Warehouse/index/stock_index')}">仓库列表</a></li>
+        <li class="active"><a>货位库存列表</a></li>
+    </ul>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="display" value="show">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">货位名称:</label>
+            <input type="text" name="goods_name" value="{$_GET['goods_name']}"/>
+            <label class="control-label">SKU或条形码:</label>
+            <input type="text" name="sku" value="{$_GET['sku']}" />
+            <label class="control-label">产品名:</label>
+            <input type="text" name="title" value="{$_GET['title']}"/>
+            <label class="control-label">产品内部名:</label>
+            <input type="text" name="inner_name" value="{$_GET['inner_name']}"/>
+            <label class="control-label">部门:</label>
+            <select name="id_department" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="department" item="item">
+                    <option value="{$key}" <if condition="$key EQ $_GET['id_department']">selected</if>>{$item}</option>
+                </foreach>
+            </select>
+
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="btn btn-primary searchButton">搜索</button>
+            <button class="btn btn-primary exportButton">导出</button>
+        </div>
+    </form>
+    <div class="control-group">
+        仓库：{$warehouse_name}
+    </div>
+    <fieldset>
+        <table class="table table-hover table-bordered table-list order-table">
+            <thead>
+            <tr>
+                <th>内部名</th>
+                <th>部门</th>
+                <th>货位名称</th>
+                <th>SKU</th>
+                <th>条形码</th>
+                <th>产品名</th>
+                <th>属性</th>
+                <th>可用库存</th>
+                <th>实际库存</th>
+                <th>已审核库存</th>
+                <th>未配货库存</th>
+                <th>已配货库存</th>
+            </tr>
+            </thead>
+            <tbody>
+            <foreach name="list" item="goods">
+                <tr style="<php>
+                switch($order['blacklist_level']){
+                    case 1:case 2:
+                    case 3:
+                        echo 'background:rgba(255, 229, 0, 0.3);';
+                    case 4:
+                    case 10:
+                        echo 'background:rgba(244, 54, 54, 0.5);';
+                    break;
+                }
+                echo $order['order_repeat']>0?'color:red;':'';
+                </php>">
+                    <td>{$goods.inner_name}</td>
+                    <td>{$goods.department_name}</td>
+                    <td>{$goods.goods_name}</td>
+                    <td>{$goods.sku}</td>
+                    <td>{$goods.barcode}</td>
+                    <td>{$goods.title}</td>
+                    <td>{$goods.attr}</td>
+                    <td>{$goods.quantity}</td>
+                    <td>{$goods.actual_quantity}</td>
+                    <td>{$goods.approved_quantity}</td>
+                    <td>{$goods.unpicking_quantity}</td>
+                    <td>{$goods.picked_quantity}</td>
+                </tr>
+            </foreach>
+            </tbody>
+        </table>
+        <div class="pagination">{$Page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search input[name="display"]').val('show');
+    });
+    $('.exportButton').click(function(){
+        $('.form-search input[name="display"]').val('export');
+    });
+
+</script>
+</body>
+</html>

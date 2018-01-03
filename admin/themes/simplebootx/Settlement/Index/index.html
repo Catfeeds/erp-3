@@ -1,0 +1,492 @@
+<admintpl file="header" />
+<style>
+    a.multiSelect {
+        background: #FFF right center no-repeat;
+        border: solid 1px #BBB;
+        padding-right: 20px;
+        position: relative;
+        cursor: default;
+        text-decoration: none;
+        display: -moz-inline-stack;
+        display: inline-block;
+        vertical-align: top;
+        color: rgb(149, 165, 166);
+        vertical-align: middle;
+        padding: 4px 6px;
+        border-radius: 3px;
+        height:20px;
+    }
+
+    a.multiSelect:link, a.multiSelect:visited, a.multiSelect:hover, a.multiSelect:active {
+        text-decoration: none;
+    }
+
+    a.multiSelect span
+    {
+        margin: -6px 1px 5px 3px;
+        overflow: hidden;
+        display: -moz-inline-stack;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    a.multiSelect.hover {
+        background-image: url(dropdown.blue.hover.png);
+    }
+
+    a.multiSelect.active,
+    a.multiSelect.focus {
+        border: 1px solid #dce4ec;
+    }
+
+    .multiSelectOptions,.multiSelectOptions_1 {
+        margin-top: -1px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        border: solid 1px #B2B2B2;
+        background: #FFF;
+    }
+
+    .multiSelectOptions LABEL,.multiSelectOptions_1 LABEL {
+        padding: 0px 2px;
+        display: block;
+        white-space: nowrap;
+    }
+
+    .multiSelectOptions input,.multiSelectOptions_1 input,{
+        vertical-align: middle;
+    }
+
+    .multiSelectOptions LABEL.checked,.multiSelectOptions_1 LABEL.checked {
+        background-color: #dce5f8;
+    }
+
+    .multiSelectOptions LABEL.selectAll,.multiSelectOptions_1 LABEL.selectAll {
+        border-bottom: dotted 1px #CCC;
+    }
+
+    .multiSelectOptions LABEL.hover,.multiSelectOptions_1 LABEL.hover {
+        background-color: #3399ff;
+        color: white;
+    }
+    label:hover{background-color:#0080FF;}
+    label.control-label:hover{background-color:#FFFFFF; opacity:0.5;filter:alpha(opacity=50);}
+</style>
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Index/index')}">结算列表</a></li>
+        <li><a href="{:U('import/amount')}">导入结算</a></li>
+        <li><a href="{:U('Index/grouping')}">结算分组</a></li>
+        <!--
+        <button class="btn btn-primary LogisticsInfo" style="float: right;" type="button" orderid="5">同步完成订单</button>
+        -->
+        <!--<button class="btn btn-primary updateSignedForDate" style="float: right;" type="button">同步签收时间</button>-->
+    </ul>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <input type="hidden" name="department_id" id="department_id1"/>
+            <a href="javascript:;" class="multiSelect active" id="department_id">
+                <span style="width: 106px;">请选择</span>
+            </a>
+            <div id="busni" class="multiSelectOptions" style="position: absolute; z-index: 99999; display:none; height: 150px;left:75px;">
+                <php>$id_department = explode(',',$_GET['department_id']);</php>
+                <label class="selectAll"><input type="checkbox" class="selectAll" flag="bun" />全选</label>
+                <foreach name="department" item="item">
+                    <label class="">
+                        <input type="checkbox" name="department_id[]" value="{$item.id_department}" <php> if(in_array($item['id_department'],$id_department))echo checked</php> />{$item.title}  </label>
+                </foreach>
+            </div>
+            <label class="control-label">地区:</label>
+            <select name="zone_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="zone" item="item">
+                    <option value="{$item.id_zone}" <php>echo isset($_GET['zone_id']) && $_GET['zone_id']==$item['id_zone'] ? 'selected' : ''</php>>{$item.title}</option>
+                </foreach>
+            </select>
+
+            <label class="control-label">物流:</label>
+            <input type="hidden" name="shipping_id" id="shipping_id1"/>
+            <a href="javascript:;" class="multiSelect active" id="shipping_id">
+                <span style="width: 106px;">请选择</span>
+            </a>
+            <div id="logistics" class="multiSelectOptions_1" style="position: absolute; z-index: 99999; display:none; height: 150px;left:379px;">
+                <php>$shipping_id = explode(',',$_GET['shipping_id']);</php>
+                <label class="selectAll"><input type="checkbox" class="selectAll" flag="logis" />全选</label>
+                <php>foreach($shipping as $key=>$title){ </php>
+                <label class="">
+                    <input type="checkbox" name="shipping_id[]" value="{$key}" <php> if(in_array($key,$shipping_id)&&strlen($_GET['shipping_id'])!=0)echo checked</php> />{$title}
+                </label>
+                <php>}</php>
+            </div>
+
+            <label class="control-label">状态:</label>
+            <select name="status">
+                <option value="">--所有--</option>
+                <option <php>echo isset($_GET['status']) && ($_GET['status']==0 && $_GET['status']!='')?'selected="selected"':'';</php> value="0">未结款</option>
+                <option <php>echo $_GET['status']==1?'selected="selected"':'';</php> value="1">部分结款</option>
+                <option <php>echo $_GET['status']==2?'selected="selected"':'';</php> value="2">已结款</option>
+            </select>
+            <label class="control-label">物流归类状态:</label>
+            <select name="summary_status_label" style="width:100px;">
+                <option value="0">所有</option>
+                <php>foreach($summary_status as $item){ </php>
+                <php>if($item){</php>
+                <option value="{$item}"<php>if(isset($_GET['summary_status_label'])&& $_GET['summary_status_label']==$item){echo ' selected="selected"';}</php>>{$item}</option>
+                <php>}</php>
+                <php>}</php>
+            </select>
+            &nbsp;&nbsp;&nbsp;
+           <span style="color: red">是否模糊查询</span> <input type="checkbox" {$_GET['ismore']==1?'checked="checked"':''} name="ismore" value={$_GET['ismore']==1?'1':'0'} id="morecheck">
+            <label class="control-label">关键词类型:</label>
+            <select name="keywordtype" style="width:100px;">
+                <option {$_GET['keywordtype']=='id_increment'?'selected':''} value="id_increment">订单号</option>
+                <!-- <option {$_GET['keywordtype']=='track_number'?'selected':''} value="track_number">运单号</option> -->
+                <option {$_GET['keywordtype']=='id_domain'?'selected':''} value="id_domain">域名</option>
+                <option {$_GET['keywordtype']=='first_name'?'selected':''} value="first_name">姓名</option>
+                <option {$_GET['keywordtype']=='tel'?'selected':''} value="tel">电话</option>
+                <option {$_GET['keywordtype']=='address'?'selected':''} value="address">地址</option>
+                <option {$_GET['keywordtype']=='email'?'selected':''} value="email">邮箱</option>
+                <option {$_GET['keywordtype']=='remark'?'selected':''} value="remark">备注</option>
+                <option {$_GET['keywordtype']=='username'?'selected':''} value="username">广告专员</option>
+
+            </select>
+            <label class="control-label">关键词:</label>
+            <input type="text" name="keyword" style="width: 200px;" value="<php>echo $_GET['keyword'];</php>" placeholder="请输入订单号、姓名">
+            <label class="control-label">运单号:</label>
+            <input type="text" name="track_number" style="width: 200px;" value="<php>echo $_GET['track_number'];</php>" placeholder="请输入运单号...">
+            <label class="control-label">订单状态：</label>
+            <select name="id_order_status">
+                <option value="">全部</option>
+                <foreach name="orderStatus" item="vo">
+                    <option value="{$vo.id_order_status}" <if condition="($_GET['id_order_status'] eq $vo['id_order_status'])"> selected="selected" </if> >{$vo.title}</option>
+                </foreach>
+            </select>
+            <br>
+            <label class="control-label">签收日期:</label>
+            <input type="text" name="start_time" class="js-datetime" value="<php>echo $_GET['start_time'];</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="end_time" value="<php>echo $_GET['end_time'];</php>" style="width: 120px;">
+            <label class="control-label">结算日期:</label>
+            <input type="text" name="start_date_settlement" class="js-datetime" value="<php>echo $_GET['start_date_settlement'];</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="end_date_settlement" value="<php>echo $_GET['end_date_settlement'];</php>" style="width: 120px;">
+            <label class="control-label">下单日期:</label>
+            <input type="text" name="start_created_at" class="js-datetime" value="<php>echo $_GET['start_created_at'];</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="end_created_at" value="<php>echo $_GET['end_created_at'];</php>" style="width: 120px;">
+            <label class="control-label">发货日期:</label>
+            <input type="text" name="start_date_delivery" class="js-datetime" value="<php>echo $_GET['start_date_delivery'];</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="end_date_delivery" value="<php>echo $_GET['end_date_delivery'];</php>" style="width: 120px;">
+            <button class="btn btn-primary searchButton">搜索</button>
+            <button class="btn btn-primary exportSearchButton" title="一次性最多导出3w条">导出结果</button>
+        </div>
+    </form>
+    <div> 结款金额：<php>echo empty($amount_settlement)?'00.00':$amount_settlement;</php> &nbsp;&nbsp;运费金额：<php> echo empty($feight)?'00.00':$feight;</php>&nbsp;&nbsp;&nbsp;&nbsp;手续费金额：<php> echo empty($fee)?'00.00':$fee;</php></div>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th width="50">订单ID</th><th width="60">部门</th><th>部门主管</th><th>广告专员</th><th>收件人</th>
+            <!--<th>订单数</th>-->
+            <th style="width:350px;">产品名</th>
+            <th>总金额</th>
+            <th>已结金额</th><th>未结金额</th><th>退款金额</th>
+            <th>物流</th><th>运单号</th><th>订单状态</th><th>重量</th><th>物流状态</th><th>物流归类状态</th><th>物流上线日期</th><th>签收日期</th><th>备注</th>
+            <th>结算状态</th>
+            <th>运费</th>
+            <th>手续费</th>
+            <th style="color: #000;">附加费</th>
+            <th style="color: #000;">返款手续费</th>
+            <th style="color: #000;">代收手续费</th>
+            <th style="color: #000;">退款手续费</th>
+            <th style="color: #000;">转寄费</th>
+            <th style="color: #000;">上架费</th>
+            <th style="color: #000;">作业费</th>
+            <th style="color: #000;">其他费用</th>
+            <th style="color: #000;">费用金额统计</th>
+            <th>结款日期</th><th>下单时间</th><th>发货时间</th><th>退货时间</th><th>退款时间</th>
+            <th style="width:50px">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <php>//print_r($orderList)</php>
+        <foreach name="orderList" item="item">
+            <tr>
+                <td width="50">{$item['id_increment']}</td>
+                <td>{$item.depart}</td>
+                <td>{$userList[$item['id_department_master']]}</td>
+                <td width="50">{$item.name}</td>
+                <td width="50">{$item.first_name}</td>
+                <!--<td width="50">{$item['order_count']}</td>-->
+                <td>
+                   <php>
+                        $tempProHtml = array();
+                        foreach($item['products'] as $vp){
+                        $proId = $vp['id_product'];
+                        $tempProHtml[$proId]['title']= $vp['title'];
+                        $tempProHtml[$proId]['qty']= $vp['quantity'];
+                        if($vp['order_attrs']){
+                        foreach($vp['order_attrs'] as $pa){
+                        $number= $vp['quantity']; //$number=$pa['number'];
+                        unset($pa['number']);$tempAttrArray = array();
+                        foreach ($pa as $pa2){
+                        $tempAttrArray[] = $pa2['value_label'];
+                        }
+                        $getAttr = $tempAttrArray?implode('<span style="color:green;">+</span>',$tempAttrArray).'<span style="color:red;"> x </span>'.$number.'<br />':'';
+                        $tempProHtml[$proId]['attr'][] = '<div style="padding-left:5px;">'.$getAttr.'</div>';
+                        }
+                        }
+                        }
+                        foreach($tempProHtml as $proId=>$product){
+                        $title = $tempProHtml[$proId]['title'];$qty = $tempProHtml[$proId]['qty'];
+                        $attrHtml = $tempProHtml[$proId]['attr']?implode('',$tempProHtml[$proId]['attr']):'';
+                        $tempQty = $attrHtml?'':'<span style="color:red;"> x </span>'.$qty;
+                        echo '<div>'.$tempProHtml[$proId]['title'].$tempQty.'
+                        <hr style="margin:2px 0;color:green;border: 1px solid;"/>'.$attrHtml.'</div><br />';
+                        }
+                    </php>
+
+                </td>
+                <td width="50"><php>echo \Common\Lib\Currency::format($item['amount_total'],$item['currency_code']);</php></td>
+                <td><php>echo \Common\Lib\Currency::format($item['amount_settlement'],$item['currency_code']);</php></td>
+                <td><span class="notSettlement"><php>
+                    $notSettlement = $item['amount_total']-$item['amount_settlement'];
+                    echo \Common\Lib\Currency::format($notSettlement,$item['currency_code']);
+                </php></span>
+                </td>
+                <td><php>
+                echo \Common\Lib\Currency::format($item['rejected_amount'],$item['currency_code']);
+                </php></span>
+                </td>
+                <td><php>echo $shipping[$item['id_shipping']];</php></td>
+                <td>{$item['track_number']}
+
+                </td>
+                <td>{$item.order_status}</td>
+                <!-- 重量 -->
+                <td>{$item.weight}</td>
+                <td>{$item.track_label}</td>
+                <td>{$item.summary_status_label}</td>
+                <td><php>echo $item['date_online']?$item['date_online']:'';</php></td>
+                <td><php>echo $item['date_signed']?$item['date_signed']:'';</php></td>
+                <td>{$item.remark}</td>
+                <td><php> switch($item['status']){
+                            case 0: echo '<span style="color:red;">未结算</span>';break;
+                    case 1: echo '<span style="color:red;">部分结款</span>';break;
+                    case 2: echo '已结算';break;
+                    }</php></td>
+                <td>{$item['freight']}</td>
+                <td>{$item['formalities_fee']}</td>
+                <td>{$item['surcharge']}</td>
+                <td>{$item['back_fee']}</td>
+                <td>{$item['collection_fee']}</td>
+                <td>{$item['refund_fee']}</td>
+                <td>{$item['forward_fee']}</td>
+                <td>{$item['slotting_fee']}</td>
+                <td>{$item['operation_fee']}</td>
+                <td>{$item['other_fee']}</td>
+                <td>{$item['stat_total_fee']}</td>
+                <td><php> echo substr($item['date_settlement'],0,10)</php></td>
+                <td>{$item['order_create_at']}</td><td>{$item['date_delivery']}</td>
+                <td>{$item.return_time}</td>
+                <td>{$item.rejected_time}</td>
+                <td>
+                    <php>
+                        if($item['status']<2){
+                            echo '
+                        <input type="text" placeholder="请输入收结算金额" value="" required="" style="width:130px;" name="amount">
+                        <br/>
+                        <textarea cols="18" rows="3" name="order_remark" class="orderRemarkText" placeholder="请填写备注信息" style="width:130px;height: 50px;"></textarea>
+                        <br/>
+                        <button orderid="'.$item['id_order'].'" type="button" class="btn btn-primary btn-small js-ajax-submit">确定</button>
+
+                        ';
+                        }
+                        echo '<a target="_blank" class="btn btn-small" href="'.U('Index/edit',array('id'=>$item['id_order'])).'">编辑</a>';
+                    </php>
+                    <a target="_blank" class="btn btn-small" href="{:U('Settlement/index/order_info',array('id'=>$item['id_order']))}">详情</a>
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+
+    <div class="pagination">{$page}</div>
+    </fieldset>
+    <div style="display: none"><php>   echo '耗时'.round($t2-$t1,3).'秒<br>';echo '耗时'.round($t3-$t2,3).'秒<br>';echo '耗时'.round($t4-$t3,3).'秒<br>';var_dump($sql);</php></div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+
+    var sh_na = '';
+    $("input[name^=shipping_id]:checked").each(function(index){
+            sh_na += ','+$(this).parent().text();
+
+        });
+    if(sh_na.substring(1)==""){
+        $("#shipping_id").find("span").text("请选择");
+    }else{
+        $("#shipping_id").find("span").text(sh_na.substring(1));
+    }
+    // sh_na_na = trim(sh_na.substring(1))==""?"请选择":trim(sh_na.substring(1));
+    
+    $('#morecheck').on('click',function(){
+        if($(this).attr('checked')){
+            $(this).val('1');
+        }else{
+            $(this).val('0');
+        }
+    });
+    $('.searchButton').click(function(){
+        var department_id = '';
+        $("input[name^=department_id]:checked").each(function(index){
+            department_id += ','+$(this).val();
+
+        });
+        department_id = department_id.substring(1);
+        $("#department_id1").attr('value',department_id);
+        $("input[name^=department_id]").removeAttr("checked");
+
+        var shipping_id = '';
+        $("input[name^=shipping_id]:checked").each(function(index){
+            shipping_id += ','+$(this).val();
+
+        });
+        shipping_id = shipping_id.substring(1);
+        $("#shipping_id1").attr('value',shipping_id);
+        $("input[name^=shipping_id]").removeAttr("checked");
+        $('.form-search input[name=a]').attr('value','<php>echo ACTION_NAME;</php>');
+        $('.form-search').attr('action',"{:U('Index/index')}");
+    });
+    $('.exportSearchButton').click(function(){
+        var department_id = '';
+        $("input[name^=department_id]:checked").each(function(index){
+            department_id += ','+$(this).val();
+
+        });
+        department_id = department_id.substring(1);
+        $("#department_id1").attr('value',department_id);
+        $("input[name^=department_id]").removeAttr("checked");
+
+        var shipping_id = '';
+        $("input[name^=shipping_id]:checked").each(function(index){
+            shipping_id += ','+$(this).val();
+
+        });
+        shipping_id = shipping_id.substring(1);
+        $("#shipping_id1").attr('value',shipping_id);
+        $("input[name^=shipping_id]").removeAttr("checked");
+
+        $('.form-search input[name=a]').attr('value','export_search');
+        $('.form-search').attr('action',"{:U('Index/export_search')}");
+    });
+    $('.LogisticsInfo').click(function(){
+        var Obj = $(this);Obj.text('Loading...');
+        $.post("{:U('Index/logistics')}",{},function(data){
+            window.location.reload();
+        });
+    });
+    $('.updateSignedForDate').click(function(){
+        var Obj = $(this);Obj.text('Loading...');
+        $.post("{:U('Index/update_signed_for_date')}",{},function(data){
+            if(data=='ok'){window.location.reload();}else{alert(data)}
+        });
+    });
+    $('.js-ajax-submit').click(function(){
+        var Obj = $(this);Obj.attr('disable','Disable').text('Loading...');
+        var getId = Obj.attr('orderid');
+        var amount = Obj.parent().find('input[name=amount]').val();
+        var notSettlement = parseFloat(Obj.parent().parent().find('.notSettlement').text());
+        var order_remark = Obj.parent().find('.orderRemarkText').val();
+        if(parseFloat(amount)=='NaN' || amount=='' || !Number(amount)){alert('输入金额有误。');return false;}
+        if(parseFloat(amount)>notSettlement){alert('输入金额大于未结算金额。');return false;}
+        $.post("{:U('Index/entry')}",{'id':getId,'amount':amount,'remark':order_remark},function(data){
+            var getData = $.parseJSON(data);
+            if(getData.status){
+                Obj.parent().parent().find('.notSettlement').html(getData.notsettle);
+                Obj.parent().parent().find('.settlement').html(getData.settlement);
+            }else{
+                alert(getData.message);
+            }
+            Obj.attr('disable','').text('确定');
+        })
+    });
+
+    //部门多选框点击事件
+    $("#department_id").click(function(){
+        if($("#busni").css("display")!="none"){
+            $("#busni").css("display","none");
+        }else{
+            $("#busni").css("display","block");
+        };
+    })
+    //物流多选框 点击事件
+    $("#shipping_id").click(function(){
+        if($("#logistics").css("display")!="none"){
+            $("#logistics").css("display","none");
+        }else{
+            $("#logistics").css("display","block");
+        };
+    })
+    //部门多选框下拉点击事件
+    $(".multiSelectOptions").find('INPUT:checkbox').click( function() {
+        var checked = $(this)[0].checked;
+        if($(this)[0].className == "selectAll"){
+            $(".multiSelectOptions").find('INPUT:checkbox').each(function(){
+                if($(this)[0].className == "selectAll"){
+                }else{
+                    if(checked){
+                        $(this).prop("checked",true);
+                    }else{
+                        $(this).prop("checked",false);
+                    }
+                }
+            })
+        }else{
+            if(!checked){
+                $(this).parent().parent().find(".selectAll").prop("checked",false);
+            }
+        }
+    })
+
+    //物流多选框下拉点击事件
+    $(".multiSelectOptions_1").find('INPUT:checkbox').click( function() {
+        var checked = $(this)[0].checked;
+        if($(this)[0].className == "selectAll"){
+            $(".multiSelectOptions_1").find('INPUT:checkbox').each(function(){
+                if($(this)[0].className == "selectAll"){
+                }else{
+                    if(checked){
+                        $(this).prop("checked",true);
+                    }else{
+                        $(this).prop("checked",false);
+                    }
+                }
+            })
+        }else{
+            if(!checked){
+                $(this).parent().parent().find(".selectAll").prop("checked",false);
+            }
+        }
+    })
+
+    //部门多选框 失去焦点时触发事件
+    $('#busni').hover(function(){
+        $(this).show();
+    }, function(){
+        $(this).hide();
+    });
+
+    //物流
+    $('#logistics').hover(function(){
+        $(this).show();
+    }, function(){
+        $(this).hide();
+    });
+
+</script>
+</body>
+</html>

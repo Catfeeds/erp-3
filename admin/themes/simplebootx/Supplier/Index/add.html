@@ -1,0 +1,73 @@
+<admintpl file="header"/>
+</head>
+<body>
+    <div class="wrap js-check-wrap">
+        <ul class="nav nav-tabs">
+            <li><a href="{:U('index/index')}">供应商名称</a></li>
+            <li class="active"><a href="{:U('index/add')}">添加供应商</a></li>
+        </ul>
+        <form class="form-horizontal js-ajax-form" action="{:U('index/add_post')}" method="post">
+            <fieldset>
+                <div class="control-group">
+                    <label class="control-label">供应商名</label>
+                    <div class="controls">
+                        <input type="text" name="title" value="" required/>
+                        <span class="form-required" style="color:red">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">部门</label>
+                    <div class="controls">
+                        <select name="id_department">
+                            <foreach name="list" item="item">
+                                <option value ="{$item.id_department}">{$item.title}</option>
+                            </foreach>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">地址</label>
+                    <div class="controls">
+                        <input type="text" name="addr" value=""/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">电话</label>
+                    <div class="controls">
+                        <input type="text" name="phone" value=""/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">负责人</label>
+                    <div class="controls">
+                        <input type="text" name="principal" value=""/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">联系方式</label>
+                    <div class="controls">
+                        <input type="text" name="tel_phone" value=""/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">供应商网址</label>
+                    <div class="controls">
+                        <input type="text" name="supplier_url" value="" placeholder="www.abc.com,必须带wwww"/>
+                    </div>
+                </div>                                              
+                <div class="control-group">
+                    <label class="control-label">采购交货期</label>
+                    <div class="controls">
+                        <input type="text" name="delivery" value=""/> (天)
+                    </div>
+                </div>                        
+            </fieldset>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary js-ajax-submit">{:L('ADD')}</button>
+                <a class="btn" href="{:U('index/index')}">{:L('BACK')}</a>
+            </div>
+        </form>
+    </div>
+    <script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

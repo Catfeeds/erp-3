@@ -1,0 +1,101 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="department_id" style="width:100px;">
+                <option value="0" <php> if(isset($_GET['department_id']) && $_GET['department_id']=="0"){ echo "selected";}</php>>所有</option>
+                <foreach name="department" item="item">
+                    <option value="{$item.id_department}" <php>
+                    if($_GET['department_id'] && $_GET['department_id']!=="0"){
+                   if($_GET['department_id']==$item['id_department']){
+                    echo 'selected';
+                    }
+                    }else if(!isset($_GET['department_id']) && $item['id_department']==$_SESSION['department_id'][0]){
+                            echo "selected";
+                    }
+                    </php>>{$item['title']}</option>
+                </foreach>
+            </select>
+           <label class="control-label">地区:</label>
+            <select name="id_zone" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="zone_list"  key="key" item="item">
+                    <option value="{$key}" <php>echo isset($_GET['id_zone']) && $_GET['id_zone']==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">日期筛选:</label>
+            <input type="text" name="start_time" class="js-datetime" value="<php>echo isset($_GET['start_time'])?str_replace('+',' ',$_GET['start_time']):'';</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="end_time" value="<php>echo isset($_GET['end_time'])?str_replace('+',' ',$_GET['end_time']):'';</php>" style="width: 120px;">
+            <button class="btn btn-primary searchButton">搜索</button><br>
+        </div>
+
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th style="text-align:center">部门</th>
+            <th style="text-align:center">主管</th>
+            <th style="text-align:center">人员</th>
+            <th style="text-align:center">单数</th>
+            <th style="text-align:center">广告费（人民币）</th>
+            <th style="text-align:center">营业额（人民币）</th>
+            <th style="text-align:center">平均广告费</th>
+            <th style="text-align:center">ROI</th>
+            <th style="text-align:center">平均营业额（人民币）</th>
+         </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="vlist">
+        <php>$i = 0;</php>
+         <foreach name="vlist.detail" item="item">
+        <php>
+         $num = count($vlist['detail']);
+        </php>
+             <tr>   
+                    <if condition="$i eq 0 ">
+                    <td rowspan="{$num}" style="text-align:center;vertical-align:middle;">
+                        {$vlist.department_name}</td>
+                    </if>
+                    <if condition="$i eq 0 ">
+                   <td rowspan="{$num}" style="text-align:center;vertical-align:middle;">
+                         {$vlist.leader_name}</td>
+                    </if>
+                    <td>{$item.user_nicename}</td>
+                    <td>{$item.total_ordered}</td>
+                    <td><php>echo !empty($item['expense']) ? round($item['expense'],2) : 0;</php></td>
+                    <td><php>echo round($item['effective_price'],2);</php></td>
+                    <td><php>echo round($item['expense']/$item['total_ordered'],2);</php></td>
+                    <td><php>echo round($item['ROI'],2);</php></td>
+                    <td><php>echo round($item['effective_price']/$item['total_ordered'],2);</php></td>
+                 </tr>
+                 <php>$i++;</php>
+                 </foreach>
+                 <tr>
+                    <td style="border-top: none;"></td>
+                    <td style="border-top: none;"></td>
+                    <td style="color: red;">{$vlist.total}</td>
+                    <td>{$vlist.order_t}</td>
+                    <td><php>echo round($vlist['total_exp'],2)</php></td>
+                    <td>{$vlist.total_effective_price}</td>
+                    <td><php>echo !empty($vlist['total_exp_average']) ? round($vlist['total_exp_average'],2) : 0;</php></td>
+                    <td><php>echo round($vlist['total_ROI_average'],2);</php></td>
+                    <td><php>echo round($vlist['total_effective_average'],2);</php></td>
+                 </tr>
+             </foreach>
+        </tbody>
+    </table>
+
+    <!--<div class="pagination">{$page}</div>-->
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

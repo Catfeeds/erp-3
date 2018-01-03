@@ -1,0 +1,78 @@
+<admintpl file="header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('index/index')}">域名管理</a></li>
+			<!--<li><a href="{:U('index/add')}">添加域名</a></li>-->
+		</ul>
+		<form action="{:U('domain/listorders')}" method="post">
+			<table class="table table-hover table-bordered">
+				<thead>
+					<tr>
+						<th width="30">ID</th>
+						<th align="left">域名</th>
+						<th align="left">IP地址</th>
+						<!--<th align="left">产品数</th>-->
+						<th align="left">SMTP主机</th>
+						<th align="left">SMTP用户</th>
+						<th align="left">SMTP密码</th>
+						<th align="left">SMTP端口</th>
+						<th align="left">SMTP加密</th>
+						<!--<th align="left">审核状态</th>-->
+						<th align="left">参考网站</th>
+						<th width="40" align="left">状态</th>
+						<th width="120">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<foreach name="domains" item="vo">
+					<tr>
+						<td>{$vo.id_domain}</td>
+						<td>{$vo.name}</td>
+						<td>{$vo.ip}</td>
+						<!--<td>{$vo.product_count}</td>-->
+                        <td>{$vo.smtp_host}</td>
+                        <td>{$vo.smtp_user}</td>
+                        <td>{$vo.smtp_pwd}</td>
+                        <td>{$vo.smtp_port}</td>
+                        <td>
+                            <if condition="$vo['smtp_ssl'] eq 1">
+                                <font color="red">√</font>
+                                <else />
+                                <font color="red">╳</font>
+                            </if>
+                        </td>
+<!--                        <td>
+                            <if condition="$vo['verify'] eq 1">
+                                <font color="red">√</font>
+                                <else />
+                                <font color="red">╳</font>
+                            </if>
+                        </td>-->
+                        <td>{$vo.copy_url}</td>
+						<td>
+							<if condition="$vo['status'] eq 1">
+								<font color="red">√</font>
+							<else />
+								<font color="red">╳</font>
+							</if>
+						</td>
+						<td>
+
+
+							<!-- <a href="javascript:open_iframe_dialog('{:U('domain/member',array('id'=>$vo['id']))}','成员管理');">成员管理</a>| -->
+							<a href="{:U('index/edit',array('id'=>$vo['id_domain']))}">{:L('EDIT')}</a>|
+							<a class="js-ajax-delete" href="{:U('index/delete',array('id'=>$vo['id_domain']))}">{:L('DELETE')}</a>
+
+						</td>
+					</tr>
+					</foreach>
+				</tbody>
+			</table>
+            <div class="pagination">{$Page}</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

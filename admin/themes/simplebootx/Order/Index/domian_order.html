@@ -1,0 +1,55 @@
+<admintpl file="header" />
+</head>
+<body>
+<php>$sort = isset($_GET['sort']) && $_GET['sort']=='desc'?'asc':'desc';</php>
+<div class="wrap js-check-wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="department_id">
+                <option value="0">所有</option>
+                <foreach name="department" item="item" key="key">
+                    <option value="{$item.id_department}" <php>echo isset($_GET['department_id']) && $_GET['department_id']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                </foreach>
+            </select>
+            <label class="control-label">域名:</label>
+            <select name="domain_id">
+                <option value="0">所有</option>
+                <foreach name="domain" item="item" key="key">
+                    <option value="{$item.id_domain}" <php>echo isset($_GET['domain_id']) && $_GET['domain_id']==$item['id_domain'] ? 'selected' : ''</php>>{$item.name}</option>
+                </foreach>
+            </select>
+            <button class="btn btn-primary searchButton">搜索</button>
+        </div>
+    </form>
+    今日总订单：{$order_count} 昨日总订单：{$order_yes_count}
+    <table class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th>域名</th>
+            <th align="left">优化师</th>
+            <th align="left"><a href="{:U('order/Index/domian_order',array('order_by'=>'today','sort'=>$sort))}">今日订单</a></th>
+            <th align="left"><a href="{:U('order/Index/domian_order',array('order_by'=>'yesday','sort'=>$sort))}">昨日订单</a></th>
+            <th align="left"><a href="{:U('order/Index/domian_order',array('order_by'=>'order_count','sort'=>$sort))}">总订单</a></th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="order" item="vo">
+            <tr>
+                <td>{$vo.domian}</td>
+                <td>{$vo.name}</td>
+                <td>{$vo.today}</td>
+                <td>{$vo.yesday}</td>
+                <td>{$vo.order_count}</td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+    <div class="pagination">{$page}</div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

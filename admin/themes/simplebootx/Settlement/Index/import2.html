@@ -1,0 +1,75 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('Settlement/index')}">结算列表</a></li>
+        <li class="active"><a href="{:U('Settlement/import')}">导入结算</a></li>
+    </ul>
+    <fieldset>
+        <form method="post" action="" enctype="multipart/form-data"  class="form-horizontal">
+            <input type="hidden" name="import_file" value="{$filePath}">
+            <php>if(!$filePath){</php>
+            <div class="control-group" style="line-height: 36px;">
+                <div class="control-group">
+                    <label class="control-label">文件</label>
+                    <div class="controls">
+                        <input type="file" name="import_file_input">
+                        <span class="form-required"><a href="{:U('Settlement/getimportfile')}">导入案例</a>，文件内容格式需按照文档。</span>
+                    </div>
+                </div>
+            </div>
+            <php>}</php>
+
+            <php>
+                if($filePath){
+            </php>
+                <div class="control-group" style="line-height: 36px;">
+                    <div class="control-group">
+                        <label class="control-label">发货日期</label>
+                        <div class="controls">
+                            <input type="text" name="send_date" class="js-datetime" value="<php>echo $postData['send_date']?$postData['send_date']:date('Y-m-d 00:00:00');</php>">
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group" style="line-height: 36px;">
+                    <div class="control-group">
+                        <label class="control-label">订单号列</label>
+                        <div class="controls">
+                            <select name="order_id_name">
+                                <php>
+                                    foreach($csv_header as $key=>$value){
+                                    echo '<option value="'.$value.'">'.$value.'</option>';
+                                    }
+                                </php>
+                            </select>
+                            <span class="form-required" style="color: #ff0000;">请选订单号的一列。</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group" style="line-height: 36px;">
+                    <div class="control-group">
+                        <label class="control-label">出货单号</label>
+                        <div class="controls">
+                            <select name="track_number_row">
+                                <php>
+                                    foreach($csv_header as $key=>$value){
+                                       echo '<option value="'.$value.'">'.$value.'</option>';
+                                    }
+                                </php>
+                            </select>
+                            <span class="form-required" style="color: #ff0000;">请选择出货单号的一列,然后点击保存。</span>
+                        </div>
+                    </div>
+                </div>
+            <php>}</php>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</button>
+            </div>
+        </form>
+    </fieldset>
+    <php>$success = $importAction?'<div style="color:red;">导入成功</div>':'';echo $errorMessage?$errorMessage:$success;</php>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="fixedlayer" style="height: 40px;">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Purchase/Index/product_list')}">采购产品列表</a></li>
+        <li><a href="{:U('Purchase/Product/edit')}">添加产品</a></li>
+    </ul>
+</div>
+<div class="wrap">
+    <div class="customerlayer" style="height: 300px;">
+    <form method="get" action=""  class="well form-search"  style="margin-top: -80px;">
+        <div class="searchLayer" style="padding:20px;background-color: #ecf0f1;">
+            <table cellspacing="1">
+                <tr>
+                    <td class="th">部门：</td>
+                    <td>
+                        <select name="id_department" style="width:100px;height:30px">
+                            <option value="">全部</option>
+                            <php> foreach($department as $dep_id=>$dep_name){
+                                if(empty($dep_name)) continue;
+                                $selected = $_GET['id_department']==$dep_id?' selected="selected"':'';
+                                echo '<option value="'.$dep_id.'" '.$selected.'>'.$dep_name.'</option>';
+                                }
+                            </php>
+                        </select>
+                    </td>
+                    <td class="th">产品名：</td>
+                    <td>
+                        <input type="text" name="pro_title" style="width: 200px;" value="{:I('request.pro_title/s','')}" >
+                    </td>
+                    <td class="th">内部名：</td>
+                    <td>
+                        <input type="text" name="pro_name" style="width: 200px;" value="{:I('request.pro_name/s','')}" >
+                    </td>
+                </tr>
+            </table>
+            <br/>
+            <button class="btn btn-primary searchButton">搜索</button>
+            <button class="btn btn-primary exportSearchButton">导出结果</button>
+        </div>
+
+
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+    </form>
+        <!--  -->
+        <div class="ctab-panel">
+            <div class="ctab-body">
+                <div class="tableLayer">
+                    <table class="table table-hover table-bordered table-list">
+                        <thead>
+                        <tr>
+                            <th width="50">ID</th>
+                            <th>产品图片</th>
+                            <th>产品名</th>
+                            <th>内部名</th>
+                            <th>采购价</th>
+                            <th>长(cm)</th>
+                            <th>宽(cm)</th>
+                            <th>高(cm)</th>
+                            <th>重(kg)</th>
+                            <th width="120">{:L('ACTIONS')}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <foreach name="products" item="item">
+                            <tr>
+                                <td width="50">{$item.id_product}</td>
+                                <td>
+                                    <notempty name="item['img']">
+                                        <img id="photo-preview" src="{:sp_get_image_preview_url($item['img'])}" style="height:36px;width: 36px;">
+                                    </notempty>
+                                </td>
+                                <td>{$item.title}</td>
+                                <td>{$item.inner_name}</td>
+                                <td>{$item.purchase_price}</td>
+                                <td>{$item.length}</td>
+                                <td>{$item.width}</td>
+                                <td>{$item.height}</td>
+                                <td>{$item.weight}</td>
+                                <td>
+                                    <a href="{:U('index/product_edit',array('id'=>$item['id_product']))}">基础信息</a>
+                                    &nbsp;&nbsp;|&nbsp;&nbsp;
+                                    <a href="{:U('Purchase/Product/edit',array('id'=>$item['id_product']))}">编辑产品</a>
+                                </td>
+                            </tr>
+                        </foreach>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">{$Page}</div>
+                <!--<input type="text" value="" name="displayRow" placeholder="输入每页显示数">-->
+                <!--<input type="button" class="btn btn-small submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">-->
+                <!--</div>-->
+            </div>
+        </div>
+        </div>
+    </div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+    $('.exportSearchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','exportSearch');
+        $('.form-search').attr('action',"{:U('Index/export_product_search')}");
+    });
+</script>
+</body>
+</html>

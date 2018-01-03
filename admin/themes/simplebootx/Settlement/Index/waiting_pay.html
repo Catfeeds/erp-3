@@ -1,0 +1,505 @@
+<admintpl file="header" />
+<style>
+    a.multiSelect {
+        background: #FFF right center no-repeat;
+        border: solid 1px #BBB;
+        padding-right: 20px;
+        position: relative;
+        cursor: default;
+        text-decoration: none;
+        display: -moz-inline-stack;
+        display: inline-block;
+        vertical-align: top;
+        color: rgb(149, 165, 166);
+        vertical-align: middle;
+        padding: 4px 6px;
+        border-radius: 3px;
+        height:20px;
+    }
+
+    a.multiSelect:link, a.multiSelect:visited, a.multiSelect:hover, a.multiSelect:active {
+        text-decoration: none;
+    }
+
+    a.multiSelect span
+    {
+        /*margin: -6px 1px 5px 3px;*/
+        overflow: hidden;
+        display: -moz-inline-stack;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    a.multiSelect.hover {
+        background-image: url(dropdown.blue.hover.png);
+    }
+
+    a.multiSelect.active,
+    a.multiSelect.focus {
+        border: 1px solid #dce4ec;
+    }
+
+    .multiSelectOptions,.multiSelectOptions_1 {
+        margin-top: -1px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        border: solid 1px #B2B2B2;
+        background: #FFF;
+    }
+
+    .multiSelectOptions LABEL,.multiSelectOptions_1 LABEL {
+        padding: 0px 2px;
+        display: block;
+        white-space: nowrap;
+    }
+
+    .multiSelectOptions input,.multiSelectOptions_1 input,{
+        vertical-align: middle;
+    }
+
+    .multiSelectOptions LABEL.checked,.multiSelectOptions_1 LABEL.checked {
+        background-color: #dce5f8;
+    }
+
+    .multiSelectOptions LABEL.selectAll,.multiSelectOptions_1 LABEL.selectAll {
+        border-bottom: dotted 1px #CCC;
+    }
+
+    .multiSelectOptions LABEL.hover,.multiSelectOptions_1 LABEL.hover {
+        background-color: #3399ff;
+        color: white;
+    }
+    label:hover{background-color:#0080FF;}
+    label.control-label:hover{background-color:#FFFFFF; opacity:0.5;filter:alpha(opacity=50);}
+</style>
+</head>
+<body>
+<div class="fixedlayer" style="height: 40px;">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Settlement/Index/waiting_pay')}">采购单待付款列表</a></li>
+        <li><a href="{:U('Settlement/Index/import_alibaba_no')}">导入采购渠道订单号</a></li> <!--#148 zhujie 20171116-->
+    </ul>
+</div>
+<div class="wrap">
+    <div class="customerlayer" style="height: 300px;">
+    <form method="get" action=""  class="well form-search"  style="margin-top: -80px;">
+        <div class="searchLayer" style="padding:20px;background-color: #ecf0f1;">
+            <table cellspacing="1">
+                <tr>
+                    <td class="th" style="width: 100px;">部门：</td>
+                    <td>
+                       <input type="hidden" name="department_id" id="department_id1"/>
+            <a href="javascript:;" class="multiSelect active" id="department_id" style="margin-left: -5px;">
+                <span style="width: 93px;">请选择</span>
+            </a>
+            <div id="busni" class="multiSelectOptions" style="position: absolute; z-index: 99999; display:none; height: 150px;">
+                <php>$id_department = explode(',',$_GET['department_id']);</php>
+
+                <label class="selectAll"><input type="checkbox" class="selectAll" flag="bun" />全选</label>
+                <foreach name="depart" item="item">
+                    <label class="" >
+                        <input type="checkbox" name="department_id[]" value="{$item.id_department}" <php> if(in_array($item['id_department'],$id_department))echo checked</php> />{$item.title}  </label>
+                </foreach>
+              
+            </div>
+            </div>
+                    </td>
+                    <td class="th">仓库：</td>
+                    <td>
+                        <select name="warehouse_id" style="height:30px">
+                            <option value="0">所有</option>
+                            <foreach name="warehouse" item="item">
+                                <option value="{$key}" <php>echo isset($_GET['warehouse_id']) && $_GET['warehouse_id']==$key ? 'selected' : ''</php>>{$item}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                     <!-- 增加采购员名字筛选 -->
+                    <td class="th">采购员：</td>
+                    <td>
+                        <select name="shop_id" id="shop_id" style="height:30px">
+                            <option value="0">所有</option>
+                            <foreach name="shop_users" item="item">
+                                <option value="{$item.id_users}" <php>echo isset($_GET['shop_id']) && $_GET['shop_id']==$item['id_users'] ? 'selected' : ''</php>>{$item.user_nicename}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <!-- 增加采购员名字筛选 -->
+                    <td class="th">采购单号：</td>
+                    <td>
+                        <input type="text" name="purchase_no" value="{$_GET['purchase_no']}"/>
+                    </td>
+                    <td class="th">内部采购单号：</td>
+                    <td>
+                        <input type="text" name="inner_purchase_no" value="{$_GET['inner_purchase_no']}"/>
+                    </td>
+                    
+                    
+                </tr>
+
+                <tr>
+                    <td class="th" style="width:100px">采购渠道订单号：</td>
+                    <td>
+                        <input type="text" name="alibaba_no" value="{$_GET['alibaba_no']}"/>
+                    </td>
+                    <td class="th">内部名：</td>
+                    <td>
+                        <input type="text" name="inner_name" value="{$_GET['inner_name']}"/>
+                    </td>
+                    <td class="th">SKU：</td>
+                    <td>
+                        <input type="text" name="sku" value="{$_GET['sku']}"/>
+                    </td>
+                  <!-- 用采购员替换 创建人
+                  <td class="th">创建人：</td>
+                    <td>
+                        <input type="text" name="id_users" value="{$_GET['id_users']}"/>
+                    </td>
+                     -->
+                    <td class="th">状态：</td>
+                    <td>
+                        <select name="status_id" style="width:100px;height:30px">
+                            <option value="0">所有</option>
+                            <foreach name="pur_status" item="item" key='key'>
+                                <option value="{$key}" <php>echo isset($_GET['status_id']) && $_GET['status_id']==$key ? 'selected' : ''</php>>{$item}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="th">创建时间：</td>
+                    <td colspan="3" style="white-space:nowrap;">
+                        <input type="text" name="start_time" class="js-datetime" value="{$Think.get.start_time}" style="width: 150px;" autocomplete="off">-
+                        <input type="text" class="js-datetime" name="end_time" value="{$Think.get.end_time}" style="width: 150px;">
+                    </td>
+                    <td class="th" style="width:100px">内部采购时间：</td>
+                    <td colspan="3" style="white-space:nowrap;">
+                        <input type="text" name="start_purchase_time" class="js-datetime" value="{$Think.get.start_purchase_time}" style="width: 150px;" autocomplete="off">-
+                        <input type="text" name="end_purchase_time"  class="js-datetime" value="{$Think.get.end_purchase_time}" style="width: 150px;">
+                    </td>
+                    
+                    <td><span class="btn btn-primary showstatisticsInfo" style="width: 100px;">显示统计信息</span></td>
+                </tr>
+            </table>
+            <br/>
+            <button class="btn btn-primary searchButton">搜索</button>&nbsp &nbsp <button class="btn btn-primary exportSearchButton">导出</button>
+            <span style="color: red;margin-left: 25px;" id="statisticsInfo"></span>
+        </div>
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+
+        <div class="control-group" style="line-height: 36px;">
+            <select name="check" id="check">
+                <option value="0">请选择</option>
+                <option value="pass">同意</option>
+                <option value="refuse">拒绝</option>
+            </select>
+
+            <button class="btn btn-primary checkButton">确定</button>
+        </div>
+    </form>
+    <fieldset style=" margin-bottom: 100px;">
+    <table class="table table-hover table-bordered table-list order-table">
+        <thead>
+            <tr>
+                <th><input type="checkbox" value="" id="all">&nbsp&nbsp&nbsp&nbsp&nbsp采购单号</th>
+                <th>内部采购单号</th>
+                <th>采购渠道订单号</th>
+                <th>内部采购时间</th>
+                <th>付款方式</th>
+                <th>仓库</th>
+                <th>供应商</th>
+                <th>广告员</th>
+                <th>图片</th>
+                <th>产品SKU</th>
+                <th>内部名</th>
+                <th>单价</th>
+                <th>采购金额</th>
+                <th>采购数量</th>
+                <th>采购数量总计</th>
+                <th>总金额</th>
+                <th>预付款</th>
+                <th>运费</th>
+                <th>审核状态</th>
+                <th>采购渠道</th>
+                <th>创建人</th>
+                <th>创建时间</th>
+                <th>操作</th>
+                <th>备注</th>
+             <!--   <th>创建时间</th>-->
+            </tr>
+        </thead>
+        <tbody>
+            <foreach name="lists" item="list">
+                <php>$i = 0;</php>
+                <foreach name="list['purchase_product']" item="item">
+                    <php>$num = count($list['purchase_product']);</php>
+                    <tr>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">
+                                <php>if($list['status'] ==3 ) {</php>
+                                <input name="purchase_no[]" class="single" type="checkbox" value="{$list['purchase_no']}">
+                                <php>}</php>
+                               {$list['purchase_no']}</td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$list['inner_purchase_no']}</td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$list['alibaba_no']}</td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$list['inner_purchase_time']}</td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}"><php>if($list['payment']==1) echo '货到付款';elseif($list['payment']==2) echo '通道付款';elseif(empty($list['payment'])) echo '无';</php></td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$warehouse[$list['id_warehouse']]}</td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$supplier[$list['id_supplier']]}</td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$list['sales_name']}</td>
+                           <!--  <td rowspan="{$num}">{$users[$list['purchase_product']['0']['id_users']]}</td> -->
+                        </if>
+                        <td><?php $thumbs = json_decode($item['thumbs'],true);$photo = array_column($thumbs['photo'],'url')[0];?><img src="{:sp_get_image_preview_url($photo)}" width="40px"></td>
+                        <td>{$item.sku}</td>
+                        <td>{$item.inner_name}</td>
+                        <td>{$item.price}</td>
+                        <td><php>echo $item['price'] * $item['quantity'];</php></td>
+                        <td class="quantity">{$item.quantity}</td>
+                        <if condition="$i eq 0 ">
+                        <td rowspan="{$num}" class="num_amo">{$list['num_amo']}</td>
+                         </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$list['price']}</td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$list['prepay']}</td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$list['price_shipping']}</td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$pur_status[$list['status']]}</td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$list['purchase_channel']}</td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$list['user_nicename']}</td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$list['created_at']}</td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}"><php>if($list['status']==5){</php><a href="javascript:void(0);" purchase_no="{$list['purchase_no']}" class="js-ajax-submit" type="button" data-subcheck="true">撤销付款</a><php>}</php></td>
+                        </if>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$list['remark']}</td>
+                        </if>
+                      <!--  <if condition="$i eq 0 ">
+                            <td rowspan="{$num}">{$list['created_at']}</td>
+                        </if>-->
+                    </tr>
+                    <php>$i++;</php>
+                </foreach>
+            </foreach>
+        </tbody>
+    </table>
+    <div class="pagination">{$Page}
+    </fieldset>
+</div>
+ </div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+
+     var sh_na = '';
+    $("input[name^=department_id]:checked").each(function(index){
+            sh_na += ','+$(this).parent().text();
+        });
+    if(sh_na.substring(1)==""){
+        $("#department_id").find("span").text("请选择");
+    }else{
+        $("#department_id").find("span").text(sh_na.substring(1));
+    }
+    $('.searchButton').click(function(){
+        var department_id = '';
+        $("input[name^=department_id]:checked").each(function(index){
+            department_id += ','+$(this).val();
+
+        });
+        department_id = department_id.substring(1);console.log(department_id);
+        $("#department_id1").attr('value',department_id);
+        $("input[name^=department_id]").removeAttr("checked");
+        $('.form-search input[name=a]').attr('value','waiting_pay');
+        $('.form-search').attr('action',"{:U('Settlement/Index/waiting_pay')}");
+    });
+
+
+    $('.checkButton').click(function(){
+        var check = $('#check').val();
+        if($("input:checked").length==0) { alert("没有选中的采购单！");return false;}
+        if(check !=0 ){
+                var reason = $('input[name=reason]').val();
+            if(check == 'refuse'){
+                if(reason == ''){
+                    alert('必须填写拒绝原因');
+                    return;
+                }else{
+                    window.confirm('确定拒绝？');
+                }
+                var reason = $('input[name=reason]').val();
+
+                $(".checkButton").attr("disabled","disabled");
+                var purchase_no = '';
+                $('input:checkbox[class=single]:checked').each(function(i,item){
+                    purchase_no+= (item['value']+",");
+                });
+                length = purchase_no.length;
+                purchase_no = purchase_no.substring(0,length-1);
+                $.ajax({
+                    url:"{:U('Settlement/Index/check_purchase')}",
+                    type:'post',
+                    dataType:'json',
+                    data:{'purchase_no':purchase_no,'check':check,'reason':reason},
+                    success:function(data){
+                        alert(data.msg);
+                        $('.searchButton').click();
+                        return false;
+                    }
+                });
+
+            }else if( check == 'pass'){
+                if(confirm("确定要审核通过吗？"))
+                {
+                    $(".checkButton").attr("disabled","disabled");
+                    var purchase_no = '';
+                    $('input:checkbox[class=single]:checked').each(function(i,item){
+                        purchase_no+= (item['value']+",");
+                    });
+                    length = purchase_no.length;
+                    purchase_no = purchase_no.substring(0,length-1);
+                    $.ajax({
+                        url:"{:U('Settlement/Index/check_purchase')}",
+                        type:'post',
+                        dataType:'json',
+                        data:{'purchase_no':purchase_no,'check':check,'reason':reason},
+                        success:function(data){
+                            alert(data.msg);
+                            $('.searchButton').click();
+                            return false;
+                        }
+                    });
+                }
+
+            }
+
+        }
+        else{
+            alert('请选择审批意见');
+        }
+        return false;
+    });
+    $('.exportSearchButton').click(function(){
+        $('.form-search').attr('value','export_search');
+        $('.form-search').attr('action',"{:U('Purchase/Index/export_search2')}");
+    });
+    $("#all").click(function(){
+        if(this.checked){
+            $("td :checkbox").prop("checked", true);
+        }else{
+            $("td :checkbox").prop("checked", false);
+        }
+    });
+    $('#check').change(function(){
+        var select = $('#check').val();
+        if(select == 'refuse'){
+            $('#check').after(' <input type="text" placeholder="请输入拒绝的原因" name="reason"/>')
+        }
+        if(select == 'pass'||select ==0){
+            $('#check').siblings().remove('input');
+        }
+    });
+
+
+    $('.showstatisticsInfo').click(function () {
+        var data=$('.form-search').serializeArray();
+        $('#statisticsInfo').html('');
+        $.ajax({
+            url:"{:U('Index/waiting_pay')}",
+            type:'get',
+            dataType:'json',
+            data:{'data':data,'isajax':1},
+            success:function(data){
+                var tipstr='采购订单总数量 '+data.totalcnt+',采购产品总数量：'+data.totalpp+',采购总价：'+data.totalprice;
+                $('#statisticsInfo').html(tipstr);
+            }
+        })
+    
+    });
+     /*异步 撤销付款 功能   liuruibin  20171030  */
+    $('.js-ajax-submit').click(function(){
+        var curObj = $(this);var curParObj =  curObj.parent();
+        var purchase_no = curObj.attr('purchase_no');
+        if(confirm("确定要撤销付款吗？"))
+        {
+            $.ajax({
+                url:"{:U('Settlement/Index/revoke_payment')}",
+                type:'post',
+                dataType:'json',
+                data:{'purchase_no':purchase_no},
+                success:function(data){
+                    alert(data.msg);
+                    $('.searchButton').click();
+                    return false;
+                }
+
+            });
+        }
+    });
+    //部门多选框点击事件  -- Lily 20171106
+    $("#department_id").click(function(){
+        if($("#busni").css("display")!="none"){
+            $("#busni").css("display","none");
+        }else{
+            $("#busni").css("display","block");
+        };
+    })
+    
+    //部门多选框下拉点击事件  -- Lily 20171106
+    $(".multiSelectOptions").find('INPUT:checkbox').click( function() {
+        var checked = $(this)[0].checked;
+         // var text = $.trim($(this).parent().text());
+         //  $(".multiSelect").find("span").text(text);
+          if($(this)[0].className == "selectAll"){
+           $(".multiSelectOptions").find('INPUT:checkbox').each(function(){
+                if($(this)[0].className == "selectAll"){
+                }else{
+                    if(checked){
+                        $(this).prop("checked",true);
+                       
+                    }else{
+                        $(this).prop("checked",false);
+                    }
+                }
+            })
+        }else{
+            if(!checked){
+                $(this).parent().parent().find(".selectAll").prop("checked",false);
+            }
+        }
+    })
+
+    //部门多选框 失去焦点时触发事件  -- Lily 20171106
+    $('#busni').hover(function(){
+        $(this).show();
+    }, function(){
+        $(this).hide();
+    });
+</script>
+</body>
+</html>

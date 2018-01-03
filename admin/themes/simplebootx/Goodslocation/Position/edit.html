@@ -1,0 +1,152 @@
+<admintpl file="header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li  class="active"><a href="{:U('Position/edit',array('id_warehouse_allocation'=>$_GET['id_warehouse_allocation']))}">{:L('编辑货位')}</a></li>
+    </ul>
+    <form class="form-horizontal js-ajax-form" action="{:U('Position/edit')}" method="post">
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label">{:L('所属仓库')}</label>
+                <div class="controls">
+                    <select name="id_warehouse" style="width:100px;" id="id_warehouse">
+                        <option value="0">所有</option>
+                        <foreach name="warehouse" item="item" key="key">
+                            <option value="{$key}" <if condition="$key EQ $list['id_warehouse' ]">selected</if>>{$item}</option>
+                        </foreach>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('货位区域名称')}</label>
+                <div class="controls">
+                    <select name="id_goods_area" style="width:100px;" id="id_goods_area" >
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">货位名称</label>
+                <div class="controls">
+                    <input type="text" name="goods_name" id="goods_name" value="{$list.goods_name}" style="height:30px;" autocomplete="off"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">产品名</label>
+                <div class="controls">
+                    <input type="text" name=""  value="{$list.title}" style="height:30px;" readonly/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">SKU</label>
+                <div class="controls">
+                    <input type="text" name=""  value="{$list.sku}" style="height:30px;" readonly/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">库存</label>
+                <div class="controls">
+                    <input type="text" name="quantity"  value="{$list.quantity}" style="height:30px;" readonly/>
+                </div>
+            </div>
+        </fieldset>
+        <input name="id" type="hidden" value="{$_GET['id']}"/>
+        <div class="form-actions">
+            <input type="hidden" name="id_warehouse_allocation" value="{$_GET['id_warehouse_allocation']}" id="id_warehouse_allocation"/>
+            <input type="hidden" name="id_product" value="{$list['id_product']}"/>
+            <input type="hidden" name="id_product_sku" value="{$list['id_product_sku']}"/>
+            <button type="button" class="btn btn-primary js-ajax-submit" id="add_btn">{:L('EDIT')}</button>
+            <a class="btn  backbtn" href="#">{:L('BACK')}</a>
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    function send_id_warehouse(){
+        var id_warehouse = $('#id_warehouse option:selected').val();
+        if(id_warehouse!=0){
+            $.ajax({
+                url:"{:U('Position/select_by_warehoues')}",
+                type:'get',
+                dataType:'json',
+                data:{'id_warehouse':id_warehouse},
+                success:function(data){
+                    if(data['flag']!=1)
+                    {
+                        $.each(data,function(index,elem){
+                            $('#id_goods_area').removeAttr("disabled");
+                            $('#id_goods_area').append('<option value="'+elem['id_goods_area']+'" >'+elem['title']+'</option>');
+                            if(elem['id_goods_area']=='<?php echo $list["id_goods_area"]; ?>')
+                            {
+                                $('#id_goods_area option').attr("selected","selected");
+                            }
+                        });
+                    }else
+                    {
+                        alert(data.msg);
+                        $('#id_goods_area').attr("disabled","disabled");
+                    }
+
+                }
+            });
+        }
+    }
+    $(function(){
+        send_id_warehouse();
+    });
+    $('#id_warehouse').change(function(){
+        $('#id_goods_area').empty();
+        send_id_warehouse();
+    });
+    $("#add_btn").click(function(){
+        var id_warehouse = $('#id_warehouse option:selected').val();
+        var id_goods_area = $('#id_goods_area option:selected').val();
+        var goods_name = $('#goods_name').val();
+        var id_warehouse_allocation = $('#id_warehouse_allocation').val();
+        var reg = /^([A-Za-z]){2}(-)(\d{2})(-)(\d{2})$/;
+        var a =  goods_name.match(reg);
+        if(id_warehouse=='0')
+        {
+            alert('请选择仓库');
+            return false;
+        }
+        if(id_goods_area==null)
+        {
+            alert('没有货位区域名称，不能提交');
+        }
+        if(goods_name==null)
+        {
+            alert('没有货位名称，不能提交');
+        }
+        if(a==null)
+        {
+            alert('货位名称有误，请重新输入');
+            return false;
+        }
+        if(id_warehouse&&id_goods_area&&goods_name){
+            var flag = true;
+            $.ajax({
+                url:"{:U('Position/select_find')}",
+                type:'get',
+                dataType:'json',
+                data:{'id_goods_area':id_goods_area,'goods_name':goods_name,'id_warehouse':id_warehouse,'id_warehouse_allocation':id_warehouse_allocation},
+                success:function(data){
+                    if(data.flag == 0){
+                        $('form').submit();
+                    }else{
+                        alert(data.msg);
+                        flag = false;
+                        return flag;
+                    }
+                }
+            });
+            return flag;
+        }else
+            return false;
+    });
+    $('.backbtn').on('click',function(){
+        window.history.back(-1);
+    });
+</script>
+</body>
+</html>

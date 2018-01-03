@@ -1,0 +1,134 @@
+<admintpl file="header" />
+</head>
+<link href="__PUBLIC__/js/layer/theme/layer.css"  rel="stylesheet" type="text/css">
+<script src="__PUBLIC__/js/layer/jquery-1.9.1.min.js"></script>
+<script src="__PUBLIC__/js/layer/layer.js"></script>
+<body>
+<style>
+    .wfbox{ position: relative; }
+    .wfbox .btn{ position: absolute; top: 5px; right: 0; }
+    .wfbox .btn a{ color: #fff; }
+</style>
+<div class="wrap">
+    <div class="wfbox"><ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Product/index/index')}">产品列表</a></li>
+        <!--<li><a href="{:U('Product/index/edit')}">添加产品</a></li>-->
+    </ul>
+    <span id="add" class="btn btn-primary btn-small">添加产品</span>
+    </div>
+    
+<!--弹框显示添加产品-->
+<script>
+  $("#add").click(function(){
+      parent.layer.open({
+         type: 2,
+         title: "添加产品",
+         maxmin: true,  //最大化，最小化
+         shadeClose: true,
+         shade: 0.2,
+         area: ['95%', '95%'],
+         time: false, //自动关闭
+         anim: 2,
+         content: ["{:U('Product/index/edit')}", 'yes'] //iframe的url，no代表不显示滚动条
+     });
+   });
+   
+</script>   
+                
+    
+    <fieldset>
+        <form method="get" class="form-horizontal js-ajax-form" action="{:U('Product/index/index')}">
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th width="50">ID</th>
+            <th>部门</th>
+            <th>分类</th>
+            <th>产品图片</th>
+            <th>产品名</th>
+            <th>内部名</th>
+            <th>产品编码（SPU）</th>
+            <th>进货价</th>
+            <th>销售价</th>
+            <th>库存</th><!--<th>类型</th>-->
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        <tr>
+            <th width="50"><input type="text" name="product_id" style="width:50px;" value="{$Think.get.product_id}"/></th>
+            
+            <th><select name="id_department" style="width:100px;">
+                <option value="0">所有</option>
+               <foreach name="department" item="dep_id">
+                                 <php> 
+                                $selected = $_GET['id_department']==$dep_id['id_department']?" selected=selected":'';
+                                 </php>
+                                 <option value="{$dep_id['id_department']}" <php> echo $selected </php> >{$dep_id.title}</option>;
+                             </foreach>
+            </select></th>
+            
+            <th><input type="text" name="category_name" style="width:95%;" value="{$Think.get.category_name}"/></th>
+            <th><select name="thumbs" style="width:100px;">
+                <option value="0">所有</option>
+                <option value="-1"<if condition="$Think.get.thumbs eq -1 "> selected="selected"</if>>无</option>
+                <option value="1"<if condition="$Think.get.thumbs eq 1 "> selected="selected"</if>>有</option>
+            </select></th>
+            <php>
+                if(isset($_GET['product_name']) && $_GET['product_name']) {
+                    $value = $_GET['product_name'];
+                } else {
+                    $value = $_GET['product_name'];
+                }
+            </php>
+            <th><input type="text" name="product_name" style="width:95%;" value="{$value}"/></th>
+            <th><input type="text" name="inner_name" style="width:95%;" value="{$Think.get.inner_name}"/></th>
+            <th><input type="text" name="product_sku" style="width:95%;" value="{$Think.get.product_sku}"/></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <!--<th></th>-->
+            <th>
+                <select name="status" style="width:100px;">
+                    <option value="0">所有</option>
+                    <option value="-1"<if condition="$Think.get.status eq -1 "> selected="selected"</if>>关闭</option>
+                    <option value="1"<if condition="$Think.get.status eq 1 "> selected="selected"</if>>开启</option>
+                </select>
+            </th>
+            <th width="50">
+                <button type="submit" class="btn btn-primary btn-small">搜索</button>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="proList" item="item" key='key'>
+            <tr>
+                <td width="50">{$item.id_product}</td>
+                <td width="50">{$item.department_title}</td>
+                <td>{$item.category_title}</td>
+                <td>
+                    <notempty name="item['img']['photo']">
+                        <a href="{:sp_get_image_preview_url($item['img']['photo'][0]['url'])}" target="_blank"> <img id="photo-{$key}-preview" src="{:sp_get_image_preview_url($item['img']['photo'][0]['url'])}" style="height:36px;width: 36px;"></a>
+                    </notempty>
+                </td>
+                <td>{$item.title}</td>
+                <td>{$item.inner_name}</td>
+                <td>{$item.model}</td>
+                <td>{$item.purchase_price}</td>
+                <td>{$item.sale_price}</td><td>{$item.quantity}</td>
+                <!--<td><php>echo $item['type']=='bundle'?'<b>套餐产品</b>':'普通产品';</php></td>-->
+                <td><php>echo $item['status']?'开启':'<span style="color:red;">关闭</span>';</php></td>
+                <td><if condition="$item['status'] eq 1 "><a href="{:U('Product/index/edit',array('id'=>$item['id_product']))}">编辑</a></if>
+                    <!--<a href="{:U('Product/delete',array('id'=>$item['id']))}" class="js-ajax-delete">删除</a>-->
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+    </form>
+    <div class="pagination">{$page}</div>
+    </fieldset>
+
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="department_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="department" item="item">
+                    <option value="{$item.id_department}" <php>echo isset($_GET['department_id']) && $_GET['department_id']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                </foreach>
+            </select>  
+            
+            <label class="control-label">选择年月:</label>
+            <input type="text" name="time" class="js-date" value="<php>echo $_GET['time']</php>" style="width: 120px;" autocomplete="off">
+<!--            <select name="year1" style="width:130px;"></select>
+            <select name="month1" class="mon" style="width:130px;"></select>-->
+            <button class="btn btn-primary searchButton">搜索</button>
+            <!--<button class="btn btn-primary exportSearchButton">导出结果</button><br><br>-->
+            <label class="control-label">台币汇率:</label>
+            <input type="text" class="tb-hl count_hl" name="tb" value="<php>echo $_GET['tb']</php>" style="width:100px">
+            <label class="control-label">港币汇率:</label>
+            <input type="text" class="gb-hl count_hl" name="gb" value="<php>echo $_GET['gb']</php>" style="width:100px">
+            <label class="control-label">日元汇率:</label>
+            <input type="text" class="jpy-hl count_hl" name="jpy" value="<php>echo $_GET['jpy']</php>" style="width:100px">
+            <label class="control-label">新加坡元汇率:</label>
+            <input type="text" class="xjp-hl count_hl" name="xjp" value="<php>echo $_GET['xjp']</php>" style="width:100px">
+<!--            <a href="javascript:;" class="btn btn-primary countButton ">计算合计金额</a>
+            <a href="javascript:;" class="btn btn-primary resetButton ">重置</a>-->
+            <button class="btn btn-primary countButton">计算合计金额</button>
+            <button class="btn btn-primary resetButton">重置</button>
+        </div>
+    </form>
+    
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th rowspan="2" style="line-height:70px;text-align:center">部门</th>
+            <th rowspan="2" style="line-height:70px;text-align:center">币种</th>
+            <th colspan="2" style="text-align:center">有效单</th>
+            <th colspan="2" style="text-align:center">发货单</th>
+            <th colspan="2" style="text-align:center">签收单</th>
+            <th colspan="2" style="text-align:center">结款单</th>
+            <th rowspan="2" style="line-height:70px;text-align:center">签收单占比</th>
+            <th rowspan="2" style="line-height:70px;text-align:center">物流结款占比</th>
+        </tr>
+        <tr>
+            <td style="text-align:center">单数</td>
+            <td style="text-align:center">总金额</td>
+            <td style="text-align:center">单数</td>
+            <td style="text-align:center">总金额</td>
+            <td style="text-align:center">单数</td>
+            <td style="text-align:center">总金额</td>
+            <td style="text-align:center">单数</td>
+            <td style="text-align:center">总金额</td>
+        </tr>
+        </thead>
+        <tbody>
+            <foreach name="list" item="item" key="key">
+                <php>
+                    $count = count($item)+2;
+                    $total_effective=0;$total_effective_price=0;
+                    $total_ship_count=0;$total_ship_price=0;
+                    $total_signed_count=0;$total_signed_price=0;
+                    $total_sesults_section=0;$total_sesults_section_price=0;
+                    $total_effective=0;$total_effective=0;
+                </php>
+                <tr>
+                    <td <php>echo 'rowspan="'.$count.'"'</php> style="text-align:center"><php>echo M('Department')->where(array('id_department'=>$key))->getField('title')</php></td>
+                </tr>
+                <foreach name='item' item='val' key='k'>
+                    <php>
+                        $total_effective+=$val['effective'];$total_effective_price+=$val['effective_price'];
+                        $total_ship_count+=$val['ship_count'];$total_ship_price+=$val['ship_price'];
+                        $total_signed_count+=$val['signed_count'];$total_signed_price+=$val['signed_price'];
+                        $total_sesults_section+=$val['sesults_section'];$total_sesults_section_price+=$val['sesults_section_price'];
+                        //$currency = M('Currency')->where(array('code'=>$k))->getField('title');
+                    </php>
+                    <tr>                
+                        <td style="text-align:center"><php>echo $k</php></td>
+                        <td style="text-align:center">{$val.effective}</td>
+                        <td style="text-align:center"><php>echo $val['effective_price']</php></td>
+                        <td style="text-align:center">{$val.ship_count}</td>
+                        <td style="text-align:center"><php>echo $val['ship_price']</php></td>
+                        <td style="text-align:center">{$val.signed_count}</td>
+                        <td style="text-align:center"><php>echo $val['signed_price']</php></td>
+                        <td style="text-align:center">{$val.sesults_section}</td>
+                        <td style="text-align:center"><php>echo $val['sesults_section_price']</php></td>
+                        <td style="text-align:center"><php>$Returns = ($val['signed_count']/$val['effective'])*100;echo number_format($Returns,2).'%';</php></td>
+                        <td style="text-align:center"><php>$Returns = ($val['sesults_section']/$val['effective'])*100;echo number_format($Returns,2).'%';</php></td>              
+                    </tr>
+                </foreach>
+                <tr>
+                    <td style="text-align:center">总计</td>
+                    <td style="text-align:center"><php>echo $total_effective</php></td>
+                    <td style="text-align:center" class="total_effective_price"><php>echo $total_effective_price</php></td>
+                    <td style="text-align:center"><php>echo $total_ship_count</php></td>
+                    <td style="text-align:center" class="total_ship_price"><php>echo $total_ship_price</php></td>
+                    <td style="text-align:center"><php>echo $total_signed_count</php></td>
+                    <td style="text-align:center" class="total_signed_price"><php>echo $total_signed_price</php></td>
+                    <td style="text-align:center"><php>echo $total_sesults_section</php></td>
+                    <td style="text-align:center" class="total_sesults_section_price"><php>echo $total_sesults_section_price</php></td>
+                    <td style="text-align:center"><php>$Returns = ($total_signed_count/$total_effective)*100;echo number_format($Returns,2).'%';</php></td>
+                    <td style="text-align:center"><php>$Returns = ($total_sesults_section/$total_effective)*100;echo number_format($Returns,2).'%';</php></td>
+                    <input type='hidden' class='hid_tep' name="hid_tep" value="<php>echo $total_effective_price</php>">
+                    <input type='hidden' class='hid_tshp' name="hid_tshp" value="<php>echo $total_ship_price</php>">
+                    <input type='hidden' class='hid_tsip' name="hid_tsip" value="<php>echo $total_signed_price</php>">
+                    <input type='hidden' class='hid_tssp' name="hid_tssp" value="<php>echo $total_sesults_section_price</php>">
+                </tr>
+            </foreach>
+        </tbody>
+    </table>
+
+    <div class="pagination">{$page}</div>
+    </fieldset>
+    <div style="display: none"><php>   echo '耗时'.round($t2-$t1,3).'秒<br>';echo '耗时'.round($t3-$t2,3).'秒<br>';echo '耗时'.round($t4-$t3,3).'秒<br>';var_dump($sql);</php></div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/YMDClass.js"></script>   
+<script>
+//    new YMDselect('year1','month1',new Date().getFullYear());
+    $('.resetButton').click(function(){
+        $('.tb-hl').val('');
+        $('.gb-hl').val('');
+        $('.jpy-hl').val('');
+        $('.xjp-hl').val('');
+        window.location.reload();
+    });
+    
+//    $('.countButton').click(function(){
+//        
+//        var count = 0;
+//        $('.count_hl').each(function(key,value){
+//            if($(this).val() != '') {
+//                count++;
+//            }
+//        });
+//        
+//        if(count > 1) {
+//            alert('请填写一个汇率！');
+//            return false;
+//        }
+//        
+//        //存储没转换的总金额
+//        var hid_tep = new Array(); 
+//        $('.hid_tep').each(function(key,value){
+//            hid_tep[key] = $(this).val();
+//        });
+//        var hid_tshp = new Array(); 
+//        $('.hid_tshp').each(function(key,value){
+//            hid_tshp[key] = $(this).val();
+//        });
+//        var hid_tsip = new Array(); 
+//        $('.hid_tsip').each(function(key,value){
+//            hid_tsip[key] = $(this).val();
+//        });
+//        var hid_tssp = new Array(); 
+//        $('.hid_tssp').each(function(key,value){
+//            hid_tssp[key] = $(this).val();
+//        });
+//
+//        $.ajax({
+//            url:"{:U('Settlement/OrderAnalysis/get_parities')}",
+//            type:"POST",
+//            dataType:'json',
+//            data:{
+//                'tb':$('.tb-hl').val(),
+//                'gb':$('.gb-hl').val(),
+//                'jpy':$('.jpy-hl').val(),
+//                'xjp':$('.xjp-hl').val(),
+//                'hid_tep':hid_tep,
+//                'hid_tshp':hid_tshp,
+//                'hid_tsip':hid_tsip,
+//                'hid_tssp':hid_tssp
+//            },
+//            success:function(result){
+//                if(result) {
+//                    $('.total_effective_price').each(function(key,value){
+//                        $(this).text(result.tep[key]);
+//                    });
+//                    $('.total_ship_price').each(function(key,value){
+//                        $(this).text(result.tshp[key]);
+//                    });
+//                    $('.total_signed_price').each(function(key,value){
+//                        $(this).text(result.tsip[key]);
+//                    });
+//                    $('.total_sesults_section_price').each(function(key,value){
+//                        $(this).text(result.tssp[key]);
+//                    });
+//                }
+//            }
+//        })
+//    })
+    
+</script>
+</body>
+</html>

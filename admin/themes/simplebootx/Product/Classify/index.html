@@ -1,0 +1,36 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Product/classify/index')}">产品属性列表</a></li>
+        <li><a href="{:U('Product/classify/add')}">添加产品属性</a></li>
+    </ul>
+    <form method="post" class="form-horizontal js-ajax-form" action="{:U('Product/classify/index')}">
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th width="50">ID</th>
+            <th>属性名称</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="item" key='key'>
+            <tr>
+                <td width="50">{$item.id_classify}</td>
+                <td>{$item.name}</td>
+                <td><a href="{:U('Product/classify/edit',array('id'=>$item['id_classify']))}">编辑</a>
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+    <!--<div class="pagination">{$page}</div>-->
+    </fieldset>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

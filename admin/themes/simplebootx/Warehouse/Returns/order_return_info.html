@@ -1,0 +1,176 @@
+<admintpl file="header" />
+</head>
+<body>
+<style>
+    #search_auto, #search_auto_pro{border:1px solid #dce4ec; position:absolute; display:none;}
+    #search_auto li, #search_auto_pro li{background:#FFF; text-align:left;list-style-type:none;}
+    #search_auto li.cls, #search_auto_pro li.cls{text-align:right;}
+    #search_auto li a, #search_auto_pro li a{display:block; padding:5px 6px; cursor:pointer; color:#666;}
+    #search_auto li a:hover, #search_auto_pro li a:hover{background:#D8D8D8; text-decoration:none; color:#000;}
+    ul{margin: 0 0 10px;}
+</style>
+<div class="loading" style="display:none;position:absolute; left:0; top:0;width:100%; height:100%;z-index:20000;background-color:gray;opacity:0.5; -moz-opacity:0.5; filter:alpha(opacity=50);">
+    loading...
+</div>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('Warehouse/Returns/order_return_list')}">退货订单</a></li>
+        <li class="active"><a href="{:U('Warehouse/Returns/create_order_return')}">退货订单详情</a></li>
+        <li><a href="{:U('Warehouse/Returns/import_return_order')}">批量生成退货单</a></li>
+    </ul>
+    <form method="get" class="form-horizontal ">
+        <fieldset>
+            <php>if(isset($order['id'])){</php>
+            <input type="hidden" name="id" value="<php>echo $order['id'];</php>">
+            <php>}</php>
+            <div class="control-group">
+                <label class="control-label">部门:</label>
+                <div class="controls">
+                    <select  name="id_department" required>
+                        <foreach name="department" item="depart">
+                            <option value="{$key}" <php>echo $order_return['id_department'] == $key ? 'selected' : ''</php> >{$depart}</option>
+                        </foreach>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">仓库:</label>
+                <div class="controls">
+                    <select name="id_warehouse" required>
+                        <foreach name="warehouse" item="ware">
+                            <option value="{$key}" <php>echo $order_return['id_warehouse']==$key ? 'selected' : ''</php> >{$ware}</option>
+                        </foreach>
+                    </select>
+                    <span class="form-required" style="color:red">*</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">订单号:</label>
+                <div class="controls">
+                    <div>
+                        <input type="text" id="id_increment" name="id_increment" value="<php>echo $order_return['id_increment'];</php>" >
+                        <input  type="hidden" id = "status" value="<php>echo $order_return['status'];</php>">
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">可再次派货:</label>
+                <div class="controls">
+                    <select name="isagain" required>
+                        <foreach name="isAgain" item="val">
+                            <option value="{$key}" <php>echo $order_return['isagain']==$key ? 'selected' : ''</php> >{$val}</option>
+                        </foreach>
+                    </select>
+                    <span class="form-required" style="color:red">*</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">退货原因:</label>
+                <div class="controls">
+                    <textarea placeholder="备注" style="width: 28%; height: 100px;" required name="remark"><php>echo isset($order_return['remark'])?$order_return['remark']:'';</php> </textarea>
+                </div>
+            </div>
+
+            <div class="control-group" id="product_show">
+                <label class="control-label">产品列表:</label>
+                <div class="controls" >
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>产品名称</th>
+                            <th>产品单价</th>
+                            <th>产品属性</th>
+                            <th>产品数量</th>
+                            <th>退货数量</th>
+                            <th>退货金额</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <foreach name="return_order_detail" item="order">
+                            <tr>
+                                <th>
+                                    <input type="text"   value="{$order['product_name']}" readonly>
+                                    <input type="hidden" name ="id_product[]"  value="{$order['id_product']}">
+                                    <input type="hidden" name ="id_product_sku[]"   value="{$order['id_product_sku']}" >
+                                    <input type="hidden" name ="option_value[]"   value="{$order['option_value']}" >
+                                </th>
+                                <th><input type="text"   value="{$order['price']}" class="price_{$key}" disabled></th>
+                                <th><input type="text"   value="{$order['attrs_title']}"  disabled></th>
+                                <th><input type="number"  class="id_product_qty_origin_{$key}" data-index="{$key}" value="{$order['quantity']}" readonly></th>
+                                <th><input type="number" name ="id_product_qty[]" class="id_product_qty" data-index="{$key}" value="{$order['qty']}"></th>
+                                <th><input type="text" name ="amt[]" class="amt_{$key}"   value="{$order['amt']}" ></th>
+                            </tr>
+                        </foreach>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </fieldset>
+        <div class="form-actions">
+            <div style="float: left; margin-left: 20px;"><a class="btn" href="{:U('Warehouse/Returns/order_return_list')}">{:L('BACK')}</a></div>
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    var status = $("#status").val();
+    if (status == 1)
+    {
+        $("#tj_sub").show();
+    }
+
+    $(".id_product_qty").live("change", function(){
+        var index = $(this).data('index');
+        var price = $(".price_" + index).val();
+        var qty = $(this).val();
+        var qty_origin = $(".id_product_qty_origin_" + index).val();
+
+        if (qty >=0 && qty%1 === 0 && qty <=  qty_origin)
+        {
+            amt = price*qty;
+        }
+        else
+        {
+            alert("请输入合理的数字！");
+            amt = 0;
+            $(this).val(0);
+        }
+
+        if (amt < 0 )
+        {
+            alert("请输入合理的退款额！");
+            amt = 0;
+            $(this).val(0);
+        }
+
+        $(".amt_" + index).val(amt.toFixed(2));
+    });
+
+    $("input[name='amt[]'").live('change',function () {
+        var amt = $(this).val();
+        if( amt < 0 )
+        {
+            $(this).val(0);
+        }
+    });
+
+    $('.sub').click(function(){
+        $('.form-horizontal input[name=a]').attr('value','index');
+        $('.form-horizontal').attr('action',"{:U('Warehouse/Returns/save_post/status/1')}");
+        $('.form-horizontal') .submit();
+    });
+
+    $('.tj_sub').click(function(){
+        $('.form-horizontal input[name=a]').attr('value','index');
+        $('.form-horizontal').attr('action',"{:U('Warehouse/Returns/save_post/status/2')}");
+        $('.form-horizontal') .submit();
+    });
+
+</script>
+</body>
+</html>

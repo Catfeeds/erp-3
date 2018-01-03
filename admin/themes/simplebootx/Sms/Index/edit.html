@@ -1,0 +1,83 @@
+<admintpl file="header"/>
+</head>
+<body>
+    <div class="wrap js-check-wrap">
+        <ul class="nav nav-tabs">
+            <li><a href="{:U('Index/index')}">{:L('短信管理')}</a></li>
+            <li class="active"><a href="{:U('index/edit')}">{:L('编辑短信')}</a></li>
+        </ul>
+        <form class="form-horizontal js-ajax-form" action="{:U('index/edit_post')}" method="post">
+            <fieldset>
+                <div class="control-group">
+                    <label class="control-label">短信名称</label>
+                    <div class="controls">
+                        <input type="text" name="name" value="{$data.name}"/>
+                        <span class="form-required">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">短信接口名</label>
+                    <div class="controls">
+                        <input type="text" name="api" value="{$data.api}" />
+                        <span class="form-required">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">短信接口MD5密码</label>
+                    <div class="controls">
+                        <input type="password" name="passwd" value="{$data.passwd}" />
+                        <span class="form-required">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">接收手机号码</label>
+                    <div class="controls">
+                        <input type="text" name="mobile" value="{$data.mobile}"/>
+                        <span class="form-required">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">短信内容</label>
+                    <div class="controls">
+                        <textarea name="content" rows="2" cols="20" class="inputtext" style="height: 100px; width: 500px;">{$data.content}</textarea>
+                        <span class="form-required">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">错误次数</label>
+                    <div class="controls">
+                        <input type="text" name="err_count" value="{$data.err_count}" id=""/>
+                        <span class="form-required">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">错误消息</label>
+                    <div class="controls">
+                        <textarea name="err_msg" rows="2" cols="20" class="inputtext" style="height: 100px; width: 500px;">{$data.err_msg}</textarea>
+                        <span class="form-required">*</span>
+                    </div>
+                </div>				
+                <div class="control-group">
+                    <label class="control-label">状态</label>
+                    <div class="controls">
+                        <if condition="$data['status'] eq 1">
+                            <label class="radio inline" for="active_true"><input type="radio" name="status" value="1" checked id="active_true" />{:L('ENABLED')}</label>
+                            <label class="radio inline" for="active_false"><input type="radio" name="status" value="0" id="active_false">{:L('DISABLED')}</label>
+                            <else />
+                            <label class="radio inline" for="active_true"><input type="radio" name="status" value="1" id="active_true" />{:L('ENABLED')}</label>
+                            <label class="radio inline" for="active_false"><input type="radio" name="status" value="0" checked id="active_false">{:L('DISABLED')}</label>
+                        </if>
+
+                    </div>
+                </div>
+            </fieldset>
+            <div class="form-actions">
+                <input type="hidden" name="id_sms" value="{$data.id_sms}"/>
+                <button type="submit" class="btn btn-primary js-ajax-submit">{:L('ADD')}</button>
+                <a class="btn" href="{:U('index/index')}">{:L('BACK')}</a>
+            </div>
+        </form>
+    </div>
+    <script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

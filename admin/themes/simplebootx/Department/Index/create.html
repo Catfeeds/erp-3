@@ -1,0 +1,83 @@
+<admintpl file="header" />
+</head>
+<body>
+    <div class="loading" style="display:none;position:absolute; left:0; top:0;width:100%; height:100%;z-index:20000;background-color:gray;opacity:0.5; -moz-opacity:0.5; filter:alpha(opacity=50);">
+        loading...
+    </div>
+	<div class="wrap">
+        <ul class="nav nav-tabs">
+            <li><a href="{:U('Department/index/index')}">部门列表</a></li>
+            <li class="active"><a href="{:U('Department/index/create',array('id'=>$data['id_department']))}">添加部门</a></li>
+        </ul>
+		<form method="post" enctype="multipart/form-data" class="form-horizontal js-ajax-form" action="{:U('Department/index/save_post')}">
+			<fieldset>
+                <php>if(isset($data['id_department'])){</php>
+                 <input type="hidden" name="id" value="<php>echo $data['id_department'];</php>">
+                <php>}</php>
+                <div class="control-group">
+                    <label class="control-label">上级部门:</label>
+                    <div class="controls">
+                  <select name="parent_id">
+                            <option value="0">-一级部门-</option>
+                            <foreach name="department" item="item">
+                                <option value="{$item.id_department}" <php>echo $parent_id==$item['id_department']?'selected="selected"':'';</php>>{$item.title}</option>
+                            </foreach>
+                        </select>
+                   </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">名称:</label>
+                    <div class="controls">
+                        <input type="text" name="title" value="<php>echo isset($data['title'])?$data['title']:'';</php>">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">部门编号:</label>
+                    <div class="controls">
+                        <input type="text" name="department_code" value="<php>echo isset($data['department_code'])?$data['department_code']:'';</php>">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">负责人:</label>
+                    <div class="controls">
+                        <select name="id_users">
+                            <option value="0">--</option>
+                            <foreach name="user" item="item">
+                                <option value="{$item.id}" <php>echo $data['id_users']==$item['id']?'selected="selected"':'';</php>>{$item.user_nicename}</option>
+                            </foreach>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">是否为业务部门:</label>
+                    <div class="controls">
+                        <if condition="$data['type'] eq 1">
+                            <label class="radio inline" for="active_true"><input type="radio" name="type" value="1" checked id="active_true" />是</label>
+                            <label class="radio inline" for="active_false"><input type="radio" name="type" value="0" id="active_false">否</label>
+                            <else />
+                            <label class="radio inline" for="active_true"><input type="radio" name="type" value="1" id="active_true" />是</label>
+                            <label class="radio inline" for="active_false"><input type="radio" name="type" value="0" checked id="active_false">否</label>
+                        </if>
+
+                    </div>
+                </div>
+                
+                <!-- 可自由设置排序 -->
+                <div class="control-group">
+                    <label class="control-label">自由排序ID</label>
+                    <div class="controls">
+                        <input type="text" name="sort" value="<php>echo isset($data['sort'])?$data['sort']:'';</php>"> <span style="color:red">(必须为数字)</span>
+                    </div>
+                </div>
+                <!-- 可自由设置排序 -->
+                
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">保存</button>
+				<a class="btn" href="{:U('Index/index')}">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

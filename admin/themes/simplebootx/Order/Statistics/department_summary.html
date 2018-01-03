@@ -1,0 +1,136 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <!--<label class="control-label">地区:</label>
+            <select name="zone_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="zone" item="item">
+                    <option value="{$item.id_zone}" <php>echo isset($_GET['zone_id']) && $_GET['zone_id']==$item['id_zone'] ? 'selected' : ''</php>>{$item.title}</option>
+                </foreach>
+            </select>-->
+            <label class="control-label">建立日期:</label>
+            <input type="text" name="start_time" class="js-date" value="<php>echo $_GET['start_time'];</php>"
+                   style="width: 120px;" autocomplete="off"><!---
+            <input type="text" class="js-datetime" name="end_time" value="<php>echo $_GET['end_time'];</php>" style="width: 120px;">-->
+            <button class="btn btn-primary searchButton">搜索</button>
+            <button class="btn btn-primary exportButton">导出</button>
+        </div>
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list" style=" margin-bottom: 100px;">
+        <thead>
+        <tr>
+            <th>业务总监</th>
+            <th>经理</th>
+            <th>部门</th>
+            <th>部门负责人</th>
+            <th>台湾总订单</th>
+            <th>台湾有效单</th>
+            <th>香港总订单</th>
+            <th>香港有效单</th>
+            <th>其他地区总订单</th>
+            <th>其他地区有效单</th>
+            <th>合计总订单</th>
+            <th>合计有效单</th>
+        </tr>
+        </thead>
+        <tbody>
+        <php>$get_total = 0 ;$get_effective = 0 ;$get_total_tw = 0 ;$get_effective_tw = 0 ;$get_total_hk = 0 ;$get_effective_hk = 0 ;$get_total_other = 0 ;$get_effective_other = 0 ;</php>
+        <foreach name="list" item="item" key="director">
+            <php>
+                $get_number=0;
+                foreach($item as $v2){
+                 $get_number=count($v2)+$get_number;
+                }
+                $get_number = $get_number+2+count($item);
+                echo '<tr><td rowspan="'.$get_number.'" style="text-align:center">'.$director.'</td></tr>';
+                $depart_total= 0;
+                $depart_effective = 0;
+                $depart_total_tw= 0;
+                $depart_effective_tw= 0;
+                $depart_total_hk= 0;
+                $depart_effective_hk= 0;
+                $depart_total_other= 0;
+                $depart_effective_other= 0;
+            </php>
+            <foreach name="item" item="item2" key="director2">
+                <php>
+                    $get_number2 = count($item2)+1;
+                    echo '<tr><td rowspan="'.$get_number2.'" style="text-align:center">'.$director2.'</td></tr>';
+
+                </php>
+                <foreach name="item2" item="depart">
+                    <php>
+                        $depart_total +=$depart['total'];$depart_effective +=$depart['effective'];
+                        $depart_total_tw +=$depart['total_tw'];$depart_effective_tw +=$depart['effective_tw'];
+                        $depart_total_hk +=$depart['total_hk'];$depart_effective_hk +=$depart['effective_hk'];
+                        $depart_total_other +=$depart['total_other'];$depart_effective_other +=$depart['effective_other'];
+
+                    </php>
+                    <tr>
+                        <td>{$depart.title}</td>
+                        <td>{$depart.user_nicename}</td>
+                        <td>{$depart.total_tw}</td>
+                        <td>{$depart.effective_tw}</td>
+                        <td>{$depart.total_hk}</td>
+                        <td>{$depart.effective_hk}</td>
+                        <td>{$depart.total_other}</td>
+                        <td>{$depart.effective_other}</td>
+                        <td>{$depart.total}</td>
+                        <td>{$depart.effective}</td>
+                    </tr>
+                </foreach>
+            </foreach>
+
+            <tr  style="text-align:center;font-weight: bold;">
+                <td colspan="3" style="text-align:center;">合计</td>
+
+                <td>{$depart_total_tw}</td>
+                <td>{$depart_effective_tw}</td>
+                <td>{$depart_total_hk}</td>
+                <td>{$depart_effective_hk}</td>
+                <td>{$depart_total_other}</td>
+                <td>{$depart_effective_other}</td>
+                <td>{$depart_total}</td>
+                <td>{$depart_effective}</td>
+            </tr>
+            <php>$get_total += $depart_total ;$get_effective += $depart_effective ;
+                $get_total_tw += $depart_total_tw ;$get_effective_tw += $depart_effective_tw;
+                $get_total_hk += $depart_total_hk ;$get_effective_hk += $depart_effective_hk ;
+                $get_total_other += $depart_total_other ;$get_effective_other += $depart_effective_other ;
+
+
+            </php>
+        </foreach>
+        <tr>
+            <td colspan="4" style="text-align:center;">合计</td>
+            <td>{$get_total_tw}</td>
+            <td>{$get_effective_tw}</td>
+            <td>{$get_total_hk}</td>
+            <td>{$get_effective_hk}</td>
+            <td>{$get_total_other}</td>
+            <td>{$get_effective_other}</td>
+            <td>{$get_total}</td>
+            <td>{$get_effective}</td>
+        </tr>
+        </tbody>
+    </table>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search').attr('action',"{:U('Statistics/department_summary')}");
+    });
+    $('.exportButton').click(function(){
+        $('.form-search').attr('action',"{:U('Statistics/export_department_summary')}");
+    });
+</script>
+</body>
+</html>

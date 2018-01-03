@@ -1,0 +1,657 @@
+<admintpl file="header" />
+</head>
+<body>
+<style>
+    #search_auto, #search_auto_pro, #search_auto_inner_purchase{border:1px solid #dce4ec; position:absolute; display:none;}
+    #search_auto li, #search_auto_pro li ,#search_auto_inner_purchase li{background:#FFF; text-align:left;list-style-type:none;}
+    #search_auto li.cls, #search_auto_pro li.cls ,#search_auto_inner_purchase li.cls{text-align:right;}
+    #search_auto li a, #search_auto_pro li a ,#search_auto_inner_purchase li a{display:block; padding:5px 6px; cursor:pointer; color:#666;}
+    #search_auto li a:hover, #search_auto_pro li a ,#search_auto_inner_purchase li a:hover{background:#D8D8D8; text-decoration:none; color:#000;}
+    .searchLayer table td.th {width: 100px;}
+    ul{margin: 0 0 10px;}
+    .tableLayer table td{white-space:normal}
+</style>
+<div class="loading" style="display:none;position:absolute; left:0; top:0;width:100%; height:100%;z-index:20000;background-color:gray;opacity:0.5; -moz-opacity:0.5; filter:alpha(opacity=50);">
+    loading...
+</div>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('Index/index')}">采购订单</a></li>
+        <li class="active"><a href="{:U('index/create')}">建立采购</a></li>
+    </ul>
+    <div class="searchLayer">
+        <form method="post" enctype="multipart/form-data" class="form-horizontal " style="padding:20px" id="form">
+            <table cellspacing="1" class="table-bordered">
+                <tr>
+                    <php>if(isset($order['id'])){</php>
+                    <input type="hidden" name="id" value="<php>echo $order['id'];</php>">
+                    <php>}</php>
+                    <td class="th">内部采购单号</td>
+                    <td>
+                        <div id="search_inner_purchase">
+                            <input class="inputtxt1 ui-autocomplete-input" id="inner_purchase_no" name="inner_purchase_no" type="text" value="{$product['inner_purchase_no']}">
+                            <span class="error-inner-purchase-no" style="color:red;"></span>
+                        </div>
+                        <div id="search_auto_inner_purchase" style="z-index:1"></div>
+
+                        
+                    </td>
+                    <php>$inner_purchase_time = date('Y-m-d');</php>
+                    <td class="th">内部采购时间：</td>
+                    <td><input type="text" name="inner_purchase_time" id="inner_purchase_time" class="js-datetime date" value="<php>echo $data['inner_purchase_time']?$data['inner_purchase_time']:$inner_purchase_time</php>" style="width: 120px;" autocomplete="off" required="required"></td>
+
+                    <td class="th">部门</td>
+                    <td>
+                        <select title="" class="selectDepartment" name="id_department" style="height:100%">
+                            <foreach name="department" item="depart">
+                                <option value="{$depart.id_department}" <php>echo $product['id_department']==$depart['id_department'] ? 'selected' : ''</php>>{$depart.title}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <td class="th">仓库</td>
+                    <td>
+                        <select title="" class="selectWarehouse" name="id_warehouse" required style="height:100%;width:80%"">
+                            <foreach name="warehouse" item="ware">
+                                <option value="{$ware.id_warehouse}">{$ware.title}</option>
+                            </foreach>
+                        </select>
+                        <span class="form-required" style="color:red">*</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="th">产品</td>
+                    <td>
+                        <div id="search_pro">
+                            <input name="product_id" id="product_id" type="hidden" value="{$product['id_product']}">
+                            <input class="inputtxt1 ui-autocomplete-input" id="inner" name="inner_name" type="text" autocomplete="off" value="{$product['inner_name']}" style="width:80%">
+                            <span class="error-msg-pro"></span>
+                        </div>
+                        <div id="search_auto_pro" style="z-index:1"></div>
+                    </td>
+                    <td class="th">供应商名</td>
+                    <td>
+                        <div id="search">
+                            <input name="id_supplier" id="supplier_id" type="hidden">
+                            <input class="inputtxt1 ui-autocomplete-input" id="supplier" name="supplier_name" type="text" style="width:55%;" autocomplete="off" value="<php>echo $_GET['supplier_name']</php>" required>
+                            <span class="form-required" style="color:red">*</span>
+                            <span class="error-msg"></span>
+                        </div>
+                        <div id="search_auto" style="z-index:1000"></div>
+                    </td>
+                    <td class="th">供应商连接</td>
+                    <td>
+                        <div id="search_url" >
+                            <input class="inputtxt1 ui-autocomplete-input" id="supurl" name="supplier_url" type="text" autocomplete="off" style="width:70%" value="<php>echo $_GET['sup_name']</php>" required>
+                            <span class="form-required" style="color:red">*</span>
+                        </div>
+                        <div id="search_url_auto" ></div>
+                    </td>
+
+                    <td class="th">采购渠道</td>
+                    <td>
+                        <select title="" class="selectChannel" name="pur_channel" required id="pur_channel" style="height:100%;width:80%">
+                            <option value="">请选择</option>
+                            <option value="1" <php>echo empty($_GET['pur_channel'])||$_GET['pur_channel']==1?'selected="selected"':'';</php>>阿里巴巴</option>
+                            <option value="2" <php>echo $_GET['pur_channel']==2?'selected="selected"':'';</php>>淘宝</option>
+                            <option value="3" <php>echo $_GET['pur_channel']==3?'selected="selected"':'';</php>>线下</option>
+                        </select>
+                        <span class="form-required" style="color:red">*</span>
+                    </td>
+
+                </tr>
+                <tr>
+
+                    <td class="th">运费</td>
+                    <td>
+                        <input type="text" name="price_shipping" value="" onchange="calculate_unit_price()" style="width:80%">
+                    </td>
+                    <td class="th">预付金额</td>
+                    <td>
+                        <input type="text" name="prepay" value="" style="width:80%">
+                    </td>
+                    <td class="th">付款方式</td>
+                    <td>
+                        <select name="payment" style="height:100%" id="payment">
+                            <option value="2">通道支付</option>
+                            <option value="1">货到付款</option>
+                        </select>
+                    </td>
+                    <td class="th">采购渠道订单号</td>
+                    <td>
+                         <input type="text" name="alibaba_no" required value="" style="width:80%"> 
+                         <span class="form-required" style="color:red">*</span>                  
+                    </td>                    
+                </tr>
+            </table>
+            <br/>
+
+            <input type="hidden" name="hid" value="" class="tj_hid">
+            <div class="ctab-panel">
+                <div class="ctab-head">
+                    <a id="items" href="#" class="active">属性详情</a>
+                    <!--<a href="#" id="import">导入SKU数量</a>-->
+                </div>
+                <div class="ctab-body" id="first">
+                    <div class="tableLayer" style="height:400px">
+                        <table class="table table-hover table-bordered table-list attributesListBox"></table>
+                    </div>
+
+                </div>
+                <!--<div class="ctab-body" style='display:none;' id="second">-->
+                    <!--<div class="tableLayer"  style="height:400px">-->
+                        <!--<textarea placeholder="从Excel中复制两列:sku, 数量" style="width: 600px; height:300px;" id="import_data"></textarea>-->
+                        <!--<a class="btn" id="import_btn">导入</a>-->
+                        <!--<div id="warning"></div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            </div>
+            <div class="ctab-body">
+                <div class="tableLayer"  style="height:200px">
+                    <textarea placeholder="从Excel中复制两列:sku, 数量" style="width: 600px; height:300px;" id="import_data"></textarea>
+                    <a class="btn" id="import_btn">导入</a>
+                    <div id="warning"></div>
+                </div>
+            </div>
+            <br/>
+            <table cellspacing="1" class="table-bordered">
+                <tr>
+                    <td class="th">采购总价</td>
+                    <td colspan="">
+                        <input type="text" class="tpi" name="total_price" value="" required style="width:50%">
+                        <a href="javascript:;" class="btn btn-primary up_price">更新单价</a>
+                    </td>                
+                    <td class="th">sku</td>
+                    <td>
+                        <input type="text" name="add_sku" style="width:50%"/>
+                        <a class="btn btn-primary addrow">增加</a>
+                    </td>
+                    
+                </tr>
+
+            </table>
+            <br/>
+            <table cellspacing="1" class="table-bordered">
+                <tr>
+                    <td class="th">备注</td>
+                    <td>
+                        <textarea placeholder="备注" style="width:300; height: 50;" required="" name="remark"><php>echo isset($order['remark'])?$order['remark']:'';</php> </textarea>
+                    </td>
+                    <td class="th">预计发货时间</td>
+                    <php>$date_from = date('Y-m-d');$date_to = date('Y-m-d',strtotime('+3 day'));</php>
+                    <td><input type="text" name="date_from" id="date_from" class="js-datetime date" value="<php>echo $data['date_from']?$data['date_from']:$date_from</php>" style="width: 120px;" autocomplete="off" required="required"></td>
+                    <td class="th">预计到货时间</td>
+                    <td><input type="text" name="date_to" id="date_to" class="js-datetime date" value="<php>echo $data['date_to']?$data['date_to']:$date_to</php>" style="width: 120px;" autocomplete="off" required="required"></td>
+                    </tr>
+            </table>
+
+            <div class="form-actions">
+                <a  class="btn btn-primary sub" id="save">保存</a>
+                <a class="btn btn-primary tj_sub">提交</a>
+                <a class="btn" href="{:U('Index/index')}">{:L('BACK')}</a>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+var ischeck=0; //全局变量，判断内部采购单号是否合法
+//ajax保存或者提交
+function ajax_post(){
+    var formData = new FormData($( "#form" )[0]);
+    var pid = $('#product_id').val();
+    var supplier_id = $('#supplier').val();
+    var pur_channel = $('#pur_channel').val();
+    var date_from = $('#date_from').val();
+    var date_to = $('#date_to').val();
+    var payment = $('#payment').val();
+    var supurl = $('#supurl').val();
+    if(pid == ''){
+        alert('产品不能为空！');
+        return false;
+    }else if(pur_channel == ''){
+        alert('采购渠道不能为空！');
+        return false;
+    } else if(supplier_id == ''){
+        alert('供应商名不能为空！');
+        return false;
+    }else if(supurl == ''){
+        alert('供应商链接不能为空！');
+        return false;
+    }else if(date_from == ''){
+        alert('预计发货时间不能为空！');
+        return false;
+    }else if(date_to == ''){
+        alert('预计到货时间不能为空！');
+        return false;
+    }else if(payment == '0'){
+        alert('付款方式不能为空');
+        return false;
+    }
+    /* 内部采购单号验证先取消，用的时候再去掉注释 11-10 zx
+    else if(ischeck=='0'){ //内部采购单号不合法
+        alert('内部采购单号不合法');
+        return false;
+    } */
+    $.ajax({
+        url:"{:U('Index/save_post')}",
+        type:'post',
+        data: formData,
+        contentType: false,
+        processData: false,
+        async: false,
+        success:function(returndata) {
+            returndata = JSON.parse(returndata);
+            if(returndata.status == 1){
+                alert(returndata.message);
+                return false;
+            }
+            else if(returndata.status == 0){
+                alert('操作成功');
+                window.location.href="{:U('/Purchase/Index/index')}";
+            }
+        }
+    });
+}
+var unit_price = 0; //全局变量-单价
+$('#save').click(function(){
+    //获取所有表单元素
+    ajax_post();
+});
+$(function(){
+    //切换选项卡
+    $('#import').on('click', function(){
+        $('#import').addClass('active');
+        $('#items').removeClass("active");
+        $('#second').attr('style','display:block;')
+        $('#first').attr('style','display:none;')
+    });
+    $('#items').on('click', function(){
+        $('#items').addClass("active");
+        $('#import').removeClass("active");
+        $('#second').attr('style','display:none;')
+        $('#first').attr('style','display:block;')
+    });
+    //采购预警跳过来初始化
+    var a = '<?php echo $product_row?>';
+    if(a){
+        $('.attributesValueList').show();
+        $('.attributesListBox').html(a);
+    }
+    //搜索提示供应商
+    $('#search_auto').css({'width':'220px','background':'white','height':'100px','overflow':'auto'});
+    function supp_post() {
+        $.post("{:U('Index/get_supp_attr')}",{'value':$('#supplier').val(),'pro_id':$('#product_id').val()},function(data){
+            if(data=='0') {
+                $('.error-msg').html('无此供应商').css({'color':'red'});
+                $('#search_auto').html('').css('display','none');
+//                        $('.sub').attr("disabled", true);
+//                        $('.tj_sub').attr("disabled", true);
+            }else{
+                $('#search_auto').html(data).css('display','block');
+                setTimeout(function(){
+                    $('#search_auto').html('').css('display','none');
+                },4000);
+            }
+        });
+    }
+
+    $('#supplier').click(function(){
+        supp_post();
+    });
+//            $('#supplier').bind('input propertychange', function() {
+    $('#search input[name="supplier_name"]').keyup(function(){
+        supp_post();
+    });
+
+    //搜索提示产品内部名
+    $('#search_auto_pro').css({'width':'220px','background':'white','height':'180px','overflow':'auto'});
+    $('#search_pro input[name="inner_name"]').keyup(function(){
+        var inputText= $.trim(this.value);
+        if(inputText!=""){
+            $.post("{:U('Index/get_product_title')}",{'value':$(this).val(),'id_department':$('.selectDepartment').val()},function(data){
+                if(data=='0') {
+                    $('#search_auto_pro').html('').css('display','none');
+                    $('.error-msg-pro').html('无此产品').css({'color':'red'});
+//                            $('.sub').attr("disabled", true);
+//                            $('.tj_sub').attr("disabled", true);
+                }else {
+                    $('#search_auto_pro').html(data).css('display','block');
+                }
+            });
+        } else {
+            $('.error-msg-pro').html('');
+            $('#search_auto_pro').html('').css('display','none');
+        }
+    });
+});
+
+function get_supp(i) {
+    var name = $('.sup'+i).text();
+    var id_supp = i;
+    $('#supplier_id').val(id_supp);
+    $('#supplier').val(name);
+    $('#search_auto').html('').css('display','none');
+    $('.sub').removeAttr("disabled");
+    $('.tj_sub').removeAttr("disabled");
+    $('.error-msg').html('');
+    get_sup_url();
+};
+
+function get_pro_param(j) {
+    var name = $('.pro'+j).text();
+    var id_pro = j;
+    $('#product_id').val(id_pro);
+    $('#inner').val(name);
+    $('#search_auto_pro').html('').css('display','none');
+    get_pro_attr(id_pro);
+    $('.sub').removeAttr("disabled");
+    $('.tj_sub').removeAttr("disabled");
+};
+
+$('#supurl').keyup(function(){
+    $.ajax({
+        url:"{:U('Index/get_supplier_title')}",
+        type:'post',
+        dataType:'json',
+        data:{'value':$(this).val(),'id_department':$('.selectDepartment').val()},
+        success:function(data) {
+            if(data != '') {
+                $('#supplier_id').val(data.id);
+                $('#supplier').val(data.title);
+            }
+        }
+    });
+});
+
+function get_sup_url() {
+    $.post("{:U('Index/get_supp_url')}",{'supp_id':$('#supplier_id').val(),'id_department':$('.selectDepartment').val()},function(res){
+        $('#supurl').val(res);
+    });
+}
+
+//更新采购单价
+$('.up_price').click(function(){
+    var total_price = parseFloat($('.tpi').val());
+    var f_price = $('[name="price_shipping"]').val();
+    var sqt = 0;
+    if(f_price <= 0 || f_price == '') {
+        var fprice = 0;
+    } else {
+        var fprice = parseFloat(f_price);
+    }
+
+    if(total_price > 0) {
+        var price = total_price-fprice;
+
+        $('.sqt').each(function(e){
+            if($(this).val() > 0) {
+                sqt += parseInt($(this).val());
+            }
+            $(this).attr('id','dquity'+e);
+        });
+        $('.sprice').each(function(e){
+            $(this).attr('id','dsp'+e);
+        });
+
+        $('.dsqt').each(function(i){
+            var qty = $(this).val();
+            if(qty == '' || qty == 0) {
+                $('#dsp'+i).val('');
+            } else {
+                $('#dsp'+i).val((price/sqt).toFixed(4));
+            }
+        });
+    } else {
+        alert('总价要大于0');
+        return false;
+    }
+});
+
+//算出采购金额
+function qty_change(k) {
+    var spr = $('.sprice'+k).val();
+    var qty = $('.sqt'+k).val();
+    if(qty > 0) {
+        $('.hid_p'+k).val(spr*10000*qty/10000);
+        calculate_unit_price();
+    }
+}
+//算出采购金额
+function price_change(k) {
+    var qty = $('.sqt'+k).val();
+    var spr = $('.sprice'+k).val();
+    if(qty > 0) {
+        $('.hid_p'+k).val(spr*10000*qty/10000);
+        calculate_unit_price();
+    }
+}
+
+//统一单价设置
+function calculate_unit_price(){
+    var fp = $('[name="price_shipping"]').val();
+    var qty = 0;
+    $('.hid_p').each(function(){
+        if($(this).val() > 0){
+            qty += parseFloat($(this).val())*10000;
+        }
+    });
+    if(fp==0) {
+        var fprice = 0;
+    } else {
+        var fprice = parseFloat(fp)*10000;
+    }
+
+    var co_price = (qty+fprice)/10000;
+    $('[name="total_price"]').val(co_price);
+}
+function get_pro_attr(id){
+    var getProId = id;
+    if (getProId == 0) {
+        return false;
+    }
+    if ($('.productBox' + getProId).text()) {
+        alert('已经存在');
+        return false;
+    }
+
+    $('.loading').show();
+    $.post("{:U('Index/get_attr')}", {'product_id': getProId,'warehouse_id':$('.selectWarehouse').val()}, function (data) {
+        $('.loading').hide();
+        var resultData = $.parseJSON(data);
+        if (resultData.status) {
+            $('.attributesValueList').show();
+            $('.attributesListBox').append(resultData.row);
+//                    $('.attributesListBox').html(resultData.row);
+            $('.deleteBox'+getProId).click(function () {
+                var getBoxId = $(this).attr('delete');
+                if ($(this) && window.confirm('你确定要删除该记录！')) {
+                    $('.' + getBoxId).remove();
+//                            $('#inner').val('');
+//                            $('.attributesValueList').hide();
+//                            if($(".selectProduct option:first").val() == 0) {
+//                                $('.selectProduct').val(0);
+//                            }
+                }
+            });
+        }
+    });
+}
+//        });
+
+$('.selectDepartment').change(function() {
+    $('#product_id').val('');
+    $('#inner').val('');
+    $('#supplier_id').val('');
+    $('#supplier').val('');
+    $('#search_auto_pro').html('').css('display','none');
+    $('.attributesValueList').hide();
+    $('.attributesListBox').html('');
+    $('.error-msg-pro').html('');
+    $('#supurl').val('');
+});
+
+$('.selectWarehouse').change(function() {
+    $('#product_id').val('');
+    $('#inner').val('');
+    $('#supplier_id').val('');
+    $('#supplier').val('');
+    $('#search_auto_pro').html('').css('display','none');
+    $('.attributesValueList').hide();
+    $('.attributesListBox').html('');
+    $('.error-msg-pro').html('');
+    $('#supurl').val('');
+});
+
+$('.tj_sub').click(function(){
+    if (confirm('确定要提交？')) {
+        var pid = $('#product_id').val();
+        var supplier_id = $('#supplier').val();
+        var pur_channel = $('#pur_channel').val();
+        var date_from = $('#date_from').val();
+        var date_to = $('#date_to').val();
+        var payment = $('#payment').val();
+        var supurl = $('#supurl').val();
+
+        if(pid == ''){
+            alert('产品不能为空！');
+            return false;
+        }else if(pur_channel == ''){
+            alert('采购渠道不能为空！');
+            return false;
+        } else if(supplier_id == ''){
+            alert('供应商名不能为空！');
+            return false;
+        }else if(supurl == ''){
+            alert('供应商链接不能为空！');
+            return false;
+        }else if(date_from == ''){
+            alert('预计发货时间不能为空！');
+            return false;
+        }else if(date_to == ''){
+            alert('预计到货时间不能为空！');
+            return false;
+        }else if(payment == '0'){
+            alert('付款方式不能为空');
+            return false;
+        } else {
+            $('.form-horizontal input[name="hid"]').val('2');
+            ajax_post();
+        }
+    } else {
+        return false;
+    }
+});
+
+$('.supplierInput').change(function () {
+    var delivery = jQuery(this).find("option:selected").attr('delivery');
+//            console.debug(delivery);
+    var setValue = delivery ? delivery : '';
+    $('input[name=from_date]').attr('value', setValue);
+});
+
+$('#import_btn').on('click', function(){
+    var sku, qty, tmp, warning = '', line;
+    var product_id = $('#product_id').val();
+    if(product_id === ''){
+        alert('请先选择产品');
+        return false
+    }
+    var data = $('#import_data').val().split("\n");
+    for(var i in data){
+        if(data[i].trim() === ''){
+            continue;
+        }
+        tmp = data[i].split("\t");
+        sku = $.trim(tmp[0]); qty=$.trim(tmp[1]);
+        line = parseInt(i) + 1;
+
+        tmp = $('.attributesListBox').find('[data-sku-id="'+sku+'"]');
+
+        if(tmp.length > 0){
+            if(qty > 0){
+                tmp.find('.sqt').val(qty);
+                tmp.find('.hid_p').val(tmp.find('.sprice').val()*qty);
+                calculate_unit_price();
+            }else{
+                warning += '第'+ line + '行:数量   '+qty+' 错误<br>'
+            }
+        }else{
+            warning += '第'+ line + '行:SKU    '+sku+' 没找到<br>';
+        }
+    }
+    $('#warning').html(warning);
+});
+
+
+//根据sku生成采购单
+$('.addrow').click(function(){
+    var add_sku = $('input[name=add_sku]').val();
+    var selectWarehouse = $('.selectWarehouse').val();
+    tmp = $('.attributesListBox').find('[data-sku-id="'+add_sku+'"]');
+    if(tmp.length > 0){
+        alert('已经存在该产品');
+        return false;
+    }
+    $.ajax({
+        type:'get',
+        contentType: "application/json; charset=utf-8",
+        url: "{:U('/Purchase/Index/addrow')}",
+        data:{'sku':add_sku,'warehouse':selectWarehouse},
+        dataType:'json',
+        success:function(data){
+            if(data['flag']==1){
+                alert(data['msg']);
+            }else if(data['flag']==0){
+                $('input[name=product_id]').val(data['pro_id']);
+                $('.attributesValueList').show();
+                row = $('.attributesListBox').find('[class=productBox'+data['pro_id']+']');
+                if(row.length > 0){
+                    $('.attributesListBox').append(data['msg1']);
+                }else{
+                    $('.attributesListBox').append(data['msg2']);
+                }
+
+                $('.deleteBox'+data['pro_id']).click(function () {
+                    var getBoxId = $(this).attr('delete');
+                    if ($(this) && window.confirm('你确定要删除该记录！')) {
+                        $('.' + getBoxId).remove();
+                    }
+                });
+            }
+        }
+    });
+});
+//检测单号是否有效   
+    //搜索提示产品内部名
+    /* 内部采购单号验证先取消，用的时候再去掉注释 11-10 zx
+    $('#search_auto_inner_purchase').css({'width':'220px','background':'white','height':'180px','overflow':'auto','display':'none',});
+    $('#search_inner_purchase input[name="inner_purchase_no"]').keyup(function(){
+        var inputText= $.trim(this.value);
+        if(inputText!=""){
+            $.post("{:U('Index/verificate_purchase_order')}",{'value':$(this).val()},function(data){
+                if(data=='0') {
+                    $('#search_auto_inner_purchase').html('').css('display','none');
+                    $('.error-inner-purchase-no').html('无此单号或此单号不可用').css({'color':'red'});
+
+                }else {
+                    $('#search_auto_inner_purchase').html(data).css('display','block');
+                    $('.error-inner-purchase-no').html('').css({'color':'red'});
+                }
+            });
+        } else {
+            $('.error-inner-purchase-no').html('');
+            $('#search_auto_inner_purchase').html('').css('display','none');
+        }
+
+});
+function get_inner_purchase(j) {
+    var name = $('.pinner'+j).text();
+    var id_pro = j;
+    ischeck = 1;
+    $('#inner_purchase_no').val(name);
+    $('#search_auto_inner_purchase').html('').css('display','none');
+};
+*/
+</script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<admintpl file="header" />
+ <link href="__PUBLIC__/js/layer/theme/layer.css"  rel="stylesheet" type="text/css">
+    <script src="__PUBLIC__/js/layer/layer.js"></script>
+</head>
+<style>
+p{ word-wrap:break-word; word-break:normal; }
+</style>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Order/Index/question_order')}">问题件列表</a></li>
+        <!--<li><a href="{:U('Order/settleaccounts')}">结款更新</a></li>
+        <li><a href="{:U('Order/updatetrackstatus')}">签收更新</a></li>
+        <li><a href="{:U('Order/sendtracknumber')}">发送快递单号</a></li>
+        <li style="display: none;"><a href="{:U('Order/importtracknumber')}">导入快递号</a></li>-->
+    </ul>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="id_department" style="width:200px">
+                <option value="1000">全部</option>
+                <php> foreach($department_id as $dep_id){
+                    if(empty($department[$dep_id])) continue;
+                        $selected = $selectdepartment==$dep_id?' selected="selected"':'';
+                    echo '<option value="'.$dep_id.'" '.$selected.'>'.$department[$dep_id].'</option>';
+                    }
+                </php>
+            </select>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <!--添加一个下單时间筛选条件-->
+            <label class="control-label">起始时间:</label>
+            <input type="text" name="start_time" class="js-datetime" value="{:I('request.start_time/s','')}" style="width: 120px;" autocomplete="off">-
+            <input autocomplete="off" type="text" class="js-datetime" name="end_time" value="{:I('request.end_time/s','')}" style="width: 120px;">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="btn btn-primary searchButton">搜索</button>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="btn btn-primary exportSearchButton">导出搜索结果</button>
+         </div>
+    </form>
+   
+
+    <style>
+/*        #tableLayer {
+            width: 100%;
+            overflow: auto;
+            height: 600px;
+        }*/
+    </style>
+    <div id="tableLayer">
+        <fieldset>
+            <table class="table table-hover table-bordered table-list order-table" >
+                <thead>
+                <tr>
+                    <th>订单号</th>
+                    <th width="50">域名</th>
+                    <th width="80">地区</th>
+                    <th  width="80">仓库</th>
+                    <th width="100">订单状态</th>
+                    <th width="300">部门</th>
+                    <th width="80">姓名</th>
+                    <!-- <th width="80">来源</th> -->
+                 <!--    <th>电话</th>
+                    <th width="400">邮箱</th> -->
+                    <!--<th>货币代码</th>-->
+                    <th>总价</th>
+                    <th width="300">产品名</th><!--<th>支付状态</th>-->
+                    <th width="300">内部名</th>
+                    <!--<th>配送费</th>-->
+                    <th>邮编</th>
+                    <th width="100">送货地址</th>
+                    <th width="300">留言</th>
+                    <th width="300">下单时间</th>
+                    <th width="300">发货时间</th>
+                    <th width="300">发货物流</th>
+                    <th width="200">快递单号</th>
+                    <th width="100">物流状态</th>
+                    <!-- 签收情况 -->
+                    <php>if(isset($_GET['track_status']) && $_GET['track_status']){echo '<th>签收时间</th>';}</php>            
+                    <th width="80">重复数</th>
+                    <th width="60">备注</th>
+                    <th width="60">问题件时间</th>
+                    <th width="60">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <foreach name="order_list" item="order">
+                <php> $id_order['id_order'] = $order['id_order'];
+                $blacklist_level = D("Order/OrderBlacklist")->black_list_and_ip_address($id_order);
+                 </php>
+                 <tr style="<php>
+                    switch($blacklist_level['blacklist_level']){
+                        case 1:case 2:
+                        case 3:
+                            echo 'background:rgba(255, 229, 0, 0.3);';
+                        case 4:
+                        case 10:
+                            echo 'background:rgba(244, 54, 54, 0.5);';
+                        break;
+                    }
+                    echo $order['order_repeat']>0?'color:red;':'';
+                    </php>">
+                        <td width="50" ip="{$order.ip}">
+                            {$order.id_increment}<br />{$blacklist_level.ip_address}
+                            <php>
+                                $date = date('Y-m-d');
+                                $select = D("Common/orderInfo")->alias('oi')->field('COUNT(oi.ip) AS ip_total')
+                                ->where(array('oi.ip'=>$blacklist_level['ip'],'oi.created_at'=>array('EGT', $date)))->find();
+                                echo '<br/>当天IP购买数量'.'('.$blacklist_level['ip'].')：'.$select['ip_total'];
+                                echo $blacklist_level['blacklist_level']>0?'<br />黑名单等级：'.$blacklist_level['blacklist_level'].' (字段:'.$blacklist_level['blacklist_field'].')':'';
+                                echo '<br/>';
+                            </php>
+                        </td>
+                        <td>
+                            <php>
+                                $domain_url =  $form_data['domain'];
+                                //if(isset($domain_url[$order['id_domain']])){
+                                //    echo '<a href="'.$domain_url[$order['id_domain']].'" target="_blank">'.$domain[$order['id_domain']].'</a>';
+                                //}else{
+                                    echo $domain_list[$order['id_domain']];
+                                //}
+                                 echo '<br/>'.$advertiser[$order['id_users']];
+                            </php>
+                        </td>
+                        <td><php>echo $all_zone[$order['id_zone']];</php></td>
+                        <td><php> echo $warehouse[$order['id_warehouse']]</php></td>
+                        <!-- 订单状态 -->
+                        <td><php>echo $status_list[$order['id_order_status']];</php></td>
+                        <td><php> echo $department[$order['id_department']];</php></td>
+                        <td>{$order.first_name} {$order.last_name}</td>
+                        <!-- <td>{$order.http_referer}</td> -->
+                   <!--      <td>{$order.tel}</td>
+                        <td style="word-break: break-all;word-wrap: break-word;">{$order.email}</td> -->
+                        <!-- <td>{$order.currency_code}</td> -->
+                        <td><php>echo \Common\Lib\Currency::format($order['price_total'], $order['currency_code']);</php></td>
+                        <td>
+                            <php>
+                                $tempProHtml = array();
+                                $get_html = array();
+                                $empty_flag = false;
+
+                                foreach($order['products'] as $vp){
+                                    $proId = $vp['id_product'];
+                                    if(empty($vp['id_product_sku']) or empty($proId)){
+                                        $empty_flag = true;
+                                    }
+                                    $tempProHtml[$proId]['title']  = $vp['product_title'];
+                                    $tempProHtml[$proId]['qty']    = $vp['quantity'];
+                                    $getAttr = $vp['sku_title']?$vp['sku_title'].'<span style="color:red;"> x </span>'.$vp['quantity'].'<br />':'';
+                                    $get_html[$proId]['html'][] = $vp['sku_title']?'':'<span style="color:red;"> x </span>'.$vp['quantity'];
+                                    $tempProHtml[$proId]['attr'][] = '<div style="padding-left:5px;">'.$getAttr.'</div>';
+                                }
+                                foreach($tempProHtml as $proId=>$product){
+                                    $title = $tempProHtml[$proId]['title'];
+                                    $qty = $tempProHtml[$proId]['qty'];
+                                    $attrHtml = $tempProHtml[$proId]['attr']?implode('',$tempProHtml[$proId]['attr']):'';
+                                    $tempQty = $attrHtml?'':'<span style="color:red;"> x </span>'.$qty;
+                                    $num_html = $get_html[$proId]['html']?implode('',$get_html[$proId]['html']):'';
+                                    $num_qty = $num_html ? '<span style="color:red;"> x </span>'.$qty : '';
+                                    echo '<div>'.$tempProHtml[$proId]['title'].$tempQty.$num_qty.'
+                                    <hr style="margin:2px 0;color:green;border: 1px solid;"/>'.$attrHtml.'</div><br />';
+                                }
+                                if($empty_flag){
+                                    echo '<span style="color:red;">产品信息不完整</span>';
+                                }
+                            </php>
+
+                        </td>
+                        <td>
+                            <php>                             
+                                foreach($order['products'] as $vp){
+                                    echo '<div>'.$vp['inner_name'].' <hr style="margin:2px 0;color:green;border: 1px solid;"/></div><br />';
+                   
+                                }                         
+                            </php>
+
+                        </td>                        
+                        <!--<td>{$order.payment_status}</td>-->
+                        <!--<td>{$order.shipping_price}</td>-->
+                        <td>{$order.zipcode}</td>
+                        <td>
+                            <php>
+                                if($order['id_zone'] == 11) {
+                                echo $order['address'].$order['area'].' '.$order['city'].' '.$order['province'];
+                                } else {
+                                echo $order['province'].$order['city'].' '.$order['area'].' '.$order['address'];
+                                }
+                            </php>
+                        </td>
+                        <td>{$order.remark}</td>
+                        <td>{$order.created_at}</td>
+                        <td>{$order.date_delivery}</td>
+                        <!--发货物流-->
+                        <td>
+                            <php>
+                                $ship = D("Order/OrderShipping")->getShip($order['id_shipping'],'shipping_name');
+                                    if($ship){
+                                    foreach($ship as $val){
+                                        $shipname = $val['shipping_name'];
+                                    }
+                                }
+                                echo $shipname;
+                            </php>
+                        </td>
+                        <td>
+                        <php>
+                            $ship = D("Order/OrderShipping")->getShipInfo($order['id_order'],'id_shipping,track_number,status_label');
+                            $trackNumber = array();$trackLabel = array();
+                            if($ship){
+                                foreach($ship as $shipItem){
+                                $ship_info = D("Common/Shipping")->where(array('id_shipping'=>$shipItem['id_shipping']))->find();
+                                $ship_info["track_url"]=str_replace("{}","",$ship_info["track_url"]);
+                                $trackNumber[] = '<a target="_blank" href="'.$ship_info['track_url'].$shipItem['track_number'].'">'.$shipItem['track_number'].'</a>';
+                                $trackLabel[] = $shipItem['status_label'];
+                                }
+                            }
+                            echo $trackNumber?implode(',',$trackNumber):'';
+                        </php>
+                        </td>
+                        <td><php>echo $trackLabel?implode(',',$trackLabel):''; </php></td>
+                        <php>if(isset($_GET['track_status']) && $_GET['track_status']){echo '<td>'.$order['date_signed'].'</td>';}</php>                
+                        <td>
+                            <php>if($order['order_repeat']>0){
+                            echo '<a href="'.U('Order/Index/index',array('action'=>'repeat','id_order'=>$order['id_order'])).'">'.$order['order_repeat'].'</a>';
+                            }else{echo $order['order_repeat'];}</php>
+                        </td>
+                        <td>
+                            {$order.comment}
+                        </td>
+                        <td>
+                            {$order.create_time}
+                        </td>
+                        <td>
+                            <a onclick="orderDetails({$order['question_id']});" name={$order.question_id} style="cursor:pointer" >详情</a>
+                        </td>
+                    </tr>
+                  </foreach>
+                </tbody>
+            </table>
+        </fieldset>
+    </div>
+    <div class="pagination">{$page}
+    </div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    //console.debug(jQuery('.js-ajax-form'));
+    //
+    //
+    //
+    $('#morecheck').on('click',function(){
+        if($(this).attr('checked')){
+            $(this).val('1');
+        }else{
+            $(this).val('0');
+        }
+    });
+     
+    // echo $domain[$item['id_domain']].':<span style="color:red;">'.$item['total'].'</span>   ';
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('Order/Index/question_order')}");
+    });
+   $('.exportSearchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','export_search');
+        $('.form-search').attr('action',"{:U('Order/Index/export_question')}");
+    });
+     function orderDetails(question_order_id){
+        var question_order_id = question_order_id;
+        var data_before = <?php $order_list;?>
+        console.log(question_order_id);
+        $.post("{:U('Order/Index/compareQuestion')}",{'question_order_id':question_order_id,'order_list':data_before},function(data){
+            if(data){
+               parent.layer.open({
+                  type: 1,
+                  shade: 0.8,
+                  skin: 'layui-layer-rim', //加上边框
+                  area: ['90%', '90%'], //宽高
+                  time: false,
+                  shadeClose: true,
+                  content: data
+                });
+            }
+        });
+    }
+</script>
+</body>
+</html>

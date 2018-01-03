@@ -1,0 +1,192 @@
+<admintpl file="header" />
+<style type="text/css">
+    .pic-list li {
+        margin-bottom: 5px;
+    }
+    .tipShow{
+        float:left;
+        position: absolute;
+    }
+    .tipShow ul{
+        height:150px;
+        overflow:auto;
+        width:421px;
+        background-color: white;
+        margin:0 0 0 0;
+    }
+</style>
+<script type="text/html" id="photos-item-wrapper">
+    <li id="savedimage{id}">
+        <input id="photo-{id}" type="hidden" name="photos_url[]" value="{filepath}">
+        <img id="photo-{id}-preview" src="{url}" style="height:36px;width: 36px;" onclick="parent.image_preview_dialog(this.src);">
+        <a href="javascript:upload_one_image('图片上传','#photo-{id}');">替换</a>
+        <a href="javascript:$('#savedimage{id}').remove();">移除</a>
+    </li>
+</script>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+       <!-- <li><a href="{:U('Product/check/index')}">产品列表</a></li>-->
+        <li class="active"><a >编辑产品</a></li>
+    </ul>
+    <form action="{:U('Product/check/save_repost')}" method="post" class="form-horizontal js-ajax-forms" enctype="multipart/form-data">
+        <div class="row-fluid">
+            <div class="">
+                <table class="table table-bordered">
+
+                    <tr>
+                        <th>图片</th>
+                        <td>
+                            <ul id="photos" class="pic-list unstyled">
+                                <notempty name="smeta[0]['url']">
+                                    <foreach name="smeta" item="vo">
+                                        <php> $img_url=sp_get_image_preview_url($vo['url']);</php>
+                                        <li id="savedimage{$key}">
+                                            <input id="photo-{$key}" type="hidden" name="photos_url[]" value="{$vo['url']}">
+                                            <img id="photo-{$key}-preview" src="{:sp_get_image_preview_url($vo['url'])}" style="height:36px;width: 36px;" onclick="parent.image_preview_dialog(this.src);">
+                                            <if condition="$isader eq 0">
+                                            <a href="javascript:upload_one_image('图片上传','#photo-{$key}');">替换</a>
+                                            <a href="javascript:$('#savedimage{$key}').remove();">移除</a>
+                                                </if>
+                                        </li>
+                                    </foreach>
+                                </notempty>
+                            </ul>
+                            <if condition="$isader eq 0"><a href="javascript:upload_multi_image('图片上传','#photos','photos-item-wrapper');" class="btn btn-small">选择图片</a></if>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th width="80">产品分类</th>
+                        <td>
+                            <select name="post[id_check_category]" class="category_select" required>
+                               <!-- <option value="0">分类</option>-->
+                                {$select_category}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>产品名称</th>
+                        <td>
+                            <php>if($product['id_checked']){</php>
+                            <input type="hidden" name="post[id_checked]" value="{$product.id_checked}">
+                            <php>}</php>
+                            <input type="text" style="width: 400px;" name="post[title]" required value="{$product.title}" placeholder="请输入标题"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>内部名</th>
+                        <td>
+                            <input type="text" style="width: 400px;"   class="search-text" name="post[inner_name]" value ="{$product.inner_name}" required readonly/>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <th>产品id</th>
+                        <td>
+                            <input type="text" style="width: 400px;"  name="post[id_product]" value ="{$product.id_product}" readonly/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>款式</th>
+                        <td>
+                            <input type="text" style="width: 400px;" name="post[style]" value="{$product.style}" placeholder="请输入款式"/>
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th width="90">部门</th>
+                        <td>
+                            <select name="post[id_department]" required >
+                            <php> foreach($department as $key =>$dep_id){
+                                $selected = $key==$product['id_department']?' selected="selected"':'';
+                                echo '<option value="'.$key.'"'.$selected.'>'.$department[$key].'</option>';
+                                }
+                            </php>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th width="80">广告专员</th>
+                        <td>
+
+                          <!--  <select name="post[id_users]" required>
+
+ &lt;!&ndash;                               <option value="0">请选择</option>
+                                <foreach name="classify" item="item">
+                                    <option value="{$item.id_classify}" <php>echo $item['id_classify']==$product['id_classify'] ? 'selected' : ''</php>>{$item.name}</option>
+                                </foreach>&ndash;&gt;
+                            </select>-->
+                            <input type="text" style="width:400px;" name="post[name_users]" value="{$product.name_users}" placeholder="广告专员" />
+                        </td>
+                    </tr>
+
+                    <tr hidden>
+                        <th>业务链接</th>
+                        <td><input type="text" style="width:400px;" name="post[sale_url]" value="{$product.sale_url}" placeholder="业务链接" readonly /></td>
+                    </tr>
+                    <tr hidden>
+                        <th>采购链接</th>
+                        <td><input type="text" style="width:400px;" name="post[purchase_url]" value="{$product.purchase_url}" placeholder="采购链接" readonly/></td>
+                    </tr>
+                    <tr>
+                        <th>备注</th>
+                        <td><input type="text" style="width:400px;" name="post[remark]" value="{$product.remark}" placeholder="备注" /></td>
+                    </tr>
+                    <tr>
+                        <th>域名</th>
+                        <td>
+                            <input type="text" style="width:400px;" name="post[domain]"  placeholder="域名"/>
+                            <span style="color: red; padding-left: 10px;">添加域名和内部名后自动建档备案</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>二级域名</th>
+                        <td>
+                            <input type="text" style="width:400px;" name="post[extra_domain]" placeholder="二级域名"/>
+                            <span style="color: red; padding-left: 10px;">二级域名即完整的链接</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+        <notempty name="product.domain">
+            <notempty name="domain_list">
+        <div class="row-fluid ">
+            <label class="">历史域名：</label>
+            <div class="">
+                <table class="table table-hover table-bordered table-list attributesListBox">
+                    <tbody>
+                            <tr>
+                                <th>历史域名</th>
+                                <th>部门</th>
+                                <th>最近出单时间</th>
+                            </tr>
+                            <foreach name="domain_list" item="list2">
+                                    <tr>
+                                        <td>{$list2.domain}</td>
+                                        <td>{$list2.dtitle}</td>
+                                        <td>{$list2.date_purchase}</td>
+                                    </tr>
+                            </foreach>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </notempty>
+        </notempty>
+        <div class="form-actions">
+            <button class="btn btn-primary js-ajax-submit" type="submit">提交</button>
+            <a class="btn" href="#" onClick="javascript :history.back(-1);">返回</a>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+
+</script>
+</body>
+</html>

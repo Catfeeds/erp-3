@@ -1,0 +1,33 @@
+<admintpl file="header" />
+<style>
+    input[type='radio']{
+        margin-top: -1px;
+    }
+    .control-label{
+        padding-top:0px !important;
+    }
+</style>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <!--<li><a href="{:U('Loginmanage/setting_open')}">{:L('登录限制开关')}</a></li>-->
+        <li class="active"><a href="{:U('Loginmanage/system_setting')}">{:L('系统设置开关')}</a></li>
+    </ul>
+    <form class="form-horizontal" action="{:U('Loginmanage/system_setting_save')}" method="post">
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label">登录限制功能</label>
+                <div class="controls">
+                    <input type="radio" name="is_open" value="1" <php>echo $login_setting_info['is_open'] == 1 ? checked : '';</php> />启动
+                    &nbsp;&nbsp;&nbsp;
+                    <input type="radio" name="is_open" value="0" <php>echo $login_setting_info['is_open'] != 1 ? checked : '';</php> />关闭
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</button>
+        </div>
+    </form>
+</div>
+</body>

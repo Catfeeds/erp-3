@@ -1,0 +1,39 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <fieldset>
+    <table class="table table-hover table-bordered table-list" style=" margin-bottom: 100px;">
+        <thead>
+        <tr>
+           <!-- 订单号，部门，地区，下单时间，终审时间，详情；-->
+            <th>订单号</th>
+            <th>部门</th>
+            <th>地区</th>
+           <!-- <th>审单数</th>-->
+            <th>下单时间</th>
+            <th>终审时间</th><th>详情</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="item" key="director">
+            <tr>
+                <td>{$item['id_increment']}</td>
+                <td>{$department[$item['id_department']]}</td>
+                <td>{$zone[$item['id_zone']]}</td>
+              <!--  <td>{$item['check']}</td>-->
+                <td>{$item['creattime']}</td>
+                <td>{$item['checktime']}</td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+</script>
+</body>
+</html>

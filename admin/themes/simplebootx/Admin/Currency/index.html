@@ -1,0 +1,47 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('currency/index')}">货币设置</a></li>
+        <li><a href="{:U('currency/add',array('id'=>$vo['id_country']))}">添加货币</a></li>
+    </ul>
+    <table class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th width="50">ID</th>
+            <th width="150">{:L('CURRRNCY_NAME')}</th>
+            <th width="150">{:L('CURRRNCY_CODE')}</th>
+            <th width="150">{:L('CURRRNCY_SYMBOL')}</th>
+            <th width="160">{:L('CURRRNCY_VALUE')}</th>
+            <th width="160">{:L('CREATE_TIME')}</th>
+            <th width="160">{:L('UPDATE_TIME')}</th>
+            <th width="100">{:L('ACTIONS')}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="data" item="vo">
+            <tr>
+                <td>{$vo.id_currency}</td>
+                <td>{$vo.title}</td>
+                <td>{$vo.code}</td>
+                <if condition="$vo['symbol_left'] neq null">
+                    <td>{$vo.symbol_left}</td>
+                <else />
+                    <td>{$vo.symbol_right}</td>
+                </if>
+                <td>{$vo.value}</td>
+                <td>{$vo.created_at}</td>
+                <td>{$vo.updated_at}</td>
+                <td>
+                    <a href="{:U('currency/edit',array('id'=>$vo['id_currency']))}">{:L('EDIT')}</a>|
+                    <a class="js-ajax-delete" href="{:U('currency/delete',array('id'=>$vo['id_currency']))}">{:L('DELETE')}</a>
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

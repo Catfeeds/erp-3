@@ -1,0 +1,58 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <fieldset>
+        <form method="post" action="{:U('Warehouse/updateTrack')}" enctype="multipart/form-data"  class="form-horizontal">
+
+            <div class="control-group" style="line-height: 36px;">
+                <div class="control-group">
+                    <div class="controls">
+                        <p style="color:red;">更新运单号</p>
+                        <p>直接从Excel复制两列:订单号,运单号</p>
+                        物流<select class="shippingSelect" name="shipping_id">
+                        <option value="0">--选择物流--</option>
+                        <php>
+                            if($shipping){
+                            foreach($shipping as $ship){
+                            echo '<option value="'.$ship['id_shipping'].'">'.$ship['title'].'</option>';
+                            }
+                            }
+                        </php>
+                    </select><br />
+                        <textarea name="data" style="width:300px;height:300px;">{$data}</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-primary">{:L('导入')}</button>
+            </div>
+        </form>
+    </fieldset>
+    <present name="Think.post.data">
+        <div>共更新:{$total} 失败:{$infor.error|count} 成功:{$infor.success|count}</div>
+    </present>
+    <foreach name="infor.error" item="err">
+        <div style="color:red;">{$err}</div>
+    </foreach>
+    <foreach name="infor.warning" item="warning">
+        <div style="color:yellowgreen;">{$warning}</div>
+    </foreach>
+    <foreach name="infor.success" item="success">
+        <div style="color:green;">{$success}</div>
+    </foreach>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.btn-primary').click(function(){
+        var getShippingId = parseInt($('.shippingSelect').val());
+        if(getShippingId){
+            $('.form-horizontal').submit();
+        }else{
+            alert('请选择物流');
+        }
+        return false;
+    });
+</script>
+</body>
+</html>

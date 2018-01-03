@@ -1,0 +1,75 @@
+<admintpl file="header" />
+<style type="text/css">
+    .pic-list li {
+        margin-bottom: 5px;
+    }
+</style>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Index/product_list')}">产品列表</a></li>
+    </ul>
+    <form action="{:U('Index/product_edit_post')}" method="post" class="form-horizontal js-ajax-forms" enctype="multipart/form-data">
+        <div class="row-fluid">
+                <table class="table table-bordered">
+                    <tr>
+                        <th width="80">产品名称</th>
+                        <td>
+                            {$product.title}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>内部名</th>
+                        <td>
+                            {$product.inner_name}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>采购价</th>
+                        <td>
+                            {$purchase_price}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>长(cm)</th>
+                        <td>
+                            <input type="text" name="length" value="{$product.length}"/>
+                            <span class="form-required">*</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>宽(cm)</th>
+                        <td>
+                            <input type="text" name="width"  value="{$product.width}">
+                            <span class="form-required">*</span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>高(cm)</th>
+                        <td>
+                            <input type="text" name="height" value="{$product.height}">
+                            <span class="form-required">*</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>重(kg)</th>
+                        <td>
+                            <input type="text" name="weight" value="{$product.weight}">
+                        </td>
+                    </tr>
+
+                </table>
+        </div>
+        <div class="form-actions">
+            <input type="hidden" name="product_id" value="{$product.id_product}"/>
+            <button type="submit" class="btn btn-primary  js-ajax-submit">{:L('SAVE')}</button>
+            <a class="btn" href="{:U('Index/product_list')}">{:L('BACK')}</a>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,168 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <php>
+            $con = array('代收退貨完成','客樂得貨物退回中','拒收(調查處理中)','退貨完成');
+        </php>
+        <div class="control-group" style="line-height: 36px;">
+            <!--<label class="control-label">部门:</label>-->
+            <!--<select name="department_id" style="width:100px;" id="department_id">-->
+                <!--<option value="0">所有</option>-->
+                <!--<php>foreach($department as $key=>$dep){</php>-->
+                    <!--<option value="<php>echo $key;</php>" <php>echo isset($_GET['department_id']) && $_GET['department_id']==$key ? 'selected' : ''</php>>{$dep}</option>-->
+                <!--<php>}</php>-->
+            <!--</select>-->
+            <label class="control-label">起始时间:</label>
+            <input type="text" name="start_time" class="js-datetime" value="{$_GET['start_time']}" style="width: 120px;" autocomplete="off">-
+            <input autocomplete="off" type="text" class="js-datetime" name="end_time" value="{$_GET['end_time']}" style="width: 120px;">
+
+            <button class="btn btn-primary searchButton">搜索</button>
+            <!--<button class="btn btn-primary exportSearchButton">导出结果</button>-->
+            <br>
+             <foreach name="currency" item="currency_symbol">
+            <label class="control-label"><php> echo  $currency_symbol;</php>汇率:</label>
+            <input type="text" name="<php> echo $key;</php>" style="width: 200px;" value="<php>echo $_GET[$key]</php> "placeholder="台币汇率">
+             </foreach>
+         
+            <label class="control-label">营业额转化率:</label>
+            <input type="text" name="sales_revenue" style="width: 200px;" value="<php>echo $_GET['sales_revenue']</php>" placeholder="营业额转化率">
+            <button class="btn btn-primary calculationButton">计算合计金额</button>
+        </div>
+    </form>
+    <fieldset>
+        <table id="myTable" class="table table-hover table-bordered table-list">
+            <thead>
+            <tr  data-align="center">
+                <th rowspan="2">部门</th>
+                <th rowspan="2">币种</th>
+                <th colspan="2">有效单</th>
+                <th rowspan="2">营业额</th>
+                <th colspan="2">已结款</th>
+                <th colspan="2">未结款</th>
+                <th rowspan="2">营业成本</th>
+                <th rowspan="2">运费</th>
+                <th rowspan="2">广告费</th>
+                <th rowspan="2">预估利润</th>
+                <th rowspan="2">其他费用</th>
+            </tr>
+            <tr>
+                <th>单数</th>
+                <th>总金额</th>
+                <th>单数</th>
+                <th>总金额</th>
+                <th>单数</th>
+                <th>总金额</th>
+            </tr>
+            </thead>
+            <tbody>
+            <php>
+
+                foreach($lists as $key=>$value){
+                $num= count($value);
+                $revenue_all = 0;
+            </php>
+
+                  <php>$i=0;foreach($value as $k=>$v){ </php>
+                    <tr>
+                        <if condition="$i eq 0 ">
+                            <td rowspan="<php>echo $num+1;</php>"><php>echo $department[$key];</php></td>
+                        </if>
+                        <td><php>echo $currency[$k];</php></td>
+                        <td><php>echo $v['effect']['effective'];</php></td>
+                        <td><php> if(!empty($v['effect']['price_total']))echo \Common\Lib\Currency::format($v['effect']['price_total'],$k);</php></td>
+                        <td>
+                            <php>
+                                if(isset($_GET['sales_revenue'])){
+                                    $revenue = $v['effect']['price_total']*$_GET['sales_revenue'];
+                                    }
+                               if(!empty($revenue)) echo \Common\Lib\Currency::format($revenue,$k);
+                            </php>
+                        </td>
+                        <td><php>echo $v['finish']['finish'];</php></td>
+                        <td><php>if(!empty($v['finish']['price_total'])) echo \Common\Lib\Currency::format($v['finish']['price_total'],$k);</php></td>
+                        <td><php>echo $v['unfinish']['unfinish'];</php></td>
+                        <td><php>if(!empty($v['unfinish']['price_total'])) echo \Common\Lib\Currency::format($v['unfinish']['price_total'],$k);</php></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+
+                   <php>$i++;}</php>
+            <tr>
+
+                <td>合计</td>
+                <td><php>echo $data[$key]['effect'];</php></td>
+                <td><php>if(!empty($data[$key]['effect_total'])) echo\Common\Lib\Currency::format($data[$key]['effect_total'],'RMB');</php></td>
+                <!--营业额-->
+                <td><php>if(!empty($data[$key]['effect_total'])&&$_GET['sales_revenue']) echo\Common\Lib\Currency::format($data[$key]['effect_total']*$_GET['sales_revenue'],'RMB');</php></td>
+                <!--已结款-->
+                <td><php>echo $data[$key]['finish'];</php></td>
+                <td><php>if(!empty($data[$key]['finish_total'])) echo \Common\Lib\Currency::format($data[$key]['finish_total'],'RMB');</php></td>
+                <!--未结款-->
+                <td><php>echo $data[$key]['unfinish'];</php></td>
+                <td><php>if(!empty($data[$key]['unfinish_total'])) echo \Common\Lib\Currency::format($data[$key]['unfinish_total'],'RMB');</php></td>
+                <!--不写-->
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <!--<td></td>-->
+            </tr>
+            <php>}</php>
+            </tbody>
+        </table>
+
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    //console.debug(jQuery('.js-ajax-form'));
+    $('.submitDisplayRow').click(function(){
+        var getRow = $(this).parent().find('input[name=displayRow]').val();
+        if(getRow){
+            $.post("/Settlement/Ordercheck/setpagerow",{'row':getRow},function(data){
+                window.location.reload();
+            });
+        }
+    });
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','estimate_profit');
+        $('.form-search').attr('action',"/Settlement/Statistics/estimate_profit");
+    });
+    $('.exportSearchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','export_statistics');
+        $('.form-search').attr('action',"/Settlement/Index/export_statistics");
+    });
+    $('.exportSearchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','export_statistics');
+        $('.form-search').attr('action',"/Settlement/Index/export_statistics");
+    });
+    $(function(){
+        /*$(".add").each(function(){
+            insRow();
+          });*/
+          //insRow(5);
+
+    });
+    function insertAfter(newElement, targetElement){  
+        var parent = targetElement.parentNode;  
+        if (parent.lastChild == targetElement) {  
+            // 如果最后的节点是目标元素，则直接添加。因为默认是最后  
+            parent.appendChild(newElement);  
+        } else {  
+            parent.insertBefore(newElement, targetElement.nextSibling);  
+            //如果不是，则插入在目标元素的下一个兄弟节点 的前面。也就是目标元素的后面  
+        }
+    }
+
+</script>
+</body>
+</html>

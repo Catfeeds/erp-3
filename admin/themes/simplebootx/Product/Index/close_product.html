@@ -1,0 +1,45 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <fieldset>
+        <form method="post" action="{:U('index/close_product')}" class="form-horizontal" id="formdata">
+
+            <div class="control-group" style="line-height: 36px;">
+                <div class="control-group">
+                    <div class="controls">
+                        <p style="color:red;">导入产品id</p>
+                        <p>直接从Excel复制:产品ID</p>
+                        <textarea name="data" style="width:300px;height:300px;">{$data}</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <span type="submit" class="btn btn-primary  exportbtn">{:L('导入')}</span>
+            </div>
+        </form>
+    </fieldset>
+    <present name="Think.post.data">
+        <div>共添加数据:{$total} 错误数据:{$infor.error|count} </div>
+    </present>
+    <foreach name="infor.error" item="err">
+        <div style="color:red;">{$err}</div>
+    </foreach>
+    <foreach name="infor.warning" item="warning">
+        <div style="color:yellowgreen;">{$warning}</div>
+    </foreach>
+    <foreach name="infor.success" item="success">
+        <div style="color:green;">{$success}</div>
+    </foreach>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+    $('.exportbtn').on('click',function(){
+        if(confirm('确定关闭产品！')){
+            $('#formdata').trigger('submit');
+        }
+    })
+
+</script>
+</body>
+</html>

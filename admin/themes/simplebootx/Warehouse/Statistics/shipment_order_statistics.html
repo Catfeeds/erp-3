@@ -1,0 +1,178 @@
+<admintpl file="header" />
+</head>
+<body style="overflow: hidden;">
+
+<style>
+.fixedlayer {
+    position: fixed;
+    top: 0px;
+    left: 20px;
+    right: 20px;
+    padding-top: 20px;
+    background-color: #fff;
+    z-index: 10;
+}
+.buttonLayer {margin-bottom: 10px;  background-color: #fff;}
+
+.customerlayer {height: 100%; padding-top: 200px; }
+.fixedlayer .pagination { margin-top: 10px; margin-bottom: 0px; }
+.searchLayer {border: solid 1px #ddd; margin-bottom: 10px; }
+#id_warehouse{height: 30px;}
+.searchLayer input,.searchLayer select{height: 30px;}
+.searchLayer table {width: 100%; background-color: #fff; border-spacing: 1px !important; border-collapse: separate; font-family: "宋体"; table-layout: fixed; }
+.searchLayer table td {padding: 5px; margin: 1px; width: auto; }
+.searchLayer table td.th {background: #f1f1f1; width: 80px; }
+.searchLayer input[type="text"] {margin-bottom: 0px; border: none; box-shadow: none; border-bottom: solid 1px #ddd; border-radius: 0px; outline: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+.searchLayer select {margin-bottom: 0px; border-radius: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; outline: 0px;  line-height: 20px;}
+
+.tableLayer {width: 100%; overflow: scroll; height: 480px; }
+.tableLayer table{width: 100%}
+.tableLayer table th {border: solid 1px #ddd; padding: 10px; font-weight: bold; background: #f1f1f1; }
+.tableLayer table td {border: solid 1px #ddd; padding: 10px;word-wrap:break-word;word-break:break-all;white-space: normal;text-align: center;}
+.ctab-panel {width: 100%; position: relative; margin-bottom: 10px; }
+.ctab-head {height: 40px; }
+.ctab-head > a {display: inline-block; color: #333; padding: 0px 10px; line-height: 40px; }
+.ctab-head > a.active {border: solid 1px #ddd; border-bottom: none; background-color: #fff; border-top: solid 2px #3daae9; }
+.ctab-body {border: solid 1px #ddd; padding: 10px; }
+.btn a{color: white;text-decoration: none;}
+</style>
+<form method="get" action=""  id="form-search">
+<div class="fixedlayer">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#">查询条件</a></li>
+    </ul>
+    <div class="searchLayer">        
+        <input type="hidden" name="page" value="">
+        <table cellspacing="1">
+            <tr>
+                <td class="th"  >订单号:</td>
+                <td ><input type="text"  name="id_increment" value="{$getData['id_increment']?$getData['id_increment']:''}"></td>
+                <td class="th"  >下单时间:</td>
+                <td><input class="js-date date" name="created_at_s" value="{$getData['created_at_s']}" style="width: 90px;" autocomplete="off" type="text">
+                -
+                <input class="js-date date" name="created_at_e" value="{$getData['created_at_e']}" style="width: 90px;" type="text" autocomplete="off">          </td>
+                <td class="th"  >发货时间:</td>
+                <td><input class="js-date date" name="date_delivery_s" value="{$getData['date_delivery_s']}" style="width: 90px;" autocomplete="off" type="text">
+                -
+                <input class="js-date date" name="date_delivery_e" value="{$getData['date_delivery_e']}" style="width: 90px;" type="text" autocomplete="off">          </td>                    
+                <td class="th"  >签收时间:</td>
+                <td><input class="js-date date" name="date_signed_s" value="{$getData['date_signed_s']}" style="width: 90px;" autocomplete="off" type="text">
+                -
+                <input class="js-date date" name="date_signed_e" value="{$getData['date_signed_e']}" style="width: 90px;" type="text" autocomplete="off">          </td>           
+               <td class="th" >业务部门：</td>
+                <td   >
+                    <select name="id_department" id="id_department">
+                    <option value="">--选择--</option>
+                    <foreach name="departmentList" item="department" key="id" >      
+                    <option value="{$id}" {$id==$getData['id_department']?'selected':''}>{$department}</option>      
+                    </foreach>            
+                    </select>
+                </td>                                          
+      
+                                               
+            </tr>
+  
+        </table>
+        
+    </div> 
+    <div class="buttonLayer">
+        <button class="btn btn-primary searchButton" >查询</button>
+        <span class="btn btn-primary exportButton" >导出</span>
+    </div>     
+    <div class="pagination">{$page}<input type="text" value="" name="displayRow" placeholder="输入每页显示{$getData['displayRow']}数">
+        <input type="button" class="btn btn-small searchButton submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">
+    </div>                     
+</div>
+</form>
+
+<div class="wrap">
+
+    <div class="customerlayer">
+        <div class="ctab-panel">
+
+            <div class="ctab-body">
+                <div class="tableLayer">
+                    <table>
+                        <thead>
+                            <tr>
+                                <!-- <th><input type="checkbox" class="allChecked" > </th> -->
+                                <th>订单号</th>
+                                <th>下单时间</th>
+                                <th>到货时间</th>
+                                <th>库存数量</th>
+                                <th>发货时间</th>
+                                <th>未到货时间</th>
+                                <th>签收时间</th>
+                                <th>发货天数</th>
+                                <th>签收天数</th>
+                                <!-- <th>操作</th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <foreach name="orderList" item="item" key='key'>
+                                <tr>
+                                    <!-- <td><input type="checkbox" class="{$inventory['status']==2?'nocheked':''} checkItem"  value="{$inventory.id}"  {$inventory['status']==2?"disabled":''}> </td> -->
+                                    <td> <a target="blank" href="/payment/Index/info/id/{$item.id_order}">{$item.id_increment}</a></td>
+                                    <td> {$item.created_at}</td>
+                                    <td> {$item.arrival_time}</td>
+                                    <td><foreach name="item.skuarr" item="poduct">
+                                       <a target="_blank" href="{:U('Product/stock/check_view')}?id_warehouse={$item['id_warehouse']}&department_id={$item['id_department']}&sku_title={$poduct.sku}">{$poduct.sku}</a>      * {$poduct.quantity}<br/>
+                                    </foreach> </td>
+                                    <td> {$item.date_delivery}</td>
+                                    <td> {$item.no_delivery_days}</td>
+                                    <td> {$item.date_signed}</td>
+                                    <td> {$item.delivery_days}</td>
+                                    <td> {$item.signed_days}</td>
+
+                                </tr>
+                            </foreach>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    
+    </div>
+
+</div>
+
+
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/artDialog/artDialog.js"></script>
+<script src="__PUBLIC__/js/jquery.stickytableheaders.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        // var top=$('.fixedlayer').height();
+        // var height_screen=document.body.clientHeight ;
+        // $('.tableLayer').height(height_screen-top-70);
+        // $('.customerlayer').css('padding-top',top+30);
+        $(".tableLayer table").stickyTableHeaders({scrollableArea: $('.tableLayer')});
+    });
+
+    $('.searchButton').on('click',function(){
+        $('#form-search').attr('action',"{:U('Warehouse/Statistics/shipment_order_statistics')}");        
+        $('#form-search').trigger('submit');
+        
+    });
+  
+
+
+
+
+
+
+    $('.exportButton').on('click',function(){
+        $('#form-search').attr('action',"{:U('Warehouse/Statistics/shipment_order_export')}");
+        $('#form-search').trigger('submit');        
+    });
+ 
+
+
+
+
+</script>
+</body>
+</html>

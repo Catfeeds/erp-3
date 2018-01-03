@@ -1,0 +1,432 @@
+<admintpl file="header" />
+<style type="text/css">
+    .pic-list li {
+        margin-bottom: 5px;
+    }
+</style>
+<script type="text/html" id="photos-item-wrapper">
+    <li id="savedimage{id}">
+        <input id="photo-{id}" type="hidden" name="photos_url[]" value="{filepath}">
+        <input id="photo-{id}-name" type="text" name="photos_alt[]" value="{name}" style="width: 160px;" title="图片名称">
+        <img id="photo-{id}-preview" src="{url}" style="height:36px;width: 36px;" onclick="parent.image_preview_dialog(this.src);">
+        <a href="javascript:upload_one_image('图片上传','#photo-{id}');">替换</a>
+        <a href="javascript:$('#savedimage{id}').remove();">移除</a>
+    </li>
+</script>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('Purchase/Index/product_list')}">采购产品列表</a></li>
+        <li class="active"><a href="{:U('Purchase/Product/edit')}">添加产品</a></li>
+    </ul>
+    <form action="{:U('Purchase/Product/save_post')}" method="post" class="form-horizontal js-ajax-forms" enctype="multipart/form-data">
+        <div class="row-fluid">
+            <div class="">
+                <table class="table table-bordered">
+                    <tr>
+                        <th width="90">部门</th>
+                        <td>
+                            <select name="post[id_department]" required <php>echo $product['id_department']?' disabled="disabled"':'';</php>>
+                                <php> foreach($department_id as $dep_id){
+                                        $selected = $dep_id==$product['id_department']?' selected="selected"':'';
+                                    echo '<option value="'.$dep_id.'"'.$selected.'>'.$department[$dep_id].'</option>';
+                                    }
+                                </php>
+                            </select>请选择业务的部门,<span style="color: red; padding-left: 10px;">产品建立后不可以修改部门</span>，因为生产了SKU
+                        </td>
+                    </tr>
+                    <tr>
+                        <th width="80">产品分类</th>
+                        <td>
+
+                            <select name="post[id_category]">
+                                <option value="0">分类</option>
+                                {$select_category}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th width="80">产品分类属性</th>
+                        <td>
+
+                            <select name="post[id_classify]">
+                                <option value="0">请选择</option>
+                                <foreach name="classify" item="item">
+                                    <option value="{$item.id_classify}" <php>echo $item['id_classify']==$product['id_classify'] ? 'selected' : ''</php>>{$item.name}</option>
+                                </foreach>
+                            </select> 如果<span style="color: red; padding-left: 10px;">主产品</span>属于某类，附件产品也属于同一类。
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>产品名称</th>
+                        <td>
+                            <php>if($product['id_product']){</php>
+                            <input type="hidden" name="post[id]" value="{$product.id_product}">
+                            <php>}</php>
+                            <input type="text" style="width: 400px;" name="post[title]" required value="{$product.title}" placeholder="请输入标题"/>
+                            <span class="form-required">*</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>内部名称</th>
+                        <td><input type="text" style="width:400px;" <php>echo $product['id_department']?' disabled="disabled"':'';</php> name="post[inner_name]" required value="{$product.inner_name}" placeholder="内部名称"/><span class="form-required" style="color:red">* &nbsp;请至少输入一个中文字符</span></td>
+                    </tr>
+                    <tr>
+                        <th>SKU</th>
+                        <td>
+                            <input type="text" disabled="disabled" name="post[model]" style="width: 400px" value="{$product['model']}" placeholder="SKU 将自动生成">
+                            <input type="button" value="生成SKU" class="btn createdSkuCode" style="display: none;">
+                        </td>
+                    </tr>
+
+<!--                    <tr>
+                        <th>采购价</th>
+                        <td>
+                            <input type="text" name="post[purchase_price]" required value="{$product['purchase_price']}" style="width: 400px" placeholder="请输入价格"><span class="form-required">*</span>
+                        </td>
+                    </tr>-->
+                    <tr>
+                        <th>零售价</th>
+                        <td>
+                            <input type="text" name="post[sale_price]" value="{$product['sale_price']}" style="width: 400px" placeholder="请输入特价">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>产品内容</th>
+                        <td>
+                            <script type="text/plain" id="content" name="post[desc]">{$product.desc}</script>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>相册图集</th>
+                        <td>
+                            <ul id="photos" class="pic-list unstyled">
+                                <notempty name="smeta['photo']">
+                                    <foreach name="smeta['photo']" item="vo">
+                                        <php>$img_url=sp_get_image_preview_url($vo['url']);</php>
+                                        <li id="savedimage{$key}">
+                                            <input id="photo-{$key}" type="hidden" name="photos_url[]" value="{$img_url}">
+                                            <input id="photo-{$key}-name" type="text" name="photos_alt[]" value="{$vo.alt}" style="width: 200px;" title="图片名称">
+                                            <img id="photo-{$key}-preview" src="{:sp_get_image_preview_url($vo['url'])}" style="height:36px;width: 36px;" onclick="parent.image_preview_dialog(this.src);">
+                                            <a href="javascript:upload_one_image('图片上传','#photo-{$key}');">替换</a>
+                                            <a href="javascript:$('#savedimage{$key}').remove();">移除</a>
+                                        </li>
+                                    </foreach>
+                                </notempty>
+                            </ul>
+                            <a href="javascript:upload_multi_image('图片上传','#photos','photos-item-wrapper');" class="btn btn-small">选择图片</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="" style="background: #fafafa none repeat scroll 0 0;">
+                <table class="table table-bordered">
+                    <tr>
+                        <td class="attributesHtml">
+                            <php>
+                                if($product_attr && is_array($product_attr)){
+                                    $i = 1;
+                                    $html = '';
+                                    foreach($product_attr as $item){
+                                        $row_html = '';$index = 0;
+                                        if($item['option_values']){
+                                            foreach($item['option_values'] as $value){
+                                                $image_html = $value['image']?'<img src="'.$value['image'].'" width="50" height="50" /> ':'';
+                                                $row_html .= '<tr>'.
+                                                            '<td>'.$value['id_product_option_value'].'</td>'.
+                                                            '<td><input type="hidden" name="attr_value['.$i.'][id_product_option_value]['.$index.']" value="'.$value['id_product_option_value'].'" placeholder="属性标题">'.
+                                                            '<input type="text" name="attr_value['.$i.'][title]['.$index.']" value="'.$value['title'].'" placeholder="属性标题"></td>'.
+                                                            '<td><input type="text" name="attr_value['.$i.'][code]['.$index.']" class="markCode" value="'.$value['code'].'" placeholder="英文标识如:red1"></td>'.
+                                                            '<td><input type="text" name="attr_value['.$i.'][sort]['.$index.']" value=""></td>'.
+                                                            '<td><input type="file" name="attr_value['.$i.'][file_extension]['.$index.']" value="'.$value['sort'].'">'.$image_html.'</td>'.
+                                                            '<td><input type="button" class="btn deleteRow" attr_value_id="'.$value['id_product_option_value'].'" value="删除"></td>'.
+                                                            '</tr>';
+                                                $index++;
+                                            }
+                                        }
+                                        $html .= '<table class="table table-hover table-bordered table-list attributesListBox'.$i.'">
+                                            <tr style="background:#f5f5f5;font-size:16px;font-weight:bold;"><td>ID</td><td>属性分类名称<input class="btn deleteOptionCategory" product_id="'.$product['id_product'].'" option_category="'.$item['id_product_option'].'" value="删除" type="button"></td><td>排序</td><td>是否必须</td><td>类型</td></tr>
+                                            <tr><td>'.$item['id_product_option'].'</td>
+                                                <td>
+                                                <input name="attr['.$i.'][id_product_option]" value="'.$item['id_product_option'].'" type="hidden">
+                                                <input name="attr['.$i.'][title]" value="'.$item['title'].'" type="text">
+                                                </td>
+                                            <td><input name="attr['.$i.'][sort]" value="'.$item['sort'].'" type="text"></td>'.
+                                            '<td><select name="attr['.$i.'][is_require]"><option value="0">否</option><option value="1">是</option></select></td>'.
+                                            '<td><select title="" class="attributesType" name="type">
+                                                    <option value="">-- Please select --</option>
+                                                    <optgroup label="Select"><option value="drop_down">Drop-down</option><option value="radio">Radio Buttons</option>
+                                                        <option value="checkbox">Checkbox</option>
+                                                    </optgroup>
+                                                    <optgroup label="Text"><option value="field">Field</option><option value="area">Area</option></optgroup>
+                                                    <!--<optgroup label="File"><option value="file">File</option></optgroup>-->
+                                                </select></td>'.
+                                            '</tr><tr>'.
+                                            '<td colspan="4"><div class="">'.
+                                                '<table class="table table-hover table-bordered table-list attributesListBox">'.
+                                                    '<thead><tr class="headings"><th>属性ID</th><th>属性值标题</th><th>标识</th><th>排序</th><th>图片</th><th></th></tr></thead>'.
+                                                    '<tbody class="tbody">'.$row_html.'</tbody>'.
+                                                    '<tfoot><tr><td colspan="100">'.
+                                                        '<button  type="button" class="btn addAttributesValue btn-primary" val_category="'.$item['id_product_option'].'" index="'.$index.'" number="'.$i.'">+属性值</button>'.
+                                                        '</td></tr></tfoot></table>'.
+                                                '</div>'.
+                                                '</td></tr></table><br /><br />';
+                                        $i++;
+                                    }
+                                echo $html;
+                                }
+                            </php>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><button class="btn btn-primary addAttributesButton" number="<php>echo count($product_attr);</php>" index="0" type="button">添加属性</button></th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-primary js-ajax-submit" type="submit">提交</button>
+            <a class="btn" href="{:U('/Purchase/Index/product_list')}">返回</a>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    //编辑器路径定义
+    var editorURL = GV.WEB_ROOT;
+</script>
+<script type="text/javascript" src="__PUBLIC__/js/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/ueditor/ueditor.all.min.js"></script>
+<script type="text/javascript">
+    function deleteOptionCategory(){
+        $('.deleteOptionCategory').click(function(){
+            var product_id = $(this).attr('product_id');
+            var curObj  = $(this);
+            if(product_id){
+                var option_id = $(this).attr('option_category');
+                if(confirm('确定删除？删除不可恢复，只系统会有记录。')){
+                    $.post("{:U('Purchase/Product/remove')}",{'product_id':product_id,'action':'option_category','option_id':option_id},function(data){
+                        curObj.parent().parent().parent().remove();
+                    });
+                }
+            }else{
+                curObj.parent().parent().parent().remove();
+            }
+        });
+    }
+    function deleteAttrRow(){
+        $('.deleteRow').click(function(){
+            var get_value_id = parseInt($(this).attr('attr_value_id'));
+            var curObj = $(this).parent().parent();
+            if(get_value_id){
+                if(confirm('确定删除？')){
+                    $.post("{:U('Purchase/Product/remove')}",{'id':get_value_id,'action':'option_value'},function(data){
+                        curObj.remove();
+                    });
+                }
+            }else{
+                curObj.remove();
+            }
+        });
+    }
+    function addAttrRow(){
+        $('.addAttributesValue').click(function(){
+            var getIndex = parseInt($(this).attr('index'))+1;
+            var getAttrIndex = parseInt($(this).attr('number'));
+            var getValueIndex = parseInt($(this).attr('index'))+1;
+            var temIndexValue = getIndex;console.log(temIndexValue);
+            $(this).attr('index',getIndex);
+            //$(this).attr('number',getAttrIndex+1);
+            var val_category_td = $(this).attr('val_category')?'<td></td>':'';
+            var addHtml = '<tr class="attrValue'+temIndexValue+'">'+val_category_td+'<td>' +
+                    '<input type="text" name="attr_value['+getAttrIndex+'][title]['+getValueIndex+']" value="" required placeholder="属性值标题"></td>' +
+                    '<td><input type="text" name="attr_value['+getAttrIndex+'][code]['+getValueIndex+']" class="markCode" value="" placeholder="英文标识如:red1"></td>'+
+                    '<td><input type="text" name="attr_value['+getAttrIndex+'][sort]['+getValueIndex+']" value=""></td>' +
+                    '<td><input type="file" name="attr_value['+getAttrIndex+'][file_extension]['+getValueIndex+']" value=""></td>' +
+                    '<td><input type="button" class="btn deleteRow" value="删除"></td>' +
+                    '</tr>';
+            $('.attributesListBox'+getAttrIndex+' .attributesListBox .tbody').append(addHtml);
+            deleteAttrRow();deleteOptionCategory();
+        });
+    }
+    addAttrRow();deleteAttrRow();deleteOptionCategory();
+    $('.addAttributesButton').click(function(){
+        var getIndex = parseInt($(this).attr('number'))+1;
+        var defaultValueIndex = parseInt($(this).attr('index'));
+        $(this).attr('number',getIndex)
+        var boxHtml = '<table class="table table-hover table-bordered table-list attributesListBox'+getIndex+'">'+
+                '<tr style="background:#f5f5f5;font-size:16px;font-weight:bold;"><td></td><td>属性分类名称<input class="btn deleteOptionCategory" value="删除" type="button"></td><td>排序</td><td>是否必须</td><td>类型</td></tr>'+
+                '<tr><td></td><td><input name="attr['+getIndex+'][title]" value="" type="text" required placeholder="属性分类名称"></td>' +
+                '<td><input name="attr['+getIndex+'][sort]" value="" type="text"></td>'+
+                '<td><select name="attr['+getIndex+'][is_require]"><option value="0">否</option><option value="1">是</option></select></td>'+
+                '<td><select title="" class="attributesType" name="type">option value="">-- Please select --</option><optgroup label="Select"><option value="drop_down">Drop-down</option><option value="radio">Radio Buttons</option><option value="checkbox">Checkbox</option></optgroup><optgroup label="Text"><option value="field">Field</option><option value="area">Area</option></optgroup></select></td>'+
+        '</tr><tr>'+
+        '<td colspan="4"><div class="">'+
+                '<table class="table table-hover table-bordered table-list attributesListBox">'+
+                '<thead><tr class="headings"><th>属性值标题</th><th>标识</th><th>排序</th><th>图片</th><th></th></tr></thead>'+
+        '<tbody class="tbody"><tr>'+
+                '<td><input type="text" name="attr_value['+getIndex+'][title][0]" value="" required placeholder="属性值标题"></td>'+
+                '<td><input type="text" name="attr_value['+getIndex+'][code][0]" class="markCode" value="" required placeholder="英文标识如:red1"></td>'+
+                '<td><input type="text" name="attr_value['+getIndex+'][sort][0]" value=""></td>'+
+                '<td><input type="file" name="attr_value['+getIndex+'][file_extension][0]" value=""></td>'+
+                '<td><input type="button" class="btn deleteRow" value="删除"></td>'+
+        '</tr></tbody>'+
+                '<tfoot><tr><td colspan="100">'+
+                '<button  type="button" class="btn addAttributesValue btn-primary" index="'+defaultValueIndex+'" number="'+getIndex+'">+属性值</button>'+
+        '</td></tr></tfoot></table>'+
+        '</div>'+
+        '</td></tr></table><br /><br />';
+        $('.attributesHtml').append(boxHtml);
+        addAttrRow();
+        deleteAttrRow();deleteOptionCategory();
+    });
+
+    $(function() {
+        $(".js-ajax-close-btn").on('click', function(e) {
+            e.preventDefault();
+            Wind.use("artDialog", function() {
+                art.dialog({
+                    id : "question",
+                    icon : "question",
+                    fixed : true,
+                    lock : true,
+                    background : "#CCCCCC",
+                    opacity : 0,
+                    content : "您确定需要关闭当前页面嘛？",
+                    ok : function() {
+                        setCookie("refersh_time", 1);
+                        window.close();
+                        return true;
+                    }
+                });
+            });
+        });
+        /////---------------------
+        Wind.use('validate','ajaxForm','artDialog',function() {
+            //编辑器
+            editorcontent = new baidu.editor.ui.Editor();
+            editorcontent.render('content');
+            try {
+                editorcontent.sync();
+            } catch (err) {}
+            //增加编辑器验证规则
+            jQuery.validator.addMethod('editorcontent',function() {
+                try {
+                    editorcontent.sync();
+                } catch (err) {}
+                return editorcontent.hasContents();
+            });
+
+            var form = $('form.js-ajax-forms');
+            //ie处理placeholder提交问题
+            if ($.browser && $.browser.msie) {
+                form.find('[placeholder]').each(function() {
+                    var input = $(this);
+                    if (input.val() == input.attr('placeholder')) {
+                        input.val('');
+                    }
+                });
+            }
+            var formloading = false;
+            //表单验证开始
+            form.validate({
+                //是否在获取焦点时验证
+                onfocusout : false,
+                //是否在敲击键盘时验证
+                onkeyup : false,
+                //当鼠标掉级时验证
+                onclick : false,
+                //验证错误
+                showErrors : function(errorMap,errorArr) {
+                    //errorMap {'name':'错误信息'}
+                    //errorArr [{'message':'错误信息',element:({})}]
+                    try {
+                        $(errorArr[0].element).focus();
+                        art.dialog({
+                            id : 'error',
+                            icon : 'error',
+                            lock : true,
+                            fixed : true,
+                            background : "#CCCCCC",
+                            opacity : 0,
+                            content : errorArr[0].message,
+                            cancelVal : '确定',
+                            cancel : function() {
+                                $(errorArr[0].element).focus();
+                            }
+                        });
+                    } catch (err) {}
+                },
+                //验证规则
+                rules : {
+                    'post[title]' : {required : 1},
+                    'post[inner_name]' : {required : 1},
+                    'post[post_content]' : {editorcontent : true}
+                },
+                //验证未通过提示消息
+                messages : {
+                    'post[title]' : {required : '请输入标题'},
+                    'post[inner_name]' : {required : '请输入内部名'},
+                    'post[post_content]' : {editorcontent : '内容不能为空'}
+                },
+                //给未通过验证的元素加效果,闪烁等
+                highlight : false,
+                //是否在获取焦点时验证
+                onfocusout : false,
+                //验证通过，提交表单
+                submitHandler : function(forms) {
+                    if (formloading)
+                        return;
+                    $(forms).ajaxSubmit({
+                        url : form.attr('action'), //按钮上是否自定义提交地址(多按钮情况)
+                        dataType : 'json',
+                        beforeSubmit : function(arr,$form,options) {
+                            formloading = true;
+                        },
+                        success : function(data,statusText,xhr,$form) {
+                            formloading = false;
+                            if (data.status) {
+                                setCookie("refersh_time",1);
+                                //添加成功
+                                Wind.use("artDialog",function() {
+                                    art.dialog({
+                                        id : "succeed",
+                                        icon : "succeed",
+                                        fixed : true,
+                                        lock : true,
+                                        background : "#CCCCCC",
+                                        opacity : 0,
+                                        content : data.info,
+                                        button : [
+                                            {
+                                                name : '继续添加？',
+                                                callback : function() {
+                                                    reloadPage(window);
+                                                    return true;
+                                                },
+                                                focus : true
+                                            },
+                                            {
+                                                name : '返回列表',
+                                                callback : function() {
+                                                    location.href = "{:U('Purchase/Index/product_list')}";
+                                                    return true;
+                                                }
+                                            }
+                                        ]
+                                    });
+                                });
+                            } else {
+                                artdialog_alert(data.info);//alert(data.info);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+        ////-------------------------
+    });
+</script>
+</body>
+</html>

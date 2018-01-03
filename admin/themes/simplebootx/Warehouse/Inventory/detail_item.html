@@ -1,0 +1,426 @@
+<admintpl file="header" />
+</head>
+<body>
+
+<style>
+.fixedlayer {
+    position: fixed;
+    top: 0px;
+    height: 260px;
+    left: 20px;
+    right: 20px;
+    padding-top: 20px;
+    background-color: #fff;
+    z-index: 10;
+}
+.buttonLayer {margin-bottom: 10px;  background-color: #fff;}
+
+.customerlayer {height: 100%; padding-top: 260px; }
+.searchLayer .pagination { margin-top: 10px; margin-bottom: 0px; }
+.searchLayer {border: solid 1px #ddd; margin-bottom: 10px; }
+#id_warehouse{height: 30px;}
+.searchLayer input,.searchLayer select{height: 30px;}
+.searchLayer table {width: 100%; background-color: #fff; border-spacing: 1px !important; border-collapse: separate; font-family: "宋体"; table-layout: fixed; }
+.searchLayer table td {padding: 5px; margin: 1px; width: auto; }
+.searchLayer table td.th {background: #f1f1f1; width: 80px; }
+.searchLayer input[type="text"] {margin-bottom: 0px; border: none; box-shadow: none; border-bottom: solid 1px #ddd; border-radius: 0px; outline: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+.searchLayer select {margin-bottom: 0px; border-radius: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; outline: 0px;  line-height: 20px;}
+
+.tableLayer {width: 100%; overflow: scroll; height: 480px; }
+.tableLayer table{width: 100%}
+.tableLayer table th {border: solid 1px #ddd; padding: 10px; font-weight: bold; background: #f1f1f1; }
+.tableLayer table td {border: solid 1px #ddd; padding: 10px; }
+.ctab-panel {width: 100%; position: relative; margin-bottom: 10px; }
+.ctab-head {height: 40px; }
+.ctab-head > a {display: inline-block; color: #333; padding: 0px 10px; line-height: 40px; }
+.ctab-head > a.active {border: solid 1px #ddd; border-bottom: none; background-color: #fff; border-top: solid 2px #3daae9; }
+.ctab-body {border: solid 1px #ddd; padding: 10px; }
+.btn a{color: white;text-decoration: none;}
+.updateallow{width: 120px;}
+.hidden{display: none;}
+.isimport{background-color: #33485d;}
+</style>
+
+<div class="fixedlayer">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Inventory/add_inventory')}">盘点单</a></li>
+        <li class="ivlist"><a href="{:U('Inventory/index')}">盘点单列表</a></li>
+    </ul>
+    <div class="buttonLayer">
+        <button class="btn btn-primary submitButton {$ivInfo['status']==2?'hidden':''}" >保存</button>
+        <input type='button' class="btn btn-primary deleteButton  {$ivInfo['status']==2?'hidden':''}"" value="作废">    
+        <input type='button' class="btn btn-primary updateStatus  {$ivInfo['status']==2?'hidden':''}"" value="提交">         
+    </div>
+    <div class="searchLayer">
+        
+        <input type="hidden" name="page" value="">
+        <table cellspacing="1">
+            <tr>
+                <td class="th">单据编号：</td>
+                <td>
+                    <input type="text" name="docno" class="" disabled="disabled" value="{$ivInfo['docno']}" >                    
+                </td>
+                <td class="th">单据日期：<span class="form-required" style="color:red">*</span></td>
+                <td><input type="text" name="bill_date" disabled="disabled" class="js-date" value="{$ivInfo['bill_date']}" autocomplete="off"></td>                
+                <td class="th">仓库：<span class="form-required" style="color:red">*</span></td>
+                <td>
+                    <input type="text" name="id_warehouse" class="" disabled="disabled" value="{$warehouseList[$ivInfo['id_warehouse']]}" > 
+             
+                </td>
+                <td class="th">单据类型：</td>
+                <td>
+                    <input type="text" name="inventory_type" class="" disabled="disabled" value="{$ivInfo['inventory_type']==1?'抽盘':'全盘'}" >
+                </td>
+            </tr>
+            <tr>
+            
+                <td class="th">描述：</td>
+                <td colspan="7">
+                <input type="text" name="remark" class="" value="{$ivInfo['description']}"  placeholder="备注"> 
+                </td>
+            </tr>
+  
+        </table>
+       
+        
+    </div>  
+        <form method="get" action="{:U('Warehouse/Inventory/detail_item')}"  id="form-search">
+            <input type="hidden" name="ivid" value="{$ivId}">
+            <input type="hidden" name="searchsku" class="" value="{$getData['searchsku']}" > 
+            <div class="pagination">{$page}<input type="text" value="{$getData['displayRow']}" name="displayRow" placeholder="输入每页显示{$getdata['displayRow']}数">
+            <input type="button" class="btn btn-small submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">
+        </div>
+        </form>       
+</div>
+
+<div class="wrap">
+
+    <div class="customerlayer">
+        <div class="ctab-panel">
+            <div class="ctab-head">
+                <a href="#" class="active" >盘点明细</a>
+                {$ivInfo['status']==1?'<a href="#" class="">导入产品SKU</a> ':''}
+
+                 
+            </div>        
+            <div class="ctab-body">
+                <div >
+                <input type="text" id="searchsku" class="" value="{$getData['searchsku']}"   placeholder="sku搜索">   <input style="margin-bottom: 10px;" type='button' class="btn btn-primary searchButton "" value="查询">
+                    <div class="tableLayer">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" class="allChecked" > </th>
+                                    <th>序号</th>
+                                    <th>sku</th>
+                                    <th>条形码</th>
+                                    <th>产品名称</th>
+                                    <th>内部名称</th>
+                                    <th>属性</th>
+                                    <th>账目数</th>
+                                    <th>实际数</th>
+                                    <th>差异数</th>
+                                    <th>备注</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <form id="ivdata" >
+                                <foreach name="itemData" item="item" key='key'>
+                                    <tr> 
+                                    <td><input type="checkbox" class=" checkItem"  value="{$item.ivitemid}"   > </td>
+                                    <td>{$key+1}</td>            
+                                    <td>{$item['sku']}</td>            
+                                    <td>{$item['barcode']}</td>            
+                                    <td>{$item['ptitle']}</td>            
+                                    <td>{$item['inner_name']}</td>            
+                                    <td>{$item['attr']}</td>            
+                                    <td>{$item['qty_book']}</td>            
+                                    <td><input type="text"   {$ivInfo['status']==2?'readonly="true"':''} name="{$item['ivitemid']}_qtycount" class="updateallow qty_count"  value="{$item['qty_count']}" ></td>            
+                                    <td><input type="text" name="" class="updateallow"  readonly="true"  value="{$item['qty_diff']}" ></td>            
+                                    <td><input type="text" {$ivInfo['status']==2?'readonly="true"':''} name="{$item['ivitemid']}_descriptopn" class="updateallow descriptopn {$ivInfo['status']==2?'readonly':''}"   value="{$item['descriptopn']}" ></td>    
+                                    <!-- <input type="hidden"  name="ivitemid"  value="{$item['ivitemid']}" >         -->
+                                    </tr>
+                                </foreach>
+                            </form>    
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div>
+                    <table cellspacing="1" class="{$ivInfo['status']==2?'hidden':''}">
+                        <tr>
+                            <td class="th">产品SKU：<span class="form-required" style="color:red">*</span></td>
+                            <td>
+                                <input type="text" name="newsku" class=""  value="" >                    
+                            </td>
+                            <td class="th">实际数据：<span class="form-required" style="color:red">*</span></td>
+                            <td><input type="text" name="newskunum" class="" value="" ></td>
+                            <td>                                    
+                                <span  class="btn btn-primary newskubtn" style="margin-bottom: 10px;">确定</span>
+                         
+                            </td>                          
+                        </tr> 
+                    </table>  
+                    </div>
+                </div>
+
+                <div  class="hide {$ivInfo['status']==2?'hidden':''}">
+                    <div class="control-group">
+                        <div class="controls">
+                        <textarea id="import_data" placeholder="从Excel中复制:sku列和实际盘点数量" style="width: 25%; height: 200px;"></textarea>
+                        <a id="import_btn" class="btn isimport">导入</a>
+                        <div id="warning"></div>
+                        </div>
+                    </div>   
+
+                </div>
+                
+            </div>
+        </div>    
+    </div>
+</div>
+
+
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+    var isupdate=0;
+    var skus={$skus};
+    var ivid={$ivId};
+    var  id_warehouse={$ivInfo['id_warehouse']};
+
+    // var indexobj=$('#appiframe-0',  window.parent.document);
+    // var allobj=indexobj.parents('.main-container');
+
+    $('.searchButton').on('click',function(){
+        $('#form-search').trigger('submit');
+    });   
+
+    $('#searchsku').on('change',function(){
+        $('input[name=searchsku]').val($(this).val());
+    }) 
+
+    $('.updateStatus').on('click',function(){
+        if (confirm('确定要提交该盘点任务！')) {
+            var  checkedIds=[];
+            checkedIds.push(ivid);
+           var ivdata= $('#ivdata').serializeArray();
+           var realnums=[];
+           var re = /^([1-9]\d*|[0]{1,})$/ ;  
+            $('.qty_count').each(function(){
+                realnums.push($(this).val());
+            }); 
+            for(var i in realnums){
+                if(!re.test(realnums[i])){
+                    alert('盘点值请填写正整数！');
+                    return false;
+                } 
+            }  
+           $.ajax({
+                url:"{:U('Inventory/updateRealById')}",
+                type:'POST',
+                dataType:'json',
+                data:{"ivdata":ivdata,'ivid':ivid},
+                success:function(data){
+                    if(data.status == 1) {
+                        $.ajax({
+                            url:"{:U('Inventory/update_Inventory_status')}",
+                            type:'POST',
+                            dataType:'json',
+                            data:{'inventoryIds':checkedIds},
+                            success:function(data){
+                                if(data.status == 1) {
+                                    alert('成功提交！');   
+                                    isupdate=0;
+                                   window.location.reload();                                    
+                                }else{
+                                    alert(data.message);  
+                                }
+                            }
+                        });                        
+
+                    }else{
+                        alert(data.message);
+                    }
+                }
+            });               
+
+        };
+    });
+
+   $('.allChecked').on('click',function(){
+        if($(this).is(':checked')){
+            $('.tableLayer tbody').find('input[type=checkbox]').attr('checked',true);
+        }else{
+            $('.tableLayer tbody').find('input[type=checkbox]').attr('checked',false);
+        }
+    });
+    $('.checkItem').on('click',function(){
+        if(!$(this).is(':checked')){
+            $(this).attr('checked',false);
+        }else{
+            $(this).attr('checked',true);
+        }      
+    });
+
+    $('.deleteButton').on('click',function(){
+        var  checkedIds=[];
+        $('.checkItem[checked] ').each(function(){
+            checkedIds.push($(this).val());
+        });
+        if(checkedIds.length==0){alert('请至少选择一个盘点单');return false;}
+        if (confirm('确定要删除该盘点数据？')) {
+            $.ajax({
+                url:"{:U('Inventory/deleteInventoryItem')}",
+                type:'POST',
+                dataType:'json',
+                data:{'ivitemids':checkedIds},
+                success:function(data){
+                    if(data.status == 1) {                        
+                        $('.checkItem[checked] ').each(function(){
+                            $(this).attr('checked',false);
+                        });  
+                        alert(data.message);                                                                 
+                        window.location.reload();
+                    }else{
+                        alert(data.message); 
+                    }
+                }
+            });
+        }        
+    });   
+
+    $('.updateallow').on('change',function(){
+        isupdate=1;
+    });
+    $('.submitButton').on('click',function(){
+       var ivdata= $('#ivdata').serializeArray();
+       var realnums=[];
+       var re = /^([1-9]\d*|[0]{1,})$/ ;  
+        $('.qty_count').each(function(){
+            realnums.push($(this).val());
+        }); 
+        for(var i in realnums){
+            if(!re.test(realnums[i])){
+                alert('盘点值请填写正整数！');
+                return false;
+            } 
+        }     
+       $.ajax({
+            url:"{:U('Inventory/updateRealById')}",
+            type:'POST',
+            dataType:'json',
+            data:{"ivdata":ivdata,'ivid':ivid},
+            success:function(data){
+                if(data.status == 1) {
+                    alert('修改成功！');
+                    isupdate=0;
+                   window.location.reload();
+                }else{
+                    alert(data.message);
+                }
+            }
+        });         
+       
+    });
+
+    $('.pagination a').on('click',function(){
+        if(isupdate==1){            
+            if (confirm('确定要保存修改？')) {
+                $('.submitButton').trigger('click');
+            }
+        }
+    });
+
+    $('.ivlist').on('click',function(){
+        if(isupdate==1){            
+            if (confirm('确定要保存修改？')) {
+                $('.submitButton').trigger('click');
+            }
+        }        
+    });
+
+
+    $('.submitDisplayRow').on('click',function(){
+        $('#form-search').trigger('submit');
+    });
+
+    $('.ctab-head a').on('click',function(){
+        $(this).addClass("active").siblings().removeClass("active");
+        var index = $(this).index();
+        $(".ctab-body>div").eq(index).removeClass("hide").siblings().addClass("hide");
+    })
+
+
+    $('.newskubtn').on('click',function(){    
+        if(isupdate==1){            
+            if (confirm('表格中已经有数据被修改,确定要保存修改？')) {
+                $('.submitButton').trigger('click');
+                return false;
+            }else{
+                isupdate=1;
+            }            
+        }            
+        var newsku=$('input[name=newsku]').val();
+        var newskunum=$('input[name=newskunum]').val();
+        if(!newsku||!newskunum){
+            alert('请填写SKU和实际盘点数据！');
+            return false;
+
+        }
+        var item={}; skuNums=[];
+        item.sku=newsku;
+        item.skunum=newskunum;
+        skuNums.push(item);  
+        $.ajax({
+            url:"{:U('Inventory/updateRealBySku')}",
+            type:'POST',
+            dataType:'json',
+            data:{'skunums':skuNums,'ivid':ivid,'id_warehouse':id_warehouse},
+            success:function(data){
+                if(data.status == 1) {
+                   window.location.reload();
+                }else{
+                    alert(data.message);
+                }
+            }
+        });   
+    });
+
+        $('#import_btn').on('click', function(){
+            var  tmp, warning = '';
+            var skunums=[];
+            var data = $('#import_data').val().split("\n");
+            var re = /^([1-9]\d*|[0]{1,})$/ ; 
+            for(var i in data){
+                if(data[i].trim() === ''){
+                    continue;
+                }
+                var item={};
+                tmp = data[i].split("\t");
+                item.sku = tmp[0]; item.skunum=tmp[1];
+                if(!re.test(tmp[1])){
+                    alert('盘点值请填写正整数！');
+                    return false;
+                }        
+
+                skunums.push(item);
+            }
+            $.ajax({
+                url:"{:U('Inventory/updateRealBySku')}",
+                type:'POST',
+                dataType:'json',
+                data:{'skunums':skunums,'ivid':ivid ,'id_warehouse':id_warehouse},
+                success:function(data){
+                    if(data.status == 1) {
+                       window.location.reload();
+                    }else{
+                        alert(data.message);
+                    }
+                }
+            });            
+        });    
+
+</script>
+</body>
+</html>

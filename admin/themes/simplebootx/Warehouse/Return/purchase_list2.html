@@ -1,0 +1,172 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <fieldset>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <!--<input type="hidden" name="id_warehouse" value="<php>echo $data['id_warehouse'];</php>">-->
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="department_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="department" item="item">
+                    <option value="{$key}" <php>echo isset($_GET['department_id']) && $_GET['department_id']==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">仓库:</label>
+            <select name="warehouse_id" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="warehouse" item="item">
+                    <option value="{$key}" <php>echo isset($_GET['warehouse_id']) && $_GET['warehouse_id']==$item ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select> 
+            <label class="control-label">状态:</label>
+            <select name="status" style="width:100px;">
+                <option value="666">所有</option>
+                <foreach name="purchase_status" item="item">
+                    <option value="{$key}" <php>echo isset($_GET['status']) && $_GET['status']==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+
+            <label class="control-label">退货入库单号:</label>
+            <input type="text" name="track_number" style="width: 200px;" value="{$getData.track_number}" placeholder="请输入退货入库单号...">
+            <label class="control-label">建立日期:</label>
+            <input type="text" name="start_time" class="js-datetime" value="{$getData.start_time}" style="width: 120px;" autocomplete="off">-
+            <input autocomplete="off" type="text" class="js-datetime" name="end_time" value="{$getData.end_time}" style="width: 120px;">
+            <br/>
+            <button class="btn btn-primary searchButton">搜索</button>
+            <a href="{:U('/Warehouse/Import/return_warehouse2')}" style="text-decoration:none;color: #fff;out-line: none" class="btn btn-primary">生成退货入库单</a>
+        </div>
+    </form>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th width="60">退货入库单号</th>
+            <th>退货运单数</th>
+            <th>退货总数量</th>
+            <th>已收到数量</th>
+            <th>建立日期</th>
+            <th>更新日期</th>
+            <th>所属仓库</th>
+           <!-- <th>部门</th>-->
+            <th>状态</th>
+            <th>备注</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="pro_list" item="item">
+            <tr>
+                <td width="60">{$item.return_no}</td>
+                <td>{$item.track_number}</td>
+                <td><span class="totalPurchase{$item.id_purchase}">{$item.total}</span>
+                </td>
+                <td><span class="notReceivedNumber{$item.id_purchase}">{$item.total_received}</span></td>
+                <td>{$item.created_at}</td>
+                <td>{$item.updated_at}</td>
+                <td>{$warehouse[$item['id_warehouse']]}</td>
+        <!--        <td>
+                    {$department[$item['id_department']]}
+                </td>-->
+                <td>{$purchase_status[$item['status']]}</td>
+                <td>{$item.remark}</td>
+                <td width="130">
+                    <if condition="$item['status'] eq 0 or $item['status'] eq 7">
+                    <a href="{:U('return/signed2',array('id'=>$item['id_return']))}">确认收货</a>
+                    <else/>
+                        <a href="{:U('return/look',array('id'=>$item['id_return']))}">查看</a>
+                    </if>
+                </td>
+            </tr>
+
+        </foreach>
+        </tbody>
+    </table>
+
+    <div class="pagination">{$page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','purchase_list2');
+        $('.form-search').attr('action',"{:U('return/purchase_list2')}");
+    });
+    
+    $('.updateNumber').click(function(){
+        var getOrderId = $(this).attr('orderid');
+        var getQty = $(this).parent().find('input[name=not_received_number]').val();
+        var totalPurchase = $('.totalPurchase'+getOrderId).text();
+        getQty  = parseInt(getQty);
+        if (getQty > parseInt(totalPurchase)) {
+            alert('输入超过了总采购数量,请重新输入。');
+            return false;
+        }
+        if(getQty){
+            $.post("{:U('Purchase/setReceivedNumber')}",{'order_id':getOrderId,'qty':getQty},function(data){
+                var getData = $.parseJSON(data);
+                if(getData.status){alert('更新成功');$('.notReceivedNumber'+getOrderId).html(getData.not_received);}else{alert(getData.message);}
+            });
+        }else{
+            alert('库存只能为整数。');
+        }
+    });
+    $('.setChildSkuQty').click(function(){
+        var curObj = $(this);
+        var getTagName = $(this).attr('orderid');
+        var getAction  = $(this).text();
+        if(getAction=='采购明细'){
+            curObj.text('隐藏');console.debug(curObj);
+            $('.showPurchase'+getTagName).show();
+        }else{
+            $(this).html('采购明细');$('.showPurchase'+getTagName).hide();
+        }
+        $('.setChildSkuQty').each(function(i){
+            var getClassN = $(this).attr('orderid');
+            if(getClassN!=getTagName){
+                $('.showPurchase'+getClassN).hide();
+                $(this).html('采购明细');
+            }
+        });
+    });
+    $('.submitStockForm').click(function(){
+        var getOrderId = $(this).attr('orderid');var postFlag = true;
+        var receiveQty = [];
+        $('.showPurchase'+getOrderId+' .receiveQty').each(function(){
+            var getPurQty = parseInt($(this).parent().parent().find('.rowQty').attr('qty'));
+            var getInputQty= parseInt($(this).val());
+            if(getInputQty>getPurQty){
+                postFlag = false;$(this).focus();
+            }
+        });
+
+        if(postFlag){
+            var getSerialize  =  $('.showPurchase'+getOrderId+' form').serializeArray();
+            $.post("{:U('Purchase/setReceivedNumber')}",getSerialize,function(data){
+                var getJsonData =  $.parseJSON(data);
+                if(getJsonData.status){
+                    //if(getJsonData.total)$('.totalQtySpan'+getProductId).html(getJsonData.total);
+                    /*$('.showPurchase'+getOrderId+' .receiveQty').each(function(){
+                        var getPurQty = parseInt($(this).parent().parent().find('.rowQty').attr('qty'));
+                        var getInputQty= parseInt($(this).val());
+                        if(getInputQty!='NaN'){
+                            var curQty = getPurQty-getInputQty;
+                            $(this).parent().parent().find('.rowQty').attr('qty',curQty).text(curQty);
+                            var getOrderTotal = $('.notReceivedNumber'+getOrderId).text();
+                        }
+                    });*/
+                    alert('设置库存成功');
+                    window.location.reload();
+                }
+            });
+        }else{
+            alert('输入有误，大于采购数量。');
+            return false;
+        }
+    });
+</script>
+</body>
+</html>

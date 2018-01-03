@@ -1,0 +1,88 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">地区:</label>
+            <select name="zone_id">
+                <option value="0">所有</option>
+                <foreach name="zone" item="item" key="key">
+                    <option value="{$key}" <php>echo isset($_GET['zone_id']) && $_GET['zone_id']==$key ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">日期筛选:</label>
+            <input type="text" name="start_time" class="js-datetime" value="<php>echo isset($_GET['start_time'])?str_replace('+',' ',$_GET['start_time']):'';</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="end_time" value="<php>echo isset($_GET['end_time'])?str_replace('+',' ',$_GET['end_time']):'';</php>" style="width: 120px;">
+            <button class="btn btn-primary searchButton">搜索</button>
+            <button class="btn btn-primary exportButton">导出</button>
+        </div>
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th style="text-align:center">日期</th>
+            <th style="text-align:center">总订单</th>
+            <th style="text-align:center">有效单</th>
+            <th style="text-align:center">营业额</th>
+            <th style="text-align:center">客单价</th>
+            <th style="text-align:center">广告费</th>
+            <th style="text-align:center">平均广告费</th>
+            <th style="text-align:center">采购成本</th>
+            <th style="text-align:center">运费成本</th>
+            <th style="text-align:center">ROI</th>
+            <th style="text-align:center">有效单占比</th>
+        </tr>        
+        </thead>
+        <tbody>            
+            <tr>
+                <td style="text-align:center">总计</td>
+                <td style="text-align:center" class='total_count'><php>echo $total_count_num['total_count']</php></td>
+                <td style="text-align:center" class='total_effective'><php>echo $total_count_num['total_effective']</php></td>
+                <td style="text-align:center" class='total_effective_price'><php>echo $total_count_num['total_effective_price']</php></td>
+                <td style="text-align:center" class='total_price'><php>echo $total_count_num['total_price']</php></td>
+                <td style="text-align:center" class='total_advert_price'><php>echo $total_count_num['total_advert_price']</php></td>
+                <td style="text-align:center" class='total_ad_average_price'><php>echo $total_count_num['total_ad_average_price']</php></td>
+                <td style="text-align:center" class='total_roi'><php>echo $total_count_num['total_purchase_price']</php></td>
+                <td style="text-align:center" class='total_roi'><php>echo $total_count_num['total_freight']</php></td>
+                <td style="text-align:center" class='total_roi'><php>echo $total_count_num['total_roi']</php></td>
+                <td style="text-align:center"><php>echo $total_count_num['total_count_price']</php></td>
+            </tr>
+            <foreach name="list" item="val" key='key'>   
+                <tr>
+                    <td style="text-align:center">{$val.create_date}</td>
+                    <td style="text-align:center">{$val.count}</td>
+                    <td style="text-align:center">{$val.effective}</td>
+                    <td style="text-align:center">{$val.effective_price}</td>
+                    <td style="text-align:center"><php>echo round($val['effective_price']/$val['effective'],2)</php></td>
+                    <td style="text-align:center"><php>echo !empty($val['expense']) ? $val['expense'] : 0</php></td>
+                    <td style="text-align:center"><php>echo round($val['expense']/$val['effective'],2)</php></td>
+                    <td style="text-align:center"><php>echo $val['purchase_price']</php></td>
+                    <td style="text-align:center"><php>echo $val['freight']</php></td>
+                    <td style="text-align:center"><php>echo round($val['effective_price']/$val['expense'],2)</php></td>
+                    <td style="text-align:center"><php>echo (round($val['effective']/$val['count'],2)*100).'%'</php></td>                    
+                </tr>
+            </foreach>
+        </tbody>
+    </table>
+
+    <!--<div class="pagination">{$page}</div>-->
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','every_advert');
+        $('.form-search').attr('action',"{:U('Advert/Status/every_advert')}");
+    });
+    $('.exportButton').click(function(){
+        $('.form-search input[name=a]').attr('value','export_every_advert');
+        $('.form-search').attr('action',"{:U('Advert/Status/export_every_advert')}");
+    });
+</script>
+</body>
+</html>

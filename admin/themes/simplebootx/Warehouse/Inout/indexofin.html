@@ -1,0 +1,210 @@
+<admintpl file="header" />
+<style>
+    input{min-height:30px;}
+</style>
+</head>
+<body>
+<div class="fixedlayer">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('warehouse/inout/indexofin')}">上架单列表</a></li>
+    </ul>
+
+
+</div>
+
+<div class="wrap">
+    <div class="customerlayer" style="padding-top: 90px;">
+        <!--  -->
+        <div class="searchLayer">
+            <form method="get" action=""  class="well form-search">
+                <table cellspacing="1">
+                    <tr>
+                        <td class="th">状态：</td>
+                        <td>
+                            <select name="status" style="height:30px">
+                                <option value="0">所有</option>
+                                <foreach name="status" item="item" key="key">
+                                    <option value="{$key}" <php>echo isset($_GET['status']) && $_GET['status']==$key ? 'selected' : ''</php>>{$item}</option>
+                                </foreach>
+                            </select>
+                        </td>
+                        <td class="th">制单时间：</td>
+                        <td>
+                            <input type="text" name="start_time" class="js-datetime" value="<php>echo $_GET['start_time'];</php>" style="width: 130px;" autocomplete="off">-
+                            <input type="text" name="end_time" class="js-datetime"  value="<php>echo $_GET['end_time'];</php>" style="width: 130px;">
+                        </td>
+                        <td class="th">制单人：</td>
+                        <td>
+                            <input type="text" name="user" value="{$_GET['user']}"/>
+                        </td>
+
+                    </tr>
+                </table>
+                <div class="buttonLayer">
+                    <button class="btn btn-primary searchButton">搜索</button>
+                    <button class="btn btn-primary submitButton" style="float:right;margin-left: 10px;">提交</button>
+                    <button class="btn btn-primary batch_del" style="float:right;margin-left: 10px;">删除</button>
+                    <a href="{:U('warehouse/inout/detail/action/add')}" class="btn btn-primary" style="float:right;margin-left: 10px;">新增</a>
+                </div>
+             </form>
+        </div>
+        <!--  -->
+        <div class="ctab-panel">
+            <!--<div class="ctab-head">
+                <a href="{:U('warehouse/inout/indexofin')}" class="active">上架单列表</a>
+            </div>-->
+            <div class="pagination">{$Page}
+                <input type="text" value="" name="displayRow" placeholder="输入每页显示数">
+                <input type="button" class="btn btn-small submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">
+            </div>
+            <div class="ctab-body">
+                <div class="tableLayer" style="height: 300px;">
+                    <table>
+                        <thead >
+                            <tr>
+                                <th><input type="checkbox" class="allChecked" ></th>
+                                <th>ID</th>
+                              <!--  <th>单据编号</th>-->
+                                <th>状态</th>
+                                <th>总行数</th>
+                                <th>总数量</th>
+                                <th>备注</th>
+                                <th>制单人</th>
+                                <th>提交人</th>
+                                <th>制单时间</th>
+                                <th>提交时间</th>
+                          <!--      <th>操作</th>-->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <foreach name="list" item="vlist">
+                                <tr>
+                                    <td style="text-align: center"> <input type="checkbox" class="{$vlist['status']==2?'nocheked':''} checkItem"  value="{$vlist.id}"  {$vlist['status']==2?"disabled":''}>
+                                    </td>
+                                    <td style="text-align: center">
+
+                                        <if condition='$vlist.status eq 2'>
+                                            <a href="{:U('warehouse/inout/look',array('id'=>$vlist['id']))}"> {$vlist['id']}</a>
+                                        </if>
+                                        <if condition='$vlist.status eq 1'>
+                                            <a href="{:U('warehouse/inout/detail/action/edit',array('id'=>$vlist['id']))}"> {$vlist['id']}</a>
+                                        </if>
+                                    </td>
+                                 <!--   <td>{$vlist['created_at']}</td>
+                                    <td>{$vlist['user_nicename']}</td>-->
+                                  <!--  <td style="text-align: center">{$status[$vlist['docno']]}</td>-->
+                                    <td style="text-align: center">{$status[$vlist['status']]}</td>
+                                    <td style="text-align: center"> {$vlist.count}</th>
+                                    <td style="text-align: center"> {$vlist.count_sum}</th>
+                                    <td style="text-align: center"> {$vlist.description}</th>
+
+                                    <td style="text-align: center">{$vlist['user_nicename']}</td>
+                                    <td style="text-align: center">{$vlist.tj_name}</td>
+                                    <td style="text-align: center">{$vlist['created_at']}</td>
+                                    <td style="text-align: center">{$vlist.status_time}</td>
+                                    <!--<td>
+
+                                    </td>-->
+                                </tr>
+                            </foreach>
+                        </tbody>
+                    </table>
+                </div>
+            <!--    <div class="pagination">{$Page}</div>-->
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/jquery.stickytableheaders.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".tableLayer table").stickyTableHeaders({scrollableArea: $('.tableLayer')});
+    });
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('warehouse/inout/indexofin')}");
+        $('.form-search') .submit();
+    });
+    $('.allChecked').on('click',function(){
+        if($(this).is(':checked')){
+            $('.tableLayer tbody').find('input[type=checkbox]').not('.nocheked').attr('checked',true);
+        }else{
+            $('.tableLayer tbody').find('input[type=checkbox]').not('.nocheked').attr('checked',false);
+        }
+    });
+    $('.checkItem').on('click',function(){
+        if(!$(this).is(':checked')){
+            $(this).attr('checked',false);
+        }else{
+            $(this).attr('checked',true);
+        }
+    });
+    $('.submitDisplayRow').click(function(){
+        var getRow = $(this).parent().find('input[name=displayRow]').val();
+        if(getRow){
+            $.post("{:U('inout/setpagerow')}",{'row':getRow},function(data){
+                window.location.reload();
+            });
+        }
+    });
+    $('.submitButton').on('click',function(){
+        var  checkedIds=[];
+        $('.checkItem[checked] ').each(function(){
+            checkedIds.push($(this).val());
+        });
+        if(checkedIds.length==0){alert('请至少选择一个上架单');return false;}
+        if (confirm('确定要提交？')) {
+            $.ajax({
+                url:"{:U('inout/update_status')}",
+                type:'POST',
+                dataType:'json',
+                data:{'id':checkedIds},
+                success:function(data){
+                    if(data.status == 1) {
+                        window.location.reload();
+                    }else{
+                        alert(data.message);
+                        $('.checkItem[checked] ').each(function(){
+                            $(this).attr('checked',false);
+                        });
+
+                    }
+                }
+            });
+        }
+        return false;
+    });
+    $('.batch_del').on('click',function(){
+        var  checkedIds=[];
+        $('.checkItem[checked] ').each(function(){
+            checkedIds.push($(this).val());
+        });
+        if(checkedIds.length==0){alert('请至少选择一个上架单');return false;}
+        if (confirm('确定要删除？')) {
+            $.ajax({
+                url:"{:U('inout/batch_del')}",
+                type:'POST',
+                dataType:'json',
+                data:{'id':checkedIds},
+                success:function(data){
+                    if(data.status == 1) {
+                        window.location.reload();
+                    }else{
+                        alert(data.message);
+                        $('.checkItem[checked] ').each(function(){
+                            $(this).attr('checked',false);
+                        });
+
+                    }
+                }
+            });
+        }
+        return false;
+    });
+
+</script>
+</body>
+</html>

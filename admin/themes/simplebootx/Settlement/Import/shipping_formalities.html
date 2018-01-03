@@ -1,0 +1,40 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Settlement/Import/shipping_formalities')}">导入手续费</a></li>
+    </ul>
+    <fieldset>
+        <form method="post" action="{:U('Settlement/Import/shipping_formalities')}" enctype="multipart/form-data"  class="form-horizontal">
+            <div class="control-group" style="line-height: 36px;">
+                <div class="control-group">
+                    <div class="controls">
+                        <p>直接从Excel复制八列：运单号、附加费、返款手续费、代收手续费、转寄费、上架费、作业费、其他费用</p>
+                        结算时间： <input name="settle_date" class="js-date date" value="<php>echo date('Y-m-d');</php>" style="width: 120px;" autocomplete="off" type="text">
+                        <br />
+                        <textarea name="data" style="width:900px;height:300px;">{$data}</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">{:L('导入')}</button>
+            </div>
+        </form>
+    </fieldset>
+    <present name="Think.post.data">
+        <div>共更新:{$total} 失败:{$infor.error|count} 成功:{$infor.success|count}</div>
+    </present>
+    <foreach name="infor.error" item="err">
+        <div style="color:red;">{$err}</div>
+    </foreach>
+    <foreach name="infor.warning" item="warning">
+        <div style="color:yellowgreen;">{$warning}</div>
+    </foreach>
+    <foreach name="infor.success" item="success">
+        <div style="color:green;">{$success}</div>
+    </foreach>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

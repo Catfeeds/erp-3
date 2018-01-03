@@ -1,0 +1,181 @@
+<admintpl file="header" />
+<style>
+    input{min-height:30px;}
+    .tableLayer table th,.tableLayer table td{word-wrap:break-word;word-break:break-all; padding: 10px 5px;white-space: normal;}
+</style>
+</head>
+<body>
+<div class="fixedlayer">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#">仓库日进销存单列表</a></li>
+    </ul>
+    <div class="buttonLayer">
+    </div>
+</div>
+
+<div class="wrap">
+    <div class="customerlayer" style="padding-top: 90px;">
+        <!--  -->
+        <div class="searchLayer">
+            <form method="get" action=""  class="well form-search">
+                <table cellspacing="1">
+                    <tr>
+                        <td class="th">部门：</td>
+                        <td>
+                            <select name="id_department" style="height: 30px;">
+                                <option value="0" <php> if($_GET['id_department']=="0"){echo "selected";}</php>>全部</option>
+                                <php>foreach($department as $dep_id=>$dep_title){
+                                if($_GET['id_department'] && $_GET['id_department']!=="0"){
+                                    $selected = $_GET['id_department']==$dep_id?' selected="selected"':'';
+                                }else if(!isset($_GET['id_department'])){
+                                    $selected = $dep_id==$_SESSION['department_id'][0]?' selected="selected"':'';
+                                }
+                                echo '<option value="'.$dep_id.'" '.$selected.'>'.$dep_title.'</option>';
+                                    }
+                                </php>
+                            </select>
+                        </td>
+                        <td class="th">产品名：</td>
+                        <td>
+                            <input type="text" name="title" value="{$_GET['title']}"/>
+                        </td>
+                        <td class="th">内部名：</td>
+                        <td>
+                            <input type="text" name="inner_name" value="{$_GET['inner_name']}"/>
+                        </td>
+                        <td class="th">sku：</td>
+                        <td>
+                            <input type="text" name="sku" value="{$_GET['sku']}"/>
+                        </td>
+                       
+                        
+                    </tr>
+                    <tr>
+                         <td class="th" style="padding: 0;">出入库时间：</td>
+                        <td style="width: 300px;display: inline-block;padding: 0;">
+                            <input type="text" name="start_time" class="js-date" value="<php>echo $_GET['start_time'] ?$_GET['start_time'] :date('Y-m-d', strtotime('-1 weeks'));</php>" style="width: 120px;" autocomplete="off">-
+                            <input type="text" name="end_time" class="js-date"  value="<php>echo $_GET['end_time'] ? $_GET['end_time'] : date('Y-m-d');</php>" style="width: 120px;">
+                        </td>
+                        
+                       <!--  <td class="th">单据编号：</td>
+                        <td>
+                            <input type="text" name="docno" value="{$_GET['docno']}"/>
+                        </td> -->
+                        <td  style="width: 150px;display: inline-block;margin-top: -25px;margin-left: 280px;padding: 0;">
+                        <div class="buttonLayer" >
+                              <button class="btn btn-primary searchButton">搜索</button>
+                            <span class="btn btn-primary exportButton">导出</span>
+                        </div>
+                          
+                        </td>
+                    </tr>
+                </table>
+                 </form>
+        </div>
+        <!--  -->
+        <div class="ctab-panel">
+            <!--<div class="ctab-head">
+                <a href="{:U('warehouse/inout/indexofin')}" class="active">仓库日进销存单列表</a>
+            </div>-->
+            <!-- <div class="pagination">{$Page}
+            <form method="get" action=""  class="page_search" style="display: inline;">
+                <input type="text" value="{$_GET['per_num']}" name="per_num" placeholder="输入每页显示数">
+                <input type="button" class="btn btn-small submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">
+                </form>
+            </div> -->
+            <div class="ctab-body">
+                <div class="tableLayer" style="height: auto; table-layout: :fixed;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th width="13%">日期</th>
+                                <th width="13%">部门</th>
+                                <th width="20%">产品名</th>
+                                <th  width="13%">内部名</th>
+                                <th width="8%">SKU</th>
+                                <th width="10%">属性</th>
+                              <!--   <th width="5%">下单量</th> -->
+                                <th width="5%">入库量</th>
+                                <th width="5%">出库量</th>
+                                <th width="5%">上架数</th>
+                                <!--      <th>操作</th>-->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <foreach name="list" item="vlist" key="key">
+                            <php>$i = 0;</php>
+                            <foreach name="vlist" item="item" key="k">
+                                <tr> 
+                                    <td style="text-align: center">{$key}</td>
+                                   <td style="text-align: center">{$item.dt_title}</td>
+                                    <td style="text-align: center">{$item.title}</td>
+                                    <td style="text-align: center"> {$item.inner_name}</th>
+                                    <td style="text-align: center"> {$k}</th>
+                                    <td style="text-align: center">{$item.sku_title} </th>
+                                    <!-- <td style="text-align: center">{$item.total_order_quantity} </th> -->
+                                    <td style="text-align: center" class="wa_in"> <a href="{:U('warehouse/index/storage_ftp_detail',array('action'=>'wa_in','detail'=>'detail','id'=>$item['id'],'sku'=>$_GET['sku'],'department_id'=>$item['dt_title'],'pn'=>$pn,'title'=>$_GET['title'],'inner_name'=>$_GET['inner_name']))}" target="_blank"> <php>echo empty($item['in'])?'0':$item['in'];</php> </a></th>
+                                    <td style="text-align: center" class="wa_out"> <a href="{:U('warehouse/index/storage_ftp_detail',array('action'=>'wa_out','detail'=>'detail','id'=>$item['id'],'sku'=>$_GET['sku'],'department_id'=>$item['dt_title'],'title'=>$_GET['title'],'inner_name'=>$_GET['inner_name']))}" target="_blank"> <php>echo empty($item['out'])?'0':$item['out'];</php> </a></th>
+                                    <td style="text-align: center" class="qty_alloc"> <a href="{:U('warehouse/index/storage_ftp_detail',array('action'=>'wa_in','id'=>$item['id'],'detail'=>'detail','sku'=>$_GET['sku'],'department_id'=>$item['dt_title'],'title'=>$_GET['title'],'inner_name'=>$_GET['inner_name']))}" target="_blank">{$item['qty_alloc']} </a></td>
+                                   <!--  
+                                    <td style="text-align: center">{$vlist.billdate}</td>
+                                    <td style="text-align: center">{$vlist['qtychange']}</td>
+                                    <td style="text-align: center">{$vlist.amtchange}</td>
+                                    <td style="text-align: center">{$vlist.qty_alloc}</td> -->
+                                    <!--<td>
+
+                                    </td>-->
+                                </tr>
+                                </foreach>
+                            </foreach>
+                        </tbody>
+                    </table>
+                </div>
+            <!--    <div class="pagination">{$Page}</div>-->
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/jquery.stickytableheaders.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        /*$(".tableLayer table").stickyTableHeaders({scrollableArea: $('.tableLayer')});*/
+    });
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('warehouse/index/storage_ftp_list')}");
+        $('.form-search') .submit();
+    });
+    $('.submitDisplayRow').click(function(){
+        $('.page_search input[name=a]').attr('value','index');
+        $('.page_search').attr('action',"{:U('warehouse/index/storage_ftp_list')}");
+        $('.page_search') .submit();
+    });  
+    $('.exportButton').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('warehouse/index/export_storageFtp')}");
+        $('.form-search') .submit();
+    });    
+    $(".wa_in").each(function(k,v){
+         var num = $(v).find("a").text();
+        if(num==0){
+            $(v).find("a").removeAttr("href");
+        }
+    });
+    $(".wa_out").each(function(k,v){
+         var num = $(v).find("a").text();
+        if(num==0){
+            $(v).find("a").removeAttr("href");
+        }
+    });
+    $(".qty_alloc").each(function(k,v){
+         var num = $(v).find("a").text();
+        if(num==0){
+            $(v).find("a").removeAttr("href");
+        }
+    });
+</script>
+</body>
+</html>

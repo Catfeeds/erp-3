@@ -1,0 +1,20 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="post" action="{:U('import/secd_import_order')}" enctype="multipart/form-data" class="form-horizontal">
+            <label class="control-label">execl文件：</label>
+            <input type="file" name="files"/>
+            <button type="submit" class="btn btn-primary">{:L('确定')}</button>
+    </form>    
+    <foreach name="infor.error" item="err">
+        <div style="color:red;">{$err}</div>
+    </foreach>
+    <foreach name="infor.success" item="success">
+        <div style="color:green;">{$success}</div>
+    </foreach>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

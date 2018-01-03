@@ -1,0 +1,235 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="loading" style="display:none;position:absolute; left:0; top:0;width:100%; height:100%;z-index:20000;background-color:gray;opacity:0.5; -moz-opacity:0.5; filter:alpha(opacity=50);">
+    loading...
+</div>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('product/transfer/index')}">产品调拨单列表</a></li>
+        <li class="active"><a href="javascript:;">添加产品调拨单</a></li>
+    </ul>
+    <div class="customerlayer" style="padding-top: 0">
+        <form method="post" enctype="multipart/form-data" action="{:U('transfer/add_details_post')}">
+            <div class="buttonLayer">
+                <if condition="$data.status eq 1">
+                    <!--<button type="submit" class="btn btn-primary js-ajax-submit sub">保存</button>-->
+                    <a href="javascript:;" data-id="{$data.id}" class="btn btn-primary tj_sub">提交</a>
+                </if>
+                <a class="btn" href="{:U('transfer/index')}">{:L('BACK')}</a>
+            </div>
+            <div class="searchLayer">
+                <table cellspacing="1">
+                    <tr>
+                        <td class="th">单据编号：</td>
+                        <input type="hidden" name="hid" value="{$data.id}">
+                        <td><input type="text" name="docno" style="min-height: 30px;color: #000" readonly value="{$data.docno}"></td>
+                        <td class="th">单据日期：</td>
+                        <td>
+                            <if condition="$data.status eq 1">
+                                <input readonly="true" type="text" name="bill_date" class="js-datetime" value="{$data.bill_date}" style="min-height: 30px;" autocomplete="off" required>
+                            </if>
+                            <if condition="$data.status eq 2">
+                                {$data.bill_date}
+                            </if>
+                        </td>
+                        <td class="th">调出部门：</td>
+                        <td>
+                <!--             <php>if(empty($product_transfer_item)){</php>
+                            <select disabled="disabled" name="out_department_id" id="out_department" style="height: 30px;" required>
+                                <option value="">--选择--</option>
+                                <foreach name="department" item="name" key="key">
+                                    <option value="{$key}" <php>echo $data['c_orig_depart_id']==$key ? 'selected' : ''</php>>{$name}</option>
+                                </foreach>
+                            </select>
+                            <php>}else{
+                                echo $department[$data['c_orig_depart_id']];
+                                echo '<input type="hidden" id="out_department" name="out_department_id" value="'.$data['c_orig_depart_id'].'">';
+                            }</php> -->
+                                <php> echo $department[$data['c_orig_depart_id']];
+                                echo '<input type="hidden" id="out_department" name="out_department_id" value="'.$data['c_orig_depart_id'].'">';</php>
+                        </td>
+                        <td class="th">调入部门：</td>
+                        <td>
+ <!--                            <php>if(empty($product_transfer_item)){</php>
+                            <select  readonly="true" name="in_department_id" id="in_department" style="height: 30px;" required>
+                                <option value="">--选择--</option>
+                                <foreach name="department" item="name" key="key">
+                                    <option value="{$key}" <php>echo $data['c_dest_depart_id']==$key ? 'selected' : ''</php>>{$name}</option>
+                                </foreach>
+                            </select>
+                            <php>}else{
+                                echo $department[$data['c_dest_depart_id']];
+                                echo '<input type="hidden" id="in_department" name="in_department_id" value="'.$data['c_dest_depart_id'].'">';
+                            }</php> -->
+
+                            <php>
+                                echo $department[$data['c_dest_depart_id']];
+                                echo '<input type="hidden" id="in_department" name="in_department_id" value="'.$data['c_dest_depart_id'].'">';
+                            </php>                            
+                        </td>
+                        <td class="th">备注：</td>
+                        <td>
+                            <if condition="$data.status eq 1">
+                                <input  readonly="true" required="" type="text" name="description" value="{$data.description}" required style="min-height: 30px;">
+                            </if>
+                            <if condition="$data.status eq 2">
+                                {$data.description}
+                            </if>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="ctab-panel">
+                <div class="ctab-head">
+                    <a href="{:U('transfer/add_details',array('id'=>$data['id']))}" class="active">明细</a>
+                    <if condition="$data.status eq 1">
+                        <a href="{:U('transfer/import_sku',array('id'=>$data['id']))}" >导入产品</a>
+                    </if>
+                </div>
+                <div class="ctab-body">
+                    <div class="tableLayer" style="height:300px">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th><label><input type="checkbox" class="js-check-all checkAllbox" data-direction="x" data-checklist="js-check-x"></label></th>
+                                <th>序号</th>
+                                <th>产品名称</th>
+                                <th>内部名</th>
+                                <th>SKU</th>
+                                <th>属性</th>
+                                <th>调拨仓库数量</th>
+                                <th>调拨仓库数量成本</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <foreach name="product_transfer_item" item="item" key="key">
+                                <tr>
+                                    <td style="text-align: center"><input type="checkbox" class="js-check" name="docno_id" value="{$item.id}"></td>
+                                    <td style="text-align: center"><php>echo $key+1</php></td>
+                                    <td style="text-align: center">{$item.pro_name}</td>
+                                    <td style="text-align: center">{$item.inner_name}</td>
+                                    <td style="text-align: center">{$item.sku}</td>
+                                    <td style="text-align: center">{$item.option_value}</td>
+                                    <td style="text-align: center">{$item.qty_stock}</td>
+                                    <td style="text-align: center">{$item.amt_stock}</td>
+                                </tr>
+                            </foreach>
+                            </tbody>
+                        </table>
+                    </div>
+                    <if condition="$data.status eq 1">
+                        <div class="sk" style="margin-top:5px">
+                            产品ID：<input type="text" name="pro_id" class="p_sku" readonly style="color: #000"/>
+                            <a href="javascript:;" class="btn btn-primary search_sku" style="margin-bottom: 10px;">搜索</a>
+                            <button type="submit" class="btn btn-primary qd" style="margin-bottom: 10px;">确定</button>
+                            <a href="javascript:;" class="btn btn-primary del_det" style="margin-bottom: 10px;">删除明细</a>
+                        </div>
+                    </if>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/iframeTools.source.js"></script>
+<script type="text/javascript">
+    var doClose = function() {
+        if (null != dialog) {
+            dialog.close();
+        }
+    };
+    var dialog = null;
+    $(function() {
+        $('.search_sku').click(function() {
+            var out_department = $('#out_department').val();
+            dialog = art.dialog.open("{:U('product/transfer/search_product')}?id_department="+out_department, {'id': 'selectmember', title: '搜索产品', width: '900px', height: '670px', lock: true});
+        })
+    });
+
+    var onSelectStore = function(sid) {
+        if (sid) {
+            $.ajax({
+                type:'POST',
+                cache:false,
+                dataType: 'json',
+                url:"{:U('product/transfer/ajax_get_pro')}",
+                data:{'id':sid},
+                success:function(name){
+                    $('.p_sku').val(name);
+                }
+            })
+        }
+    };
+
+    $('.qd').click(function(){
+        if($('.p_sku').val() == '') {
+            alert('产品ID不能为空');
+            return false;
+        }
+        $(this).submit();
+    });
+
+    $(".checkAllbox").click(function(){
+        var setVal = $(this).attr('checked')=='checked'?true:false;
+        $("input[name=docno_id]").attr("checked",setVal);
+    });
+
+    //批量删除
+    $('.del_det').click(function(){
+        var id = [];
+        $("input[name=docno_id]:checked").each(function () {
+            id.push($(this).attr('value'));
+        });
+
+        if (id.length == 0) {
+            alert('请至少选择一个数据');
+            return false;
+        }
+        $(this).attr("disabled", true);
+        if(confirm('确定要删除？')) {
+            $.ajax({
+                url: "{:U('product/transfer/batch_del_det')}",
+                type: 'POST',
+                dataType: 'json',
+                data: {'id': id},
+                success: function (data) {
+                    if (data.status == 1) {
+//                        alert(data.message);
+                        window.location.reload();
+                    } else {
+                        alert(data.message);
+                        window.location.reload();
+                    }
+                    $(this).removeAttr("disabled");
+                }
+            });
+        }
+    });
+
+    //提交
+    $('.tj_sub').click(function(){
+        var id = $(this).attr('data-id');
+        if(confirm('是否要提交？')) {
+            $(this).attr("disabled", true);
+            $.ajax({
+                url: "{:U('product/transfer/product_transfer_commit')}",
+                type: 'POST',
+                dataType: 'json',
+                data: {'id': id,'in_department':$('#in_department').val()},
+                success: function (data) {
+                    if (data.status == 1) {
+//                        alert(data.message);
+                        window.location.reload();
+                    } else {
+                        alert(data.message);
+                        window.location.reload();
+                    }
+                    $(this).removeAttr("disabled");
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

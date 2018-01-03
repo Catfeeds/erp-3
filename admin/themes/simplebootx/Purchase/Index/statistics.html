@@ -1,0 +1,297 @@
+<admintpl file="header" />
+ <link href="__PUBLIC__/js/layer/theme/layer.css"  rel="stylesheet" type="text/css">
+    <script src="__PUBLIC__/js/layer/layer.js"></script>
+</head>
+<body>
+<div class="fixedlayer" style="height: 40px;">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Index/statistics')}">销售统计</a></li>
+    </ul>
+</div>
+<div class="wrap">
+    <div class="customerlayer" style="height: 300px;">
+    <form method="post" action="{:U('Index/statistics')}"  class="well form-search"  style="margin-top: -80px;">
+        <div class="searchLayer" style="padding:20px;background-color: #ecf0f1;">
+            <!-- <p style="color:red;">默认只显示订单[未配货][配货中][缺货]状态</p> -->
+            <table cellspacing="1">
+                <tr>
+                    <td class="th">仓库：</td>
+                    <td>
+                        <select name="warehouse_id" style="width:150px;height:30px">
+                            <option value="0">所有</option>
+                            <foreach name="warehouse" item="item" key="id">
+                                <option value="{$id}" <if condition="$Think.post.warehouse_id eq $id"> selected="selected"</if>>{$item}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <td class="th">物流：</td>
+                    <td>
+                        <select name="shipping_id" style="width: 150px;height:30px">
+                            <option value="">所有</option>
+                            <foreach name="shippings" item="shipping" key="id">
+                                <option value="{$id}"<if condition="$Think.post.shipping_id eq $id"> selected="selected"</if>>{$shipping}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <td class="th">部门：</td>
+                    <td>
+                        <select name="id_department" style="width:165px;height:30px">
+                            <option value="0" <php> if($_POST['id_department']=="0"){echo "selected";}</php>>全部</option>
+                            <foreach name="departmentlist" item="department" key="id">
+                                <option value="{$id}" <php> if($_POST['id_department'] && $_POST['id_department']!=="0"){
+                                    $selected = $_POST['id_department']==$id?' selected="selected"':'';
+                                }else if(!isset($_POST['id_department'])){
+                                    $selected = $id==$_SESSION['department_id'][0]?' selected="selected"':'';
+                                } echo $selected;</php>>{$department}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <td class="th">订单状态：</td>
+                    <td>
+                        <select name="status_id" style="width:150px;height:30px">
+                            <option value="0">所有</option>
+                            <php>
+                                if($status_list){
+                                foreach($status_list as $key=>$status){
+                                $selected = $post['status_id']==$key?' selected="selected"':'';
+                                echo '<option value="'.$key.'"'.$selected.'>'.$status.'</option>';
+                                }
+                                }
+                            </php>
+                        </select>
+                    </td>
+
+                </tr>
+                <tr>
+                                    <td class="th">內部名：</td>
+                    <td>
+                        <input type="text" name="innername" value="{$Think.post.innername}" style="height: 40px;">
+                    </td>
+                    <td class="th">SKU：</td>
+                    <td style="white-space:nowrap;">
+                        <input type="text" name="sku" value="{$Think.post.sku}" style="height: 40px;">
+                    </td>
+                    <td class="th">下单时间：</td>
+                    <td colspan="2" style="white-space:nowrap;">
+                        <php>$date = date('Y-m-d', strtotime('-1 days'));</php>
+                        <input type="text" name="start_time" class="js-datetime" value="<php>echo isset($_POST['start_time'])&&$_POST['start_time']?$_POST['start_time']:$date;</php>" style="width: 120px;height: 40px;" autocomplete="off">-
+                        <input type="text" class="js-datetime" name="end_time" value="<php>echo isset($_POST['end_time'])&&$_POST['end_time']?$_POST['end_time']:date('Y-m-d',strtotime('+1 day'));</php>" style="width: 120px;height:  40px;">
+                    </td>
+
+                </tr>
+
+            </table>
+            <br/>
+
+            <button class="btn btn-primary searchButton">搜索</button>
+            <button class="btn btn-primary searchExportButton">导出</button>
+
+        </div>
+
+    </form>
+    <div>
+        订单数: {$order_count} &nbsp;&nbsp;&nbsp;产品数: {$product_count}
+    </div>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list order-table">
+        <thead class="myth1" style="display:none;">
+        <tr>
+            <th>产品图片</th>
+            <th>产品</th>
+            <th>属性</th>
+            <th>內部名</th>
+            <th>SKU</th>
+            <th>销售数量</th>
+            <!--
+            <th>总订单</th>
+            -->
+            <th>有效订单</th>
+            <th>总产品数</th>
+            <th>总采购数</th>
+            <th>总入库数</th>
+            <th>总未入库</th>
+            <!--<th>总退货</th>-->
+            <th>在途量</th>
+            <th>库存量</th>
+            <th>单价</th>
+            
+        </tr>
+        </thead>
+        <thead class="myth2">
+        <tr>
+            <th>产品图片</th>
+            <th>产品</th>
+            <th>属性</th>
+            <th>內部名</th>
+            <th>SKU</th>
+            <th>销售数量</th>
+            <!--
+            <th>总订单</th>
+            -->
+            <th>有效订单</th>
+            <th>总产品数</th>
+            <th>总采购数</th>
+            <th>总入库数</th>
+            <th>总未入库</th>
+            <!--<th>总退货</th>-->
+            <th>在途量</th>
+            <th>库存量</th>
+            <th>单价</th>
+            
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="statistics" item="stat" key="shipping_name">
+            <if condition="$stat.id_product neq ''">
+                <tr>
+                    <td>
+                        <if condition="$stat.img neq ''">
+                            <img id="photo-preview" src="{:sp_get_image_preview_url($stat['img'])}" style="height:36px;width: 36px;">
+                        </if>
+                    </td>
+                    <td>{$stat.pro_name}</td>
+                    <td>{$stat.sku_title}</td>
+                    <td>{$stat.inner_name}<br/>
+                    <a onclick="productMSG({$stat['id_product']});" name={$stat.id_product} style="cursor:pointer" >查看拿货备注</a></td>
+                    <td>{$stat.sku}</td>
+                    <td>{$stat.quantity}</td>
+                    <!-- 总订单 
+                    <td>{$stat.total_order}</td>
+                    -->
+                    <!-- 有效订单 -->
+                    <td>{$stat.effective_number}</td>
+                    <!-- 总产品数  -->
+                    <td>
+                        <php>if(!empty($stat['total_product'])){
+                                echo $stat['total_product'];
+                            }else{
+                                echo 0; 
+                            }
+                        </php>
+                    </td>
+                    <!-- 总采购数-总退货数 total -->
+                    <td>
+                    <php> echo ($stat['total_purchase'] - $stat['total_return'])</php>
+                    </td>
+                    
+                    <!-- 总入库数 -->
+                    <td>
+                        <php>if(!empty($stat['total_warehouse'])){
+                                if($stat['total_purchase'] >= $stat['total_warehouse']){
+                                    echo $stat['total_warehouse'];
+                                }else{
+                                    echo $stat['total_purchase'];
+                                }
+                            }else{
+                                echo 0; 
+                            }
+                        </php>
+                    </td>
+                    <!-- 总未入库数 -->
+                    <td>
+                        <php>if(!empty($stat['total_no_warehouse'])){
+                                echo $stat['total_no_warehouse'];
+                            }else{
+                                echo 0; 
+                            }
+                        </php>
+                    </td>
+                    <!--<td>
+                        <php>
+                           echo ($stat['total_purchase'] - $stat['total_warehouse']);
+                        </php>
+                    </td>-->
+                    <!-- 总退货数 
+                    <td>
+                        <php>if(!empty($stat['back_swarehouse'])){
+                                echo $stat['back_swarehouse'];
+                            }else{
+                                echo 0; 
+                            }
+                        </php>
+                    </td>
+                    -->
+                    <!-- 在途量 -->
+                    <td>{$stat['road_num']}</td>
+                    <!-- 库存量 -->
+                    <td>{$stat['wp_quantity']}</td>
+                    <!-- 采购单价 -->
+                    <td>
+                        
+                        <php>if(!empty($stat['single_price'])){
+                                echo $stat['single_price'];
+                            }else{
+                                echo 0; 
+                            }
+                        </php>
+                    </td>
+                        
+                    <!-- 去除详情 zx 11/15
+                    <td><a target="_blank" class="btn btn-small"  href="http://shopadmin.msiela.com/info.php?pid={$stat.id_product}" target="_blank">详情</a></td> -->
+                </tr>
+            </if>
+        </foreach>
+        </tbody>
+    </table>
+       <!-- <div class="pagination">{$page}</div>-->
+    </fieldset>
+</div>
+ </div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','statistics');
+        $('.form-search').attr('action',"{:U('purchase/Index/statistics')}");
+    });
+    $('.searchExportButton').click(function(){
+        $('.form-search input[name=a]').attr('value','export_statistics');
+        $('.form-search').attr('action',"{:U('purchase/Index/export_statistics')}");
+    });
+    /* 表头随滚动固定 */
+    $(function(){
+        var thtop,thleft,thwidth,thadd,alltd,myW;
+        var he=$(".fixedlayer");
+        var me=$(".order-table .myth1");
+        thtop=he.height()+parseInt(he.css("padding-top"))+"px";
+        thleft=he.css("left");
+        thwidth=$(".myth2").css("width");
+        thadd=$(".myth2").offset().top;
+        alltd=$(".order-table tr").eq(3).find("td");
+        for(var i=0;i<alltd.length;i++){
+            myW=alltd.eq(i).width();
+            me.find("th").eq(i).width(myW);
+        }
+        $(window).scroll(function(){
+            var scrollH=$(window).scrollTop();
+            if(scrollH>thadd){
+               me.css({"top":thtop,"left":thleft,"width":thwidth,"position":"fixed","z-index":"3","background-color":"#fff","display":"block"});
+            }else{
+               me.css({"top":"auto","left":"auto","width":"auto","position":"static","z-index":"1","display":"none"});
+            }
+        });
+        
+    })
+    //点击弹出框显示 产品 拿货链接  备注   --Lily  2017-12-05
+    function productMSG(id_product){
+        var id_product = id_product;
+        var MSG = 'MSG';
+       $.post("{:U('purchase/Index/statistics')}",{'id_product':id_product,MSG:MSG},function(data){
+            if(data){
+                var obj = data;
+                var pro_data = $.parseJSON(obj);
+                var html = "<div style='font-size:16px;margin:auto 0;padding:20px;line-height:36px;'><font color='red'>拿货链接：</font>"+pro_data.purchase_url+"<br/><font color='red'>备注：</font>"+pro_data.pro_msg+"</div>";
+               parent.layer.open({
+                  type: 1,
+                  shade: 0.8,
+                  skin: 'layui-layer-rim', //加上边框
+                  area: ['60%', '40%'], //宽高
+                  time: false,
+                  shadeClose: true,
+                  content: html
+                });
+            }
+        });
+    }
+</script>
+</body>
+</html>

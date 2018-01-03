@@ -1,0 +1,90 @@
+<admintpl file="header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+
+        <li class="active"><a href="{:U('index/edit_advert')}">{:L('编辑广告')}</a></li>
+    </ul>
+    <form class="form-horizontal js-ajax-form" action="{:U('index/edit_advert')}" method="post">
+        <fieldset>
+            <!--                <div class="control-group">
+                                <label class="control-label">{:L('广告名称')}</label>
+                                <div class="controls">
+                                    <input type="text" name="id_advert" value="{$data.ad_name}" disabled="disabled"/>
+                                    <input type="hidden" name="id_ad" value="{$data.ad_id}">
+                                    <span class="form-required">*</span>
+                                </div>
+                            </div>-->
+            <div class="control-group">
+                <label class="control-label">{:L('优化师')}</label>
+                <div class="controls">
+                    <select name="id_users" style="width:100px" id="id_users">
+                        <option value="0">全部</option>
+                        <foreach name="users" item="user">
+                            <option value="{$key}" <if condition="$key == $advert['id_users']">selected</if>>{$user}</option>
+                        </foreach>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('域名')}</label>
+                <div class="controls">
+                    <input type="text" name="name" value="{$advert.name}" readonly/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">广告名</label>
+                <div class="controls">
+                    <input type="text" name="advert_name" value="{$advert.advert_name}"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('链接')}</label>
+                <div class="controls">
+                    <input type="text" name="url" value="{$advert.url}" />
+
+                </div>
+            </div>
+  <!--          <div class="control-group">
+                <label class="control-label">{:L('投放时间')}</label>
+                <div class="controls">
+                    <input autocomplete="off" type="text" class="js-datetime" name="post_at" value="{$advert.post_at}" style="width: 120px;">
+                    &lt;!&ndash;<input type="text" name="post_at" value="{$advert.post_at}"/>&ndash;&gt;
+
+                </div>
+            </div>-->
+            <div class="control-group" >
+                <label class="control-label">{:L('地区')}</label>
+                <div class="controls">
+                    <select title="" name="id_zone" >
+                        <foreach name="zones" item="zone">
+                            <option value="{$key}" <if condition="$advert.id_zone EQ $key">selected</if> >{$zone}</option>
+                        </foreach>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('状态')}</label>
+                <div class="controls">
+                    <select name="advert_status" aria-invalid="false">
+
+                            <option value="1" <if condition="$advert.advert_status EQ 1">selected</if>>启用</option>
+                            <option value="0" <if condition="$advert.advert_status EQ 0">selected</if>>停用</option>
+
+                    </select>
+                </div>
+            </div>
+
+        </fieldset>
+        <div class="form-actions">
+           <input type="hidden" name="advert_id" value="{$_GET['advert_id']}"/>
+            <button type="submit" class="btn btn-primary js-ajax-submit">{:L('SAVE')}</button>
+            <a class="btn" href="{:U('all_advert')}">{:L('BACK')}</a>
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+<admintpl file="header"/>
+</head>
+<body>
+    <div class="wrap js-check-wrap">
+        <ul class="nav nav-tabs">
+            <li><a href="{:U('index/index')}">供应商名称</a></li>
+            <li class="active"><a href="{:U('index/add')}">编辑供应商</a></li>
+        </ul>
+        <form class="form-horizontal js-ajax-form" action="{:U('index/edit_post')}" method="post">
+            <fieldset>
+                <input type="hidden" name="id_supplier" value="{$data.id_supplier}"/>
+                <div class="control-group">
+                    <label class="control-label">供应商名</label>
+                    <div class="controls">
+                        <input type="text" name="title" value="{$data.title}" required/>
+                        <span class="form-required" style="color:red">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">部门</label>
+                    <div class="controls">
+                        <select name="id_department">
+                            <foreach name='list' item='val'>
+                                <option value="{$val.id_department}" <php>echo $data['id_department']==$val['id_department'] ? 'selected' : ''</php>>{$val.title}</option>
+                            </foreach>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">地址</label>
+                    <div class="controls">
+                        <input type="text" name="addr" value="{$data.addr}"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">电话</label>
+                    <div class="controls">
+                        <input type="text" name="phone" value="{$data.phone}"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">负责人</label>
+                    <div class="controls">
+                        <input type="text" name="principal" value="{$data.principal}"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">联系方式</label>
+                    <div class="controls">
+                        <input type="text" name="tel_phone" value="{$data.tel_phone}"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">供应商网址</label>
+                    <div class="controls">
+                        <input type="text" name="supplier_url" value="{$data.supplier_url}" placeholder="www.abc.com"/>                        
+                    </div>
+                </div>                             
+                <div class="control-group">
+                    <label class="control-label">采购交货期</label>
+                    <div class="controls">
+                        <input type="text" name="delivery" value="{$data.delivery}"/> (天)
+                    </div>
+                </div>                
+            </fieldset>
+            <div class="form-actions">
+                <input type="hidden" name="id_supplier" value="{$data.id_supplier}"/>
+                <button type="submit" class="btn btn-primary  js-ajax-submit">{:L('SAVE')}</button>
+                <a class="btn" href="{:U('index/index')}">{:L('BACK')}</a>
+            </div>
+        </form>
+    </div>
+    <script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>
+

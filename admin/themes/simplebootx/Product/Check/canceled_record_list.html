@@ -1,0 +1,296 @@
+<admintpl file="header" />
+
+<!--&lt;!&ndash; 多选插件 &#45;&#45;&ndash;&gt;-->
+<!--<link rel="stylesheet" href="__PUBLIC__/js/sumoselect/sumoselect.css">-->
+<!--<script src="__PUBLIC__/js/sumoselect/jquery.sumoselect.min.js"></script>-->
+<!-- 多选插件 ---->
+
+
+<!-- 折叠型三级目录 ---->
+<link rel="stylesheet" href="__PUBLIC__/js/bundle/zTreeStyle.css">
+<script src="__PUBLIC__/js/bundle/jquery-ui.min.js"></script>
+<script src="__PUBLIC__/js/bundle/jquery.ztree.core.js"></script>
+<script src="__PUBLIC__/js/bundle/jquery.ztree.excheck.js"></script>
+<script src="__PUBLIC__/js/common.js"></script>
+<!-- 折叠型三级目录 ---->
+</head>
+<style>
+    #treeDemo{
+        position: absolute;
+        background: white;
+        margin-left: 890px;
+        overflow-y: auto;
+    }
+    a.disable{
+        color:grey;
+    }
+    /*--------- horizon 水平展示样式 ---------*/
+    .horizon .content-row-2>div{
+        border-left: 1px solid rgba(0,0,0,0.1);
+        border-top:1px solid rgba(0,0,0,0.1);
+        height:60px;
+    }
+    .horizon .content-row{
+        margin-top:10px;
+        border: 1px solid rgba(0,0,0,0.1);
+        height:180px;
+    }
+    .horizon .content-block{
+        border-right: 1px solid rgba(0,0,0,0.1);
+    }
+    /*-------- horizon --------*/
+
+    /*-------- vertical 垂直展示样式 --------*/
+    .vertical .content-block{
+        border: 1px solid rgba(0,0,0,0.1);
+        margin-top:20px;
+        width:450px;
+    }
+    .vertical .content-row-2>div{
+        height:60px;
+        font-size:0.5em;
+        border-right: 1px solid rgba(0,0,0,0.1);
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        border-top: 1px solid rgba(0,0,0,0.1);
+        overflow:auto;
+    }
+    /*-------- vertical --------*/
+</style>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Product/check/canceled_record_list')}">已消档列表</a></li>
+    </ul>
+    <form method="get" action=""  class="form-search">
+        <div class="control-group" style="line-height: 36px;">
+
+            <label class="control-label">展示方式:</label>
+            <select id="style" name="style" style="width:100px;line-height:20px">
+                <option value="horizon">水平</option>
+                <option value="vertical" <php>if($_GET['style'] == 'vertical') echo 'selected';</php>>图片</option>
+            </select>
+
+            <label class="control-label">部门:</label>
+            <select name="id_department" style="width:100px;line-height:20px">
+                <option value="">所有</option>
+                <foreach name="department" item="dep">
+                    <option value="{$dep.id_department}" <php>if($_GET['id_department'] == $dep['id_department']) echo 'selected';</php>>{$dep.title}</option>
+                </foreach>
+            </select>
+
+            <label class="control-label">关键字:</label>
+            <input type="text" name="product_name" value="{$_GET['product_name']}"/>
+            <label class="control-label">优化师:</label>
+            <input type="text" name="user_name" value="{$_GET['user_name']}"/>
+
+            <label class="control-label">类别:</label>
+            <select  id="category" >
+            </select>
+            <ul id = "treeDemo" class = "ztree"> </ul>
+
+            <input type="hidden" name="category" value="<php> echo $category </php>">
+            <input type="hidden" name="show" value="display">
+
+            <button class="btn btn-primary searchButton" id="searchBtn">搜索</button>
+            <button class="btn btn-primary" id="export">导出搜索结果</button>
+        </div>
+    </form>
+
+    <if condition="$style eq 'horizon'">
+        <section class="content horizon">
+            <foreach name="list" item="record">
+                <div class="row-fluid content-row">
+                    <div class="span3" >
+                        <a <php>if(!empty($record['img_url'])) echo 'href="'.sp_get_image_preview_url($record['img_url']) . '"';</php> target="_blank">
+                        <img style="height:100%; max-height:180px" src="<php>if(!empty($record['img_url'])) {echo sp_get_image_preview_url($record['img_url']);}else{echo '/public/images/logo.jpg';}</php>" alt="图裂了">
+                        </a>
+                    </div>
+                    <div class="span7 content-block">
+                        <div class="row-fluid content-row-2">
+                            <div class="span4">查重时间:<php>echo date('Y/m/d', strtotime($record['check_time']));</php>
+                                <br>备案时间:<php>echo date('Y/m/d', strtotime($record['record_time']));</php></div>
+                            <div class="span4">分类<br>{$record.category_name}</div>
+                            <div class="span4">产品名<br>{$record.title}</div>
+                        </div>
+                        <div class="row-fluid content-row-2">
+                            <div class="span4">部门<br>{$record.department_name}</div>
+                            <div class="span4">广告专员<br>{$record.user_name}</div>
+                            <div class="span4">域名<br>{$record.extra_domain}</div>
+                        </div>
+                        <div class="row-fluid content-row-2">
+<!--                            <div class="span2"><a target="_blank"  class="<php>if(empty($record['purchase_url'])) echo 'disable';</php>">采购链接</a></div>
+                            <div class="span2"><a target="_blank" class="<php>if(empty($record['sale_url'])) echo 'disable';</php>">业务链接</a></div>-->
+                            <div class="span2">可用库存：<br>{$record.stock}</div>
+                            <div class="span2">采购平均单价：<br>{$record.price}</div>
+                            <div class="span2">款式<br>{$record.style}</div>
+                            <div class="span6">备注:{$record.remark}</div>
+                        </div>
+                    </div>
+                    <div class="span2">
+                        <!--<button  class="hide-record btn btn-primary" style="margin-top:60px" data-id="{$record.id_checked}">隐藏</button>-->
+                        <if condition="$record['status'] neq 6">
+                            <a href="{:U('Product/check/repost',array('id'=>$record['id_checked']))}" class="btn btn-primary" style="margin-bottom: 5%;">编辑</a><br>
+                            <a class="btn btn-primary js-ajax-delete" href="{:U('Product/check/delete',array('id'=>$record['id_checked']))}" style="margin-bottom: 5%;">删除</a><br>
+                        </if>
+                    </div>
+                </div>
+            </foreach>
+        </section>
+        <else />
+        <section class="vertical content">
+            <foreach name="list" item="record">
+                <div class="content-block span4">
+                    <div class="row-fluid" style="text-align:center;height:180px;">
+                        <a <php>if(!empty($record['img_url'])) echo 'href="'.sp_get_image_preview_url($record['img_url']) . '"';</php> target="_blank">
+                        <img style="height:100%; max-height:180px" src="<php>if(!empty($record['img_url'])) echo sp_get_image_preview_url($record['img_url']);</php>" alt="图裂了">
+                        </a>
+                    </div>
+
+                    <div class="row-fluid content-row-2">
+                        <div class="span4" style="line-height:15px;">
+                            查重时间:<br><php>echo date('Y/m/d', strtotime($record['check_time']));</php>
+                            <br>备案时间:<br><php>echo date('Y/m/d', strtotime($record['record_time']));</php>
+                        </div>
+                        <div class="span4">分类<br>{$record.category_name}</div>
+                        <div class="span4">产品名<br>{$record.title}</div>
+                    </div>
+                    <div class="row-fluid content-row-2">
+                        <div class="span4">部门<br>{$record.department_name}</div>
+                        <div class="span4">广告专员<br>{$record.user_name}</div>
+                        <div class="span4">域名<br>{$record.extra_domain}</div>
+                    </div>
+                    <div class="row-fluid content-row-2">
+                        <!--<div class="span4"><a target="_blank" class="<php>if(empty($record['purchase_url'])) echo 'disable';</php>">采购链接</a></div>
+                        <div class="span4"><a target="_blank"  class="<php>if(empty($record['sale_url'])) echo 'disable';</php>">业务链接</a></div>-->
+                        <div class="span4">可用库存：<br>{$record.stock}</div>
+                        <div class="span4">采购平均单价：<br>{$record.price}</div>
+                        <div class="span4">款式<br>{$record.style}</div>
+                    </div>
+                    <div class="row-fluid content-row-2">
+                        <div class="span12">备注:{$record.remark}</div>
+                    </div>
+                    <button  class="hide-record btn btn-primary" style="width:100%" data-id="{$record.id_checked}">隐藏</button>
+                </div>
+            </foreach>
+        </section>
+    </if>
+
+
+    <div class="pagination">{$page}</div>
+
+
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $(function(){
+        //ajax请求分类数据
+        $.post("{:U('check/ajax_category')}").success(function (ret) {
+            var data = JSON.parse(ret);
+            var setting = {
+                check: {
+                    enable: true,
+                    chkStyle: "checkbox",
+                    chkboxType: {"Y": "ps", "N": "ps"}
+                },
+                data: {
+                    simpleData: {
+                        enable: true,
+                        idKey: "id",
+                        pIdKey: "pId",
+                        rootPId: 0
+                    }
+                }
+            };
+            var tree = $.fn.zTree.init($("#treeDemo"), setting, data);
+            $("#treeDemo").hide();
+            $("#category").click(function () {
+                $("#treeDemo").css('top', $("#category").css('top').replace("px", "") + 40 + "px");
+                $("#treeDemo").css('left', $("#category").css('left'));
+                $("#treeDemo").css('width', $("#category").css('width').replace("px", "") - 10 + "px");
+                $("#treeDemo").slideDown(150);
+            });
+
+            document.addEventListener('click', function (e) {
+                if (e.target && e.target.id == "category") return;
+                if (e.target && $(e.target).parents("ul").hasClass("ztree")) return;
+                $("#treeDemo").slideUp(150);
+            }, false);
+
+            window.getSelectedID = function () {
+                var tree = $.fn.zTree.getZTreeObj("treeDemo");
+                var arr = tree.getCheckedNodes();
+                return arr.map(function (e) {
+                    return e.id
+                }).join(",");
+            }
+
+            window.setSelectedID = function (str) {
+                var ids = str.split(",");
+                var tree = $.fn.zTree.getZTreeObj("treeDemo");
+                tree.checkAllNodes(false);
+                ids.forEach(function (id) {
+                    var node = tree.getNodeByParam('id', id);
+                    tree.checkNode(node, true);
+                });
+            }
+        });
+        $('.searchButton').on('click', function(){
+            var category = getSelectedID();
+            $('input[name="category"]').val(category);
+            $('input[name="show"]').val('display');
+        });
+
+        $('#export').on('click', function(){
+            var category = $('input[name="category"]').val();
+            if ( category == null)
+            {
+                var category = getSelectedID();
+                $('input[name="category"]').val(category);
+            }
+            $('input[name="show"]').val('export');
+        });
+
+        $('.hide-record').on('click', function(){
+            if(!confirm('确定要隐藏？')){
+                return false;
+            }
+            var id = $(this).attr('data-id');
+            $.post("{:U('Product/check/hide')}", {id:id}, function(data){
+                if(data.status === 1){
+                    alert('隐藏成功');
+                    location.reload();
+                }
+            })
+        });
+
+        $('#style').change(function(){
+            $('.searchButton').click();
+        });
+
+        /*   滚动下拉加载分页 */
+        var winH = $(window).height(); //页面可视区域高度
+
+        var scrollHandler = function () {
+            var pageH = $(document.body).height();
+            var scrollT = $(window).scrollTop(); //滚动条top
+            var aa = (pageH - winH - scrollT) / winH;
+//            if (aa < 0.02) {//0.02是个参数
+//                if (i % 10 === 0) {//每10页做一次停顿！
+//                    getData(i);
+//                    $(window).unbind('scroll');
+//                    $("#btn_Page").show();
+//                } else {
+//                    getData(i);
+//                    $("#btn_Page").hide();
+//                }
+//            }
+        }
+        //定义鼠标滚动事件
+        $(window).scroll(scrollHandler);
+
+        /*   滚动下拉加载分页 */
+
+    })
+</script>
+</body>
+</html>

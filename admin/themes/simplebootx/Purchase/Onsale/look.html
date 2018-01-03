@@ -1,0 +1,72 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#">查看上架</a></li>
+    </ul>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <!--<label class="control-label">仓库:</label>-->
+            <!--<select name="id_warehouse" style="width:100px;">-->
+                <!--<option value="0">所有</option>-->
+                <!--<foreach name="warehouse" item="item">-->
+                    <!--<option value="{$key}" <if condition="$key EQ $_GET['id_warehouse']">selected</if>>{$item}</option>-->
+                <!--</foreach>-->
+            <!--</select>-->
+            <label class="control-label">所属仓库:</label><php>echo $warehouse[$datas[0]['id_warehouse']];</php><br>
+            <!--<input type="text" name="purchase_no" value=""/>-->
+            <label class="control-label">采购单:</label><php>echo $datas[0]['purchase_no'];</php>
+            <!--<input type="text" name="purchase_no" value="{$_GET['id_warehouse']}"/>-->
+
+        </div>
+    </form>
+    <fieldset>
+        <form method="post" action=""  class="well form-search">
+            <table class="table table-hover table-bordered table-list order-table">
+                <thead>
+                <tr>
+                    <th>采购单号</th>
+                    <th>SKU</th>
+                    <th>产品名</th>
+                    <th>采购数量</th>
+                    <th>已收货数量</th>
+                    <th>已上架数量</th>
+                    <th>货位</th>
+                    <th>该货位上架数量</th>
+                    <th>备注</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                    <foreach name="datas" item="data">
+                        <php>$i=0;</php>
+                        <tr>
+                            <td>{$data.purchase_no}</td>
+                            <td>{$data.sku}</td>
+                            <td>{$data.title}</td>
+                            <td>{$data.quantity}</td>
+                            <td>{$data.received}</td>
+                            <td>{$data.sum}</td>
+                            <td>{$data.goods_name}</td>
+                            <td>{$data.goods_quantity}</td>
+                            <td>{$data.remark}</td>
+                        </tr>
+                        <php>$i++;</php>
+                    </foreach>
+                </tbody>
+            </table>
+            <div class="form-actions">
+
+                <a class="btn" onclick="history.go(-1);" >{:L('BACK')}</a>
+            </div>
+       </form>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

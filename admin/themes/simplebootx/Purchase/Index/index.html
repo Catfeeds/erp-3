@@ -1,0 +1,367 @@
+<admintpl file="header" />
+<style>
+.searchLayer table td.th {width: 140px;}
+</style>
+</head>
+<body>
+<div class="fixedlayer" style="height: 40px;">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Index/index')}">采购订单</a></li>
+        <li><a href="{:U('Index/create')}">建立采购</a></li>
+    </ul>
+</div>
+<div class="wrap">
+    <div class="customerlayer" style="height: 300px;">
+    <form method="get" action=""  class="well form-search" style="margin-top: -80px;">
+        <div class="searchLayer" style="padding:20px;background-color: #ecf0f1;">
+            <table cellspacing="1">
+                <tr>
+                    <td class="th">部门：</td>
+                    <td>
+                        <select name="depart_id" style="width:100px;height:30px">
+                            <option value="0">所有</option>
+                            <foreach name="depart" item="item">
+                                <option value="{$item.id_department}" <php>echo isset($_GET['depart_id']) && $_GET['depart_id']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <td class="th">仓库：</td>
+                    <td>
+                        <select name="ware_id" style="width:100px;height:30px">
+                            <option value="0">所有</option>
+                            <foreach name="ware" item="item">
+                                <option value="{$item.id_warehouse}" <php>echo isset($_GET['ware_id']) && $_GET['ware_id']==$item['id_warehouse'] ? 'selected' : ''</php>>{$item.title}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <!-- 增加采购员名字筛选 -->
+                    <td class="th">采购员：</td>
+                    <td>
+                        <select name="shop_id" id="shop_id" style="width:100px;height:30px">
+                            <option value="0">所有</option>
+                            <foreach name="shop_users" item="item">
+                                <option value="{$item.id_users}" <php>echo isset($_GET['shop_id']) && $_GET['shop_id']==$item['id_users'] ? 'selected' : ''</php>>{$item.user_nicename}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    <!-- 增加采购员名字筛选 -->
+                    
+                    <td class="th">状态：</td>
+                    <td>
+                        <select name="status_id" style="width:100px;height:30px">
+                            <option value="0">所有</option>
+                            <foreach name="pur_status" item="item" key='key'>
+                                <option value="{$key}" <php>echo isset($_GET['status_id']) && $_GET['status_id']==$key ? 'selected' : ''</php>>{$item}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                    
+                </tr>
+
+                <tr>
+                    <td class="th">采购单号：</td>
+                    <td>
+                        <input type="text" class="tb-hl count_hl" name="pur_num" value="<php>echo $_GET['pur_num']</php>" >
+                    </td>
+                    <td class="th">内部采购单号：</td>
+                    <td>
+                        <input type="text" name="inner_purchase_no" value="{$_GET['inner_purchase_no']}"/>
+                    </td>
+                    <!--
+                    <if condition="$flag eq 1">
+                        <td class="th">采购员：</td>
+                        <td>
+                            <select name="id_users" style="width:100px">
+                                <option value="">全部</option>
+                                <php> foreach($users as $user_id=>$user_name){
+                                    if(empty($user_name)) continue;
+                                    $selected = $_GET['id_users']==$user_id?' selected="selected"':'';
+                                    echo '<option value="'.$user_id.'" '.$selected.'>'.$user_name.'</option>';
+                                    }
+                                </php>
+                            </select>
+                        </td>
+                    </if>
+                    -->
+
+                    <td class="th" >采购渠道订单号：</td>
+                    <td>
+                        <input type="text" name="alibaba_no" value="{$_GET['alibaba_no']}"/>
+                    </td>
+                </tr>
+
+               
+                <tr>
+                    <td class="th">SKU：</td>
+                    <td>
+                        <input type="text" name="sku" value="{$_GET['sku']}"/>
+                    </td>
+                    <td class="th" >采购快递单号：</td>
+                    <td>
+                        <input type="text" name="shipping_no" value="{$_GET['shipping_no']}"/>
+                    </td>
+                    <td class="th" >产品内部名：</td>
+                    <td>
+                        <input type="text" name="pro_name" value="{$_GET['pro_name']}"/>
+                    </td>
+                     
+                </tr>
+                 <tr>
+                    <td class="th">创建时间：</td>
+                    <td colspan="2" style="white-space:nowrap;">
+                        <php>$date = date('Y-m-d', strtotime('-7 days'));</php>
+                        <input type="text" name="start_time" class="js-datetime" value="<php>echo isset($_GET['start_time'])&&$_GET['start_time']?$_GET['start_time']:$date;</php>" style="width: 130px;" autocomplete="off">-
+                        <input type="text" class="js-datetime" name="end_time" value="<php>echo isset($_GET['end_time'])&&$_GET['end_time']?$_GET['end_time']:date('Y-m-d',strtotime('+1 day'));</php>" style="width: 130px;">
+                    </td>
+ 
+                </tr>
+               <tr>
+                    <td class="th">内部采购时间：</td>
+                    <td colspan="2" style="white-space:nowrap;">
+                        <input type="text" name="start_purchase_time" class="js-datetime" value="{$Think.get.start_purchase_time}" style="width: 130px;" autocomplete="off">-
+                        <input type="text" name="end_purchase_time"  class="js-datetime" value="{$Think.get.end_purchase_time}" style="width: 130px;">
+                    </td>
+                    <td><span class="btn btn-primary showstatisticsInfo" style="width: 100px;">显示统计信息</span></td>
+                    
+                </tr>
+            </table>
+            <br/>
+            <button class="btn btn-primary searchButton">搜索</button>
+            <button class="btn btn-primary exportButton">导出</button>
+            <span style="color: red;margin-left: 25px;" id="statisticsInfo"></span>
+        </div>
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <!--<button class="btn btn-primary exportSearchButton">生成打印单</button>-->
+    </form>
+    <fieldset class="well">
+        <div class="table-actions statisticsReport">
+            <select title="" class="selectStatus" name="pur_status" style="margin-bottom: 0;">
+                <option value="2" <php>echo $_GET['pur_channel']==2?'selected="selected"':'';</php>>提交采购单</option>
+                <!--<option value="10" <php>//echo $_GET['pur_channel']==10?'selected="selected"':'';</php>>取消采购单</option>-->
+            </select>
+            <button class="btn btn-primary checkButton">确定</button>
+        </div>
+    </fieldset>
+    <fieldset>
+
+    <table class="table table-hover table-bordered order-table">
+        <thead class="myth1" style="display:none;">
+        <tr>
+            <th><input type="checkbox" value="" id="all" class="checkAllbox js-check-all" style="margin:0">&nbsp采购单号</th>
+            <th>采购内部单号</th>
+            <th>采购快递单号</th>
+            <th>采购渠道订单号</th>
+            <th>内部采购时间</th>
+            <th>仓库</th>
+            <th>供应商</th>
+            <th>广告员</th>
+            <th>产品名</th>
+            <th>SKU</th>
+            <th>属性</th>
+            <th>采购单价</th>
+            <th>采购数量</th>
+            <th>采购金额</th>
+            <th>总金额</th>
+            <th>运费</th>
+            <th>采购渠道</th>
+            <th>状态</th>
+            <th>创建人</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+         <!-- 表头随滚动固定 -->
+         <thead  class="myth2">
+         <tr>
+            <th><input type="checkbox" value="" id="all" class="checkAllbox js-check-all" style="margin:0">&nbsp采购单号</th>
+            <th>采购内部单号</th>
+            <th>采购快递单号</th>
+            <th>采购渠道订单号</th>
+            <th>内部采购时间</th>
+            <th>仓库</th>
+            <th>供应商</th>
+            <th>广告员</th>
+            <th>产品名</th>
+            <th>SKU</th>
+            <th>属性</th>
+            <th>采购单价</th>
+            <th>采购数量</th>
+            <th>采购金额</th>
+            <th>总金额</th>
+            <th>运费</th>
+            <th>采购渠道</th>
+            <th>状态</th>
+            <th>创建人</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+         <!-- 表头随滚动固定 -->
+            <foreach name="proList" item="item">
+                <tr>
+                    <td <php>echo !empty($item['product']) ? 'rowspan="'.count($item['product']).'"' : ''</php>>
+                        <if condition="$item.status eq 1"><input name="purchase_id" class="js-check" type="checkbox" value="{$item.id_purchase}" style="margin:0"></if>&nbsp{$item.purchase_no}
+                    </td>
+                    <td <php>echo !empty($item['product']) ? 'rowspan="'.count($item['product']).'"' : ''</php>>{$item.inner_purchase_no }</td>
+                    <td <php>echo !empty($item['product']) ? 'rowspan="'.count($item['product']).'"' : ''</php>>{$item.shipping_no }</td>
+                    <td <php>echo !empty($item['product']) ? 'rowspan="'.count($item['product']).'"' : ''</php>>{$item.alibaba_no}</td>
+                    <td <php>echo !empty($item['product']) ? 'rowspan="'.count($item['product']).'"' : ''</php>>{$item.inner_purchase_time }</td>
+                    <td <php>echo !empty($item['product']) ? 'rowspan="'.count($item['product']).'"' : ''</php>>{$item.ware_name}</td>
+                    <td <php>echo !empty($item['product']) ? 'rowspan="'.count($item['product']).'"' : ''</php>>{$item.sup_name}</td>
+                    <!-- 广告员 -->
+                    <!--<td <php>echo !empty($item['product']) ? 'rowspan="'.count($item['product']).'"' : ''</php>>{$item['product'][0]['sales_name']}</td>  -->
+                    <td <php>echo !empty($item['product']) ? 'rowspan="'.count($item['product']).'"' : ''</php>>{$users[$item['product'][0]['id_users_sales']]}</td>
+                    
+                    <td><php>echo !empty($item['product']) ? $item['product'][0]['pro_name'] : ''</php></td>
+                    <td><php>echo !empty($item['product']) ? $item['product'][0]['sku'] : ''</php></td>
+                    <td><php>echo !empty($item['product']) ? $item['product'][0]['option_value'] : ''</php></td>
+                    <td><php>echo !empty($item['product']) ? $item['product'][0]['price'] : ''</php></td>
+                    <td><php>echo !empty($item['product']) ? $item['product'][0]['quantity'] : ''</php></td>
+                    <td><php>echo !empty($item['product']) ? $item['product'][0]['price']*$item['product'][0]['quantity'] : ''</php></td>
+                    <td <php>echo !empty($item['product']) ? 'rowspan="'.count($item['product']).'"' : ''</php>>{$item.price}</td>
+                    <td <php>echo !empty($item['product']) ? 'rowspan="'.count($item['product']).'"' : ''</php>>{$item.price_shipping}</td>
+                    <td <php>echo !empty($item['product']) ? 'rowspan="'.count($item['product']).'"' : ''</php>>{$item.pur_channel_name}</td>
+                    <td <php>echo !empty($item['product']) ? 'rowspan="'.count($item['product']).'"' : ''</php>>{$item.status_name}</td>
+                    <td <php>echo !empty($item['product']) ? 'rowspan="'.count($item['product']).'"' : ''</php>>{$item.user_nicename}</td>
+                    <td <php>echo !empty($item['product']) ? 'rowspan="'.count($item['product']).'"' : ''</php>>
+                        <a href="{:U('index/look',array('id'=>$item['id_purchase']))}">查看</a>
+                    <if condition='$item.status eq 1 or $item.status eq 4 or $item.status eq 6'>
+                            <a href="{:U('index/edit',array('id'=>$item['id_purchase']))}">编辑</a>
+                        </if>
+                        <if condition="$item.status eq 5">
+                            <a target="_blank" href="{:U('index/get_purchase_dy',array('id'=>$item['id_purchase']))}">生成打印单</a>
+                        </if>
+                        <if condition="$item.status eq 1 or $item.status eq 2 or $item.status eq 3 or $item.status eq 4 or $item.status eq 6">
+                            <a href="javascript:;" purid="{$item.id_purchase}" class="invalid">取消</a>
+                        </if>
+                    </td>
+                </tr>
+                <php>
+                    if(!empty($item['product'])){
+                        unset($item['product'][0]);
+                        $html = '';
+                        foreach($item['product'] as $k=>$v) {
+                            $html .= '<tr>';
+                            $html .= '<td>'.$v['pro_name'].'</td>';
+                            $html .= '<td>'.$v['sku'].'</td>';
+                            $html .= '<td>'.$v['option_value'].'</td>';
+                            $html .= '<td>'.$v['price'].'</td>';
+                            $html .= '<td>'.$v['quantity'].'</td>';
+                            $html .= '<td>'.$v['price']*$v['quantity'].'</td>';
+                            $html .= '</tr>';
+                        }
+                        echo $html;
+                    }
+                </php>
+            </foreach>
+         </table>
+        <div class="pagination">{$page}</div>
+       <div style="margin-bottom:5%"></div>
+    </fieldset>
+  </div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $("#all").click(function(){
+        if(this.checked){
+            $("td :checkbox").prop("checked", true);
+        }else{
+            $("td :checkbox").prop("checked", false);
+        }
+    });
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"/Purchase/Index/index");
+    });
+    $('.exportButton').click(function(){
+        $('.form-search input[name=a]').attr('value','export_index_search');
+        $('.form-search').attr('action',"/Purchase/Index/export_index_search");
+    });
+    
+    $('.checkButton').click(function(){
+        var pur_id = [];
+        $("input[name=purchase_id]:checked").each(function(){
+            pur_id.push($(this).attr('value'));
+        });
+        if(pur_id.length==0){alert('请至少选择一个采购单');return false;}
+        if (confirm('确定要提交？')) {
+            $.ajax({
+                url:"{:U('Index/update_pur_status')}",
+                type:'POST',
+                dataType:'json',
+                data:{'pur_id':pur_id,'pur_status':$('.selectStatus').val()},
+                success:function(data){
+                    if(data.status == 1) {
+                        alert(data.message);
+                        window.location.reload();
+                    }
+                }
+            });
+        }
+    });
+    
+    $('.invalid').click(function () {
+        var pru_id = $(this).attr('purid');
+        if (confirm('确定要取消？')) {
+            $.ajax({
+                url:"{:U('Index/get_invalid')}",
+                type:'POST',
+                dataType:'json',
+                data:{'id':pru_id,'status':10},
+                success:function($data){
+                    if($data.flag == 1) {
+                        alert($data.msg);
+                        window.location.reload();
+                    }
+                }
+            })
+        }
+    });
+
+    $('.showstatisticsInfo').click(function () {
+        var data=$('.form-search').serializeArray();
+//        var shop_user = $("#shop_id").val();
+//        alert(data);
+//        return false;
+        $('#statisticsInfo').html('');
+        $.ajax({
+            url:"{:U('Index/index')}",
+            type:'get',
+            dataType:'json',
+            data:{'data':data,'isajax':1},
+            success:function(data){
+                var tipstr='采购订单总数量 '+data.totalcnt+',采购产品总数量：'+data.totalpp+',采购总价：'+data.totalprice+',运费总价：'+data.totalshipping;
+                $('#statisticsInfo').html(tipstr);
+            }
+        })
+    
+    });
+    
+     /* 表头随滚动固定 */
+    $(function(){
+        var thtop,thleft,thwidth,thadd,alltd,myW;
+        var he=$(".fixedlayer");
+        var me=$(".order-table .myth1");
+        thtop=he.height()+parseInt(he.css("padding-top"))+"px";
+        thleft=he.css("left");
+        thwidth=$(".myth2").css("width");
+        thadd=$(".myth2").offset().top;
+        alltd=$(".myth2 tr").find("th");
+        for(var i=0;i<alltd.length;i++){
+            myW=alltd.eq(i).width();
+            me.find("th").eq(i).width(myW);
+        }
+        $(window).scroll(function(){
+            var scrollH=$(window).scrollTop();
+            if(scrollH>thadd){
+               me.css({"top":thtop,"left":thleft,"width":thwidth,"position":"fixed","z-index":"3","background-color":"#fff","display":"block"});
+            }else{
+               me.css({"top":"auto","left":"auto","width":"auto","position":"static","z-index":"1","display":"none"});
+            }
+        });
+        
+    })
+    
+</script>
+</body>
+</html>

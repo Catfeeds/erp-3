@@ -1,0 +1,87 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="id_department" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="department" item="item">
+                    <option value="{$item.id_department}" <php>echo isset($_GET['id_department']) && $_GET['id_department']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                </foreach>
+            </select>
+            <label class="control-label">仓库:</label>
+            <select name="id_warehouse" style="width:100px;">
+                <option value="0">所有</option>
+                <foreach name="warehouse" item="item">
+                    <option value="{$key}" <if condition="$key EQ $_GET['id_warehouse']">selected</if>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">建立日期:</label>
+            <input type="text" name="start_time" class="js-datetime" value="<php>echo $_GET['start_time'];</php>" style="width: 120px;" autocomplete="off">-
+            <input type="text" class="js-datetime" name="end_time" value="<php>echo $_GET['end_time'];</php>" style="width: 120px;">
+            <button class="btn btn-primary searchButton">搜索</button>
+        </div>
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th>日期</th>
+            <th>总订单</th>
+            <th>有效订单</th>
+            <th>无效订单</th>
+            <th>未处理</th>
+            <th>待处理</th>
+            <!--<th>配送中</th>-->
+            <th>待审核</th>
+            <th>未配货</th>
+            <th>配货中</th>
+            <th>缺货</th>
+            <th>已配货</th>
+            <th>配送中</th>
+            <th>已签收</th>
+            <th>已退货</th>
+            <th>重复下单</th>
+            <th>信息不完整</th>
+            <th>恶意下单</th>
+            <th>客户取消</th>
+            <th>质量问题/产品破损</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="item">
+            <tr>
+                <td>{$item.set_date}</td>
+                <td>{$item.total}</td>
+                <td>{$item.effective}</td>
+                <td>{$item.invalid}</td>
+                <td>{$item.status1}</td>
+                <td>{$item.status2}</td>
+                <td>{$item.status3}</td>
+                <td>{$item.status4}</td>
+                <td>{$item.status5}</td>
+                <td>{$item.status6}</td>
+                <td>{$item.status7}</td>
+                <td>{$item.status8}</td>
+                <td>{$item.status9}</td>
+                <td>{$item.status10}</td><td>{$item.status11}</td>
+                <td>{$item.status12}</td><td>{$item.status13}</td>
+                <td>{$item.status14}</td><td>{$item.status15}</td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+
+    <div class="pagination">{$page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+</script>
+</body>
+</html>

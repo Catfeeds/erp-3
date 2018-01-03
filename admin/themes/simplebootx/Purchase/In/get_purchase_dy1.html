@@ -1,0 +1,180 @@
+<admintpl file="header" />
+<title>采购单</title>
+</head>
+<body>
+<style>
+    .form-horizontal .controls {
+        line-height: 29px;
+        margin-left: 138px;
+    }
+    .form-horizontal .control-group {
+        margin-bottom: 5px;
+    }
+    .form-horizontal .control-label {
+        width: 130px
+    }
+</style>
+<div class="wrap">   
+    <div class="form-horizontal">
+        <h2 style="text-align: center">采购入库单</h2>
+        <!--
+        <div class="control-group">
+            <label class="control-label">采购单号：</label>
+            <div class="controls" style="width: 30%;float: left;    margin-left: 20px;">
+                {$data.purchase_no}
+            </div>
+            <label class="control-label">收货仓库：</label>
+            <div class="controls" >
+                {$warehouses[$data['id_warehouse']]}
+            </div>
+
+        </div>
+        <div class="control-group">
+
+
+            <label class="control-label">入库时间：</label>
+            <div class="controls" style="width: 30%;float: left;    margin-left: 20px;">
+                {$data['updated_at']}
+
+            </div>
+            <label class="control-label">供应商：</label>
+            <div class="controls">
+                {$supplier_name.title}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">入库单号：</label>
+            <div class="controls" style="width: 30%;float: left;    margin-left: 20px;">
+                {$data.inner_purchase_no}
+            </div>
+        </div>
+    -->
+        <div class="control-group">
+            <label class="control-label" style="font-weight:bold;">采购入库基本信息：</label>
+        </div>
+        <!-- 重构查看表单信息start zx 12/02 -->
+        <table class="table table-hover table-bordered table-list" border="1" style="border-collapse:collapse;text-align:center">
+            <thead>
+                <tr>
+                    <th>内部采购单号</th>
+                    <th>采购单号</th>
+                    <th>收货仓库</th>
+                    <th>采购状态</th>
+                    <th>付款渠道</th>
+                    <th>单据类型</th>
+                    <th>所属部门</th>
+                    <th>创建员工</th>
+                    <th>供应商</th>
+                    <th>采购快递单号</th>
+                    <th>采购总价格</th>
+                    <th>本次采购运费</th>
+                    <th>快递单号</th>
+                    <th>预计发货时间</th>
+                    <th>预计到货时间</th>
+                    <th>建立日期</th>
+                    <th>更新日期</th>
+                    <th>采购渠道</th>
+                    <th>备注</th>
+                </tr>
+            </thead>
+            <tbody>
+                    <tr>
+                        <td>{$purchase_list.inner_purchase_no}</td>
+                        <td>{$purchase_list.purchase_no}</td>
+                        <td>{$warehouses[$purchase_list['id_warehouse']]}</td>
+                        <td>{$_status[$purchase_list['status']]}</td>
+                        <td><?php echo $purchase_list['payment']&&$purchase_list['payment']==1?'货到付款':'通道付款'?></td>
+                        <td>{$_billtype[$purchase_list['billtype']]}</td>
+                        <td>{$departments[$purchase_list['id_department']]}</td>
+                        <td>{$users[$purchase_list['id_users']]}</td>
+                        <td>{$supplier_name.title}</td>
+                        <td>{$purchase_list.shipping_no}</td>
+                        <td>{$purchase_list.price}</td>
+                        <td>{$purchase_list.price_shipping}</td>
+                        <td>{$purchase_list.shipping_no}</td>
+                        <td><php>echo date('Y-m-d',strtotime($purchase_list['date_from']));</php></td>
+                        <td><php>echo date('Y-m-d',strtotime($purchase_list['date_to']));</php></td>
+                        <td><php>echo date('Y-m-d',strtotime($purchase_list['created_at']));</php></td>
+                        <td><php>echo date('Y-m-d',strtotime($purchase_list['updated_at']));</php></td>
+                        <td>{$purchase_list.purchase_channel}</td>
+                        <td>{$purchase_list.remark}</td>
+                    </tr>
+            </tbody>
+        </table>
+        <br/>
+            
+        <div class="control-group">
+            <label class="control-label" style="font-weight:bold;text-align: left;">详细信息：</label>
+        </div>
+        <!-- 重构查看表单信息end -->
+
+        <table class="table table-hover table-bordered table-list" border="1" style="border-collapse:collapse;">
+            <thead>
+                <tr>
+                    <th style="text-align:center">序号</th>
+                    <th style="text-align:center">产品SKU</th>
+                    <th style="text-align:center">内部名称</th>
+                    <th style="text-align:center">属性</th>
+                    <th style="text-align:center">采购数量</th>
+                    <th style="text-align:center">到货数量</th>
+                    <th style="text-align:center">总到货数量</th>
+                    <th style="text-align:center">备注</th>
+                </tr>
+            </thead>
+            <tbody>
+                <foreach name="product" item="item" key="key">
+                    <tr>
+                        <td style="text-align:center"><php>echo $key+1</php></td>
+                        <td style="text-align:center">{$item.sku}</td>
+                        <td style="text-align:center">{$item.inner_name}</td>
+                        <td style="text-align:center">{$item.option_value}</td>
+                        <td style="text-align:center">{$item.quantity}</td>
+                        <td style="text-align:center">{$item.received}</td>
+                        <td style="text-align:center">{$item.total_received_num}</td>
+                        <td style="text-align:center">{$item.remark}</td>
+                    </tr>
+                </foreach>
+                    <!-- 统计 -->
+                    <tr style="color:red;">
+                        <td style="text-align:center" colspan="4">总计：</td>
+                        <td style="text-align:center">{$data['totalquantity']}</td>
+                        <td style="text-align:center">{$data['totalreceived']}</td>
+                        <td style="text-align:center">{$data['totalreceivednum']}</td>
+                        <td style="text-align:center"></td>
+                    </tr>
+                    <!-- 统计 -->
+            </tbody>
+        </table>
+        <div class="control-group">
+            <label class="control-label">收货人:</label>
+            <div class="controls" style="width: 40%;float: left;    margin-left: 20px;">
+             ___________
+            </div>
+            <!--
+            <label class="control-label">总计：</label>
+            <div class="controls">
+                {$data['totalreceived']}
+            </div>
+            -->
+        </div>
+
+    </div>
+</div>
+<!--<input type='hidden' name='session_value' id='add' value="">-->
+<script src="__PUBLIC__/js/common.js"></script>
+<script src='__PUBLIC__/js/jQuery.print.js'></script>
+<script src='__PUBLIC__/js/jquery.barcode/jquery-barcode.js'></script>
+<script src="/public/js/jquery.ui/jquery-ui.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        HideWeekMonth()
+
+    })
+    function HideWeekMonth()
+    {
+        $("#think_page_trace_open").hide();
+    }
+
+</script>
+</body>
+</html>

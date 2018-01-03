@@ -1,0 +1,68 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Index/shipping_list')}">物流列表</a></li>
+    </ul>
+    <form method="get" action="" class="well form-search js-ajax-form">
+        <label class="control-label">物流名称：</label>
+        <input type="text" name="title" placeholder="请输入您要搜索的物流名称" value="{:I('request.title','')}"/>
+        <label class="control-label">状态：</label>
+        <select name="status" id="status" style="width: 80px;">
+            <option value="">全部</option>
+            <option value="1" <php>echo isset($_GET['status'])&&$_GET['status']==1?'selected':'';</php>>开启</option>
+            <option value="2" <php>echo isset($_GET['status'])&&$_GET['status']==2?'selected':'';</php>>关闭</option>
+        </select>
+        <button class="btn btn-primary searchButton">搜索</button>
+    </form>
+
+    <fieldset>
+        <table class="table table-hover table-bordered table-list">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>名称</th>
+                <th>跟踪地址</th>
+                <th>公司地址</th>
+                <th>联系电话</th>
+                <th>网络渠道</th>
+                <th>在物流注册账号</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <foreach name="shipping_list" item="shipping">
+                <tr>
+                    <td>{$shipping.id_shipping}</td>
+                    <td>{$shipping.title}</td>
+                    <td>{$shipping.track_url}</td>
+                    <td>{$shipping.address}</td>
+                    <td>{$shipping.tel}</td>
+                    <td>{$shipping.channels}</td>
+                    <td>{$shipping.register_account}</td>
+                    <td><php>echo $shipping['status']==1?'开启':'<span style="color:red;">关闭</span>';</php></td>
+                    <td>
+                        <a class="btn btn-primary" href="{:U('Index/edit_shipping',array('id_shipping'=>$shipping['id_shipping']))}">编辑</a>
+                        <a class="btn btn-primary" href="{:U('Index/track_list',array('id_shipping'=>$shipping['id_shipping']))}">运单号库</a>
+                        <a class="js-ajax-delete btn" href="{:U('Index/delete_shipping',array('id_shipping'=>$shipping['id_shipping']))}">删除</a>
+                    </td>
+
+                </tr>
+            </foreach>
+            </tbody>
+        </table>
+        <div class="pagination">{$Page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+       $('.form-search input[name=a]').attr('value','index');
+       $('.form-search').attr('action',"{:U('Shipping/Index/shipping_list')}");
+       $('.form-search').submit();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">部门:</label>
+            <select name="department_id" id="department_id" style="width:140px">
+                <option value="">请选择部门</option>
+                <foreach name="department" item="item" key="id_department">
+                    <option value="{$id_department}" <php>echo isset($_GET['department_id']) && $_GET['department_id']==$id_department ? 'selected' : ''</php>>{$item}</option>
+                </foreach>
+            </select>
+            <label class="control-label">建立日期:</label>
+            <input type="text" name="start_time" class="js-date" value="<php>echo $_GET['start_time'];</php>"
+                   style="width: 120px;" autocomplete="off">
+            <button class="btn btn-primary searchButton">搜索</button>
+        </div>
+    </form>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list" style=" margin-bottom: 100px;">
+        <thead>
+        <tr>
+            <th>部门</th>
+            <th>订单总量</th>
+           <!-- <th>审单数</th>-->
+            <th>超时审单数</th>
+            <th>
+
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="item" key="director">
+            <tr>
+                <td>{$department[$item['id_department']]}</td>
+                <td>{$item['total']}</td>
+              <!--  <td>{$item['check']}</td>-->
+                <td> {$item['overorder']}</td>
+                <td>
+                    <php>if($item['total']>0){
+                        echo '<a href="'.U('Warehouse/Statistics/every_day_checkorder_detail',array('department_id'=>$item['id_department'],'start_time'=>$_GET['start_time'])).'">详情</a>';
+                        }</php>
+
+                </td>
+            </tr>
+        </foreach>
+        <div class="pagination">{$page}</div>
+        </tbody>
+    </table>
+
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search').attr('action',"{:U('Statistics/every_day_checkorder')}");
+    });
+    $('.exportButton').click(function(){
+        $('.form-search').attr('action',"{:U('Statistics/export_every_day_checkorder')}");
+    });
+</script>
+</body>
+</html>

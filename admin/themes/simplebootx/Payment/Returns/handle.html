@@ -1,0 +1,340 @@
+<admintpl file="header" />
+</head>
+<body style="overflow: hidden;">
+
+<style>
+.fixedlayer {
+    position: fixed;
+    top: 0px;
+    left: 20px;
+    right: 20px;
+    padding-top: 20px;
+    background-color: #fff;
+    z-index: 10;
+}
+.buttonLayer {margin-bottom: 10px;  background-color: #fff;}
+
+.customerlayer {height: 100%; padding-top: 220px; }
+.fixedlayer .pagination { margin-top: 10px; margin-bottom: 0px; }
+.searchLayer {border: solid 1px #ddd; margin-bottom: 10px; }
+#id_warehouse{height: 30px;}
+.searchLayer input,.searchLayer select{height: 30px;}
+.searchLayer table {width: 100%; background-color: #fff; border-spacing: 1px !important; border-collapse: separate; font-family: "宋体"; table-layout: fixed; }
+.searchLayer table td {padding: 5px; margin: 1px; width: auto; }
+.searchLayer table td.th {background: #f1f1f1; width: 80px; }
+.searchLayer input[type="text"] {margin-bottom: 0px; border: none; box-shadow: none; border-bottom: solid 1px #ddd; border-radius: 0px; outline: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+.searchLayer select {margin-bottom: 0px; border-radius: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; outline: 0px;  line-height: 20px;}
+
+.tableLayer {width: 100%; overflow: scroll; height: 480px; }
+.tableLayer table{width: 100%}
+.tableLayer table th {border: solid 1px #ddd; padding: 10px; font-weight: bold; background: #f1f1f1; }
+.tableLayer table td {border: solid 1px #ddd; padding: 10px;word-wrap:break-word;word-break:break-all;white-space: normal; }
+.ctab-panel {width: 100%; position: relative; margin-bottom: 10px; }
+.ctab-head {height: 40px; }
+.ctab-head > a {display: inline-block; color: #333; padding: 0px 10px; line-height: 40px; }
+.ctab-head > a.active {border: solid 1px #ddd; border-bottom: none; background-color: #fff; border-top: solid 2px #3daae9; }
+.ctab-body {border: solid 1px #ddd; padding: 10px; }
+.btn a{color: white;text-decoration: none;}
+</style>
+<form method="get" action=""  id="form-search">
+<div class="fixedlayer">
+    <div class="searchLayer">        
+        <input type="hidden" name="page" value="">
+        <table cellspacing="1">
+            <tr>
+                <td class="th"  >订单号:</td>
+                <td ><input type="text" style="width: 150px;" name="keywords" value="{$getData['keywords']?$getData['keywords']:''}"></td>
+                <td class="th"  >运单号:</td>
+                <td ><input type="text" style="width: 150px;" name="track_number" value="{$getData['track_number']?$getData['track_number']:''}"></td>                
+                <td class="th"  >申请时间:</td>
+                <td><input class="js-date date" name="start_time" value="{$getData['start_time']}" style="width: 90px;" autocomplete="off" type="text">
+                -
+                <input class="js-date date" name="end_time" value="{$getData['end_time']}" style="width: 90px;" type="text" autocomplete="off">          </td>
+                <td class="th"  >审核时间:</td>
+                <td><input class="js-date date" name="check_start_time" value="{$getData['check_start_time']}" style="width: 90px;" autocomplete="off" type="text">
+                -
+                <input class="js-date date" name="check_end_time" value="{$getData['check_end_time']}" style="width: 90px;" type="text" autocomplete="off">          </td> 
+                 </tr>
+                 <tr>                                     
+                <td class="th"  style="width: 60px;">物流企业：</td>
+                <td >
+                    <select name="id_shipping" id="id_shipping">
+                    <option value="">--选择--</option>
+                    <foreach name="shipList" item="ship" key="id" >      
+                    <option value="{$id}" {$id==$getData['id_shipping']?'selected':''}>{$ship}</option>      
+                    </foreach>            
+                    </select>
+                </td> 
+
+               <td class="th"  style="width: 60px;">业务部门：</td>
+                <td >
+                    <select name="id_department" id="id_department">
+                    <option value="">--选择--</option>
+                    <foreach name="departmentList" item="department" key="id" >      
+                    <option value="{$id}" {$id==$getData['id_department']?'selected':''}>{$department}</option>      
+                    </foreach>            
+                    </select>
+                </td>                                          
+                <!-- <td class="th"  >退换货方式:</td> -->
+       <!--          <td ><select name="type"><option value="0">请选择</option><option {$getData['type']==1?'selected="selected"':''} value="1">退货</option><option {$getData['type']==2?'selected="selected"':''} value="2">换货</option></select></td>   -->
+                <td class="th"  >申请状态:</td>
+                <td ><select name="status"><option value="0">请选择</option><option {$getData['status']==1?'selected="selected"':''}  value="1">待审核</option><option {$getData['status']==2?'selected="selected"':''}  value="2">申请通过</option><option {$getData['status']==3?'selected="selected"':''}  value="3">申请失败</option></select></td>    
+                 <td>        <button class="btn btn-primary searchButton" >查询</button></td> 
+                 <td> <span class="btn btn-primary exportButton" >导出</span></td>
+                                    
+            </tr>
+  
+        </table>
+        
+    </div> 
+    <div class="buttonLayer">
+
+    </div>     
+    <div class="pagination">{$page}<input type="text" value="" name="displayRow" placeholder="输入每页显示{$getData['displayRow']}数">
+        <input type="button" class="btn btn-small searchButton submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">
+    </div>                     
+</div>
+</form>
+
+<div class="wrap">
+
+    <div class="customerlayer">
+        <div class="ctab-panel">
+
+            <div class="ctab-body">
+                <div class="tableLayer">
+                    <table>
+                        <thead>
+                            <tr>
+                                <!-- <th><input type="checkbox" class="allChecked" > </th> -->
+                                <th>订单编号</th>
+                                <th>运单号</th>
+                                <th>商品信息</th>
+                                
+                           <!--      <th>商品属性</th>
+                              <th>数量</th> -->
+                                <th>总价</th>
+                                <th>物流企业</th>
+                                <th>业务部门</th>
+                                <th>域名</th>
+                                <th>退换货方式</th>
+                                <th>退换货原因</th>
+                                <th>是否回收</th>
+                                <th>退款金额</th>                                
+                                <th>申请来源</th>
+                                <th>申请状态</th>                                
+                                <th>申请人</th>
+                                <th>申请时间</th>
+                                <th>申请备注</th>
+                                <th>审核人</th>
+                                <th>审核时间</th>                                
+                                <th>审核备注</th>
+
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <foreach name="orderList" item="item" key='key'>
+                                <tr>
+                                    <!-- <td><input type="checkbox" class="{$inventory['status']==2?'nocheked':''} checkItem"  value="{$inventory.id}"  {$inventory['status']==2?"disabled":''}> </td> -->
+                                    <td> <a target="blank" href="/payment/Index/info/id/{$item.id_order}">{$item.id_increment}</a></td>
+                                    <td> {$item.track_number}</td>
+                                    <td style="width: 210px">
+                                        <foreach name="item.products" item="product" key='key'>
+                                        {$product.product_title}({$product.attrs_title}<span style="color:red;"> x </span>{$product.quantity} )<hr style="margin:2px 0;color:green;border: 1px solid;">
+                                        </foreach>
+                                    </td>
+                                    
+                                    <td class="total_price">{$item.total_price}
+                                      
+                                    </td>  
+                                    <td>{$shipList[$item['id_shipping']]}</td>
+                                    <td>{$departmentList[$item['id_department']]}</td>
+                                    <td>{$domainList[$item['id_domain']]}</td>
+                                    <td> {$item['type']==1?'退货':'换货'}</td>
+                                    <td> {$reasonarr[$item['reason']]}</td>
+
+                                    <td>  <if condition="$item['recycle'] eq 1 ">是</if>  <if condition="$item['recycle'] eq 2">否</if> </td>
+                                    <td> {$item['refundmoney']}</td>
+                                    <td> {$sourcearr[$item['source']]}</td>
+                                    <td>{$statusarr[$item['status']]}</td>                                    
+                                    <td>{$userNames[$item['ownerid']]}</td>
+                                    <td>{$item['creationdate']}</td>
+                                    <td style="width: 70px">{$item['apply_remark']}</td>
+                                    <td>{$userNames[$item['statuserid']]}</td>
+                                    <td>{$item['statusdate']=='0000-00-00 00:00:00'?'':$item['statusdate']}</td>
+                                    
+                                    <td  style="width: 70px">{$item['check_remark']}</td>
+                                    <td>
+                                        <input type='hidden' class='id' name="id" value="{$item.id}">
+                                        <input type='hidden' class='type' name="type" value="{$item.type}">                                        
+                                        <input type='hidden' class='id_increment' name="id_increment" value="{$item.id_increment}">
+                                        <if condition="$item['status'] eq 1 ">
+                                        <input type='button' class="btn btn-primary pass btn_order" value="申请通过">
+                                        <input style="margin-top: 6px;" type='button' class="btn btn-primary fail btn_order" value="申请失败">
+                                        
+                                        <!-- <input type='button' class="btn btn-primary remark btn_order" value="申请失败"><br/><br/> -->
+                                        </if>
+                                                                                                     
+                                        
+                                        <!-- <input type='button' class="btn btn-primary exchange btn_order" value="换货"> -->
+                                    </td>
+
+                                </tr>
+                            </foreach>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    
+    </div>
+
+</div>
+
+
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/artDialog/artDialog.js"></script>
+<script src="__PUBLIC__/js/jquery.stickytableheaders.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        var top=$('.fixedlayer').height();
+        var height_screen=document.body.clientHeight ;
+        $('.tableLayer').height(height_screen-top-80);
+        $('.customerlayer').css('padding-top',top+50);
+        $(".tableLayer table").stickyTableHeaders({scrollableArea: $('.tableLayer')});
+    });
+
+    $('.searchButton').on('click',function(){
+        $('#form-search').attr('action',"{:U('Payment/Returns/handle')}");        
+        $('#form-search').trigger('submit');
+        
+    });
+  
+
+    $('.remark').on('click',function(){
+        var orderobj={};
+        orderobj.id=$(this).siblings('.id').val();
+        orderobj.id_increment=$(this).siblings('.id_increment').val();
+        orderobj.type=$(this).siblings('.type').val();
+        orderobj.check_remark=$(this).siblings('.check_remark').val();
+        $.ajax({
+            url:"{:U('Returns/submitRemark')}",
+            type:'POST',
+            dataType:'json',
+            data:{'orderdata':orderobj},
+            success:function(data){
+                console.log(data);
+                if(data.status == 1) {                               
+                    alert(data.message);                                                                 
+                    window.location.reload();
+                }else{
+                    alert(data.message); 
+                }
+            }
+        });          
+    });
+
+      var failtiphtml='备注&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;信息： <textarea id="check_remark_fail" style="width:190px;height: 60px;" placeholder="请填写备注信息" name="check_remark" rows="3" cols="18"></textarea>'; 
+
+    $('.fail').on('click',function(){
+        var orderobj={};
+        orderobj.id=$(this).siblings('.id').val();
+        orderobj.id_increment=$(this).siblings('.id_increment').val();
+        orderobj.type=$(this).siblings('.type').val(); 
+        orderobj.status=3;
+        var total_price=$(this).parent('td').siblings('.total_price').html();
+        // if (confirm('确定要拒绝该申请！')) {
+        art.dialog({
+                id:'menu_4834783', 
+                title:'确定要拒绝该申请！', content:failtiphtml,
+                lock:true, 
+                okVal: "确定",
+                ok: function () { 
+                    orderobj.check_remark=$('#check_remark_fail').val();                 
+                    $.ajax({
+                        url:"{:U('Returns/handleApply')}",
+                        type:'POST',
+                        dataType:'json',
+                        data:{'orderdata':orderobj},
+                        success:function(data){
+                            if(data.status == 1) {                               
+                                alert(data.message);                                                                 
+                                window.location.reload();
+                            }else{
+                                alert(data.message); 
+                            }
+                        }
+                    });
+
+                },
+                cancelVal: "取消",
+                cancel: function () { }         
+              });  
+    // }
+    });
+
+    var tiphtml='是否回收商品：<select id="recycle"><option value="1">是</option><option value="2">否</option></select> <br/>退款&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;金额：<input class=" " id="refundmoney" value="" style="width: 200px;" type="text" ><br/>备注&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;信息： <textarea id="check_remark" style="width:190px;height: 60px;" placeholder="请填写备注信息" name="check_remark" rows="3" cols="18"></textarea>';   
+    
+    $('.pass').on('click',function(){
+        var orderobj={};
+        orderobj.id=$(this).siblings('.id').val();
+        orderobj.id_increment=$(this).siblings('.id_increment').val();
+        orderobj.type=$(this).siblings('.type').val(); 
+        orderobj.status=2;
+        var total_price=$(this).parent('td').siblings('.total_price').html();
+        art.dialog({
+                id:'menu_4834783', 
+                title:'审核处理', content:tiphtml,
+                lock:true, 
+                okVal: "确定",
+                ok: function () { 
+                    orderobj.recycle=$('#recycle').val();
+                    orderobj.refundmoney=$('#refundmoney').val();
+                    orderobj.check_remark=$('#check_remark').val();
+                   var re = /^\d+(\.\d*)?$/ ;               
+                    if(!re.test(orderobj.refundmoney)){
+                        alert('请填写正确的金额数！');
+                        return false;
+                    } 
+                    if(parseFloat(orderobj.refundmoney)>parseFloat(total_price)){
+                        alert('金额数不能大于订单总价！');return false;
+                    }
+                    $.ajax({
+                        url:"{:U('Returns/handleApply')}",
+                        type:'POST',
+                        dataType:'json',
+                        data:{'orderdata':orderobj},
+                        success:function(data){
+                            if(data.status == 1) {                               
+                                alert(data.message);                                                                 
+                                window.location.reload();
+                            }else{
+                                alert(data.message); 
+                            }
+                        }
+                    });
+
+                },
+                cancelVal: "取消",
+                cancel: function () { }         
+              });  
+    });
+     
+
+
+    $('.exportButton').on('click',function(){
+        $('#form-search').attr('action',"{:U('Payment/Returns/exportApply')}");
+        $('#form-search').trigger('submit');        
+    });
+ 
+
+
+
+
+</script>
+</body>
+</html>

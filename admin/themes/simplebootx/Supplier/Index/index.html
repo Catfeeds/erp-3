@@ -1,0 +1,64 @@
+<admintpl file="header" />
+</head>
+<body>
+    <div class="wrap js-check-wrap">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="{:U('index/index')}">供应商名称</a></li>
+            <li><a href="{:U('index/add')}">添加供应商</a></li>
+        </ul>
+        <form method="get" action=""  class="well form-search">
+            <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+            <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+            <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+            <label class="control-label">供应商名称:</label>
+            <input type="text" name="sname" style="width: 200px;" value="{:I('request.sname/s','')}" >
+            <if condition="$flag eq 1">
+            <label class="control-label">采购员:</label>
+            <select name="id_users" style="width:100px">
+                <option value="">全部</option>
+                <php> foreach($users as $user_id=>$user_name){
+                    if(empty($user_name)) continue;
+                        $selected = $_GET['id_users']==$user_id?' selected="selected"':'';
+                    echo '<option value="'.$user_id.'" '.$selected.'>'.$user_name.'</option>';
+                    }
+                </php>
+            </select>
+            </if>
+            <button class="btn btn-primary searchButton">搜索</button>
+        </form>
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th width="30">ID</th>
+                    <th align="left">供应商名</th>
+                    <th align="left">供应商网址</th>
+                    <th align="left">地址</th>
+                    <th align="left">电话</th>
+                    <th align="left">采购交货期</th>
+                    <th align="left">采购员</th>
+                    <th width="120">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            <foreach name="suppliers" item="vo">
+                <tr>
+                    <td>{$vo.id_supplier}</td>                                                
+                    <td>{$vo.title}</td>
+                    <td>{$vo.supplier_url}</td>
+                    <td>{$vo.addr}</td>
+                    <td>{$vo.phone}</td>
+                    <td>{$vo.delivery}</td>
+                    <td>{$vo.uname}</td>
+                    <td>
+                        <a href="{:U('index/edit',array('id'=>$vo['id_supplier']))}">{:L('EDIT')}</a>
+                        <!--<a class="js-ajax-delete" href="{:U('index/delete',array('id'=>$vo['id_supplier']))}">{:L('DELETE')}</a>-->
+                    </td>
+                </tr>
+            </foreach>
+            </tbody>
+        </table>
+        <div class="pagination">{$Page}</div>
+    </div>
+    <script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

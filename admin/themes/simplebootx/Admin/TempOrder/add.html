@@ -1,0 +1,94 @@
+<admintpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('Admin/TempOrder/index')}">订单列表</a></li>
+			<li class="active"><a href="{:U('Admin/TempOrder/add')}">添加订单</a></li>
+            <li  ><a>添加采购</a></li>
+            <li   ><a>添加发货</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('Admin/TempOrder/add')}">
+			<input type="hidden" name="order_id" value="{$info.id}" >
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">订单号:</label>
+			 		<div class="controls">
+			 		<input type="text" name="order_no" value="{$info.order_no}">
+					<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">域名:</label>
+					<div class="controls">
+						<input type="text" name="domain" value="{$info.domain}" >
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">货号:</label>
+					<div class="controls">
+						<input type="text" name="spu_no" id="spu_no" value="{$info.spu_no}" >
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">属性:</label>
+					<div class="controls">
+						<input type="text" name="attr" id="attr" value="{$info.attr}" >
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">赠品货号:</label>
+					<div class="controls">
+						<input type="text" name="zs_spu_no" id="zs_spu_no" value="{$info.zs_spu_no}" >
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">赠品属性:</label>
+					<div class="controls">
+						<input type="text" name="zs_attr" id="zs_attr" value="{$info.zs_attr}">
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">收货人:</label>
+					<div class="controls">
+						<input type="text" name="name" id="name" value="{$info.address}">
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">电话:</label>
+					<div class="controls">
+						<input type="text" name="telphone" value="{$info.telphone}" >
+				 
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">收货地址:</label>
+					<div class="controls">
+						<input type="text" name="address" id="address" value="{$info.address}">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">状态:</label>
+					<div class="controls">
+						<select name="order_status" >
+							<option value="1" <if condition="($info.order_status eq 1)"> selected </if> >正常</option>
+							<option value="2" <if condition="($info.order_status eq 2)"> selected </if> >客户取消</option>
+						</select>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">保存</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <form method="post" action="{:U('import/import_order')}" enctype="multipart/form-data" class="form-horizontal">
+            <label class="control-label">execl文件：</label>
+            <input type="file" name="files"/>
+            <button type="submit" class="btn btn-primary">{:L('确定')}</button>
+    </form>
+    
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th>域名</th>
+            <th>姓名</th>
+            <th>电话号码</th>
+            <th>邮箱</th>
+            <th>产品id</th>
+            <th>产品名</th>
+            <th>总价</th>
+            <th>颜色</th>
+            <th>尺寸</th>
+            <th>送货地址</th>
+            <th>购买数量</th>
+            <th>留言备注</th>
+            <th>下单时间</th>
+            <th>订单状态</th>
+            <th>订单数</th>
+        </tr>
+        </thead>
+        <tbody>
+            <foreach name="data" item="item" key="key">
+                <tr>
+                    <td><php>echo $item[0]</php></td>
+                    <td><php>echo $item[2]</php></td>
+                    <td><php>echo $item[3]</php></td>
+                    <td><php>echo $item[4]</php></td>
+                    <td></td>
+                    <td><php>echo $item[6]</php></td>
+                    <td><php>echo $item[7]</php></td>
+                    <td><php>echo $item[8]</php></td>
+                    <td><php>echo $item[9]</php></td>
+                    <td><php>echo $item[10]</php></td>
+                    <td><php>echo $item[11]</php></td>
+                    <td><php>echo $item[12]</php></td>
+                    <td><php>echo $item[13]</php></td>
+                    <td><php>echo $item[18]</php></td>
+                    <td><php>echo $item[19]</php></td>
+                </tr>
+            </foreach>
+        </tbody>
+    </table>    
+<!--    <foreach name="infor.error" item="err">
+        <div style="color:red;">{$err}</div>
+    </foreach>
+    <foreach name="infor.success" item="success">
+        <div style="color:green;">{$success}</div>
+    </foreach>-->
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+
+</body>
+</html>

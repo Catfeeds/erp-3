@@ -1,0 +1,146 @@
+<admintpl file="header"/>
+</head>
+<body>
+    <div class="wrap js-check-wrap">
+        <ul class="nav nav-tabs">
+            <li><a href="{:U('index/index')}">域名管理</a></li>
+            <li class="active"><a href="{:U('index/add')}">添加域名</a></li>
+        </ul>
+        <form class="form-horizontal js-ajax-form" action="{:U('index/add_post')}" method="post">
+            <fieldset>
+                <div class="control-group">
+                    <label class="control-label">域名</label>
+                    <div class="controls">
+                        <input type="text" name="name" value="" placeholder="www.abc.com,必须带wwww" required/>
+                        <span class="form-required" style="color: red">*</span>
+                    </div>
+                </div>
+                <!--<div class="control-group">-->
+                    <!--<label class="control-label">投放地址</label>-->
+                    <!--<div class="controls">-->
+                        <!--<input type="text" name="real_address" value="http://www." placeholder="http://www.abc.com/product.php"/>-->
+                        <!--<span class="form-required">*请填写广告真实投放地址,如：http://www.abc.com/product.php</span>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <div class="control-group">
+                    <label class="control-label">部门</label>
+                    <div class="controls">
+                        <select name="id_department">
+                            <foreach name="list" item="item">
+                                <option value ="{$item.id_department}">{$item.title}</option>
+                            </foreach>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">IP地址</label>
+                    <div class="controls">
+                        <input type="text" name="ip" value="" required/>
+                        <span class="form-required" style="color: red">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">SMTP_主机</label>
+                    <div class="controls">
+                        <input type="text" name="smtp_host" value="" required/>
+                        <span class="form-required" style="color: red">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">SMTP用户</label>
+                    <div class="controls">
+                        <input type="text" name="smtp_user" value="" required/>
+                        <span class="form-required" style="color: red">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">SMTP密码</label>
+                    <div class="controls">
+                        <input type="text" name="smtp_pwd" value="" required/>
+                        <span class="form-required" style="color: red">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">SMTP端口</label>
+                    <div class="controls">
+                        <input type="text" name="smtp_port" value="25" required/>
+                        <span class="form-required" style="color: red">*</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">SMTP加密</label>
+                    <div class="controls">
+                        <label class="radio inline" for="active_true1"><input type="radio" name="smtp_ssl" value="1" id="active_true1" />开启</label>
+                        <label class="radio inline" for="active_false1"><input type="radio" name="smtp_ssl" value="0" checked id="active_false1">禁用</label>
+                    </div>
+                </div>
+<!--                <div class="control-group">
+                    <label class="control-label">审核状态</label>
+                    <div class="controls">
+                        <label class="radio inline" for="active_true2"><input type="radio" name="verify" value="1" id="active_true2" />开启</label>
+                        <label class="radio inline" for="active_false2"><input type="radio" name="verify" value="0" checked id="active_false2">禁用</label>
+                    </div>
+                </div>-->
+
+                <div class="control-group">
+                    <label class="control-label">参考网站</label>
+                    <div class="controls">
+                        <textarea name="copy_url" rows="2" cols="20" class="inputtext" style="height: 100px; width: 500px;"></textarea>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">状态</label>
+                    <div class="controls">
+                        <label class="radio inline" for="active_true"><input type="radio" name="status" value="1" checked id="active_true" />开启</label>
+                        <label class="radio inline" for="active_false"><input type="radio" name="status" value="0" id="active_false">禁用</label>
+                    </div>
+                </div>
+                <!--<div class="control-group">-->
+                <!--<label class="control-label">{:L('产品列表')}</label>-->
+                <!--<div class="controls">-->
+                <!--<table class="table table-hover table-bordered table-list attributesListBox">-->
+                <!--<thead>-->
+                <!--<tr class="headings">-->
+                <!--<th>ID</th><th>产品</th><th>操作</th>-->
+                <!--</tr>-->
+                <!--</thead>-->
+                <!--<tbody class="tbody">-->
+                <!--</tbody>-->
+                <!--<tfoot><tr><td colspan="100">-->
+                <!--<button type="button" class="btn addAttributesValue">添加</button>-->
+                <!--</td></tr></tfoot>-->
+                <!--</table>-->
+                <!--</div>-->
+                <!--</div>-->
+            </fieldset>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary js-ajax-submit">添加</button>
+                <a class="btn" href="{:U('index/index')}">返回</a>
+            </div>
+        </form>
+    </div>
+<!--    <script src="__PUBLIC__/js/common.js"></script>
+    <script type="text/javascript">
+        $('.attributesListBox').delegate('.deleteRow', 'click', function () {
+            $(this).parent().parent().remove();
+        });
+        $('.addAttributesValue').click(function () {
+            var html = '<tr><td colspan="2"><select name="product_ids[]"><option value="0">无</option>';
+            <foreach name="product_list" item="p">
+                                                    html += '<option value="{$p.id}">{$p.title}</option>';
+                                                            </foreach>
+            html += '</select></td><td><input type="button" class="btn deleteRow" value="删除"></td></tr>';
+            $('.attributesListBox .tbody').append(html);
+        });
+    </script>-->
+</body>
+<script type="text/javascript">
+    $(".btn-primary").click(function(){
+        var name = $("input[name='name']").val();
+        if($.trim(name)!==""){
+            $("input[name='name']").val($.trim(name));
+        }
+    })
+
+</script>>
+</html>

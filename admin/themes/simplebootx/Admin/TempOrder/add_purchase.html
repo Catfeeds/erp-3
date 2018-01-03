@@ -1,0 +1,47 @@
+<admintpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('Admin/TempOrder/index')}">订单列表</a></li>
+			<li ><a href="{:U('Admin/TempOrder/add')}">添加订单</a></li>
+            <li  class="active" ><a>添加采购</a></li>
+            <li   ><a>添加发货</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('Admin/TempOrder/add_purchase')}">
+			<input type="hidden" name="order_id" value="{$info.id}" >
+			<fieldset>
+				<div class="control-group">
+
+					<label class="control-label">供应商名称:</label>
+					<div class="controls">
+			 		<input type="text" name="purchase_name" value="{$info.purchase_name}">
+					<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">采购渠道订单号:</label>
+					<div class="controls">
+						<input type="text" name="purchase_no" value="{$info.purchase_no}" >
+						<span class="form-required">*</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">状态:</label>
+					<div class="controls">
+						<select name="purchase_status">
+							<option value="1" <if condition="($info.purchase_status eq 1)"> selected </if>>已采购</option>
+							<option value="2" <if condition="($info.purchase_status eq 2)"> selected </if>>未采购</option>
+						</select>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">保存</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

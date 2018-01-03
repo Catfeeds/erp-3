@@ -1,0 +1,106 @@
+<admintpl file="header"/>
+</head>
+<body>
+    <div class="wrap js-check-wrap">
+        <ul class="nav nav-tabs">
+            <li><a href="{:U('Index/stock_index')}">库存列表</a></li>
+            <li class="active"><a href="{:U('Index/stock_update',array('id'=>$data['id_warehouse']))}">仓库库存</a></li>
+        </ul>
+        <fieldset>
+            <form method="get" action=""  class="well form-search">
+                <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+                <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+                <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+                <input type="hidden" name="id_warehouse" value="<php>echo $data['id_warehouse'];</php>">
+                <div class="control-group" style="line-height: 36px;">
+                    <label class="control-label">部门:</label>
+                    <select name="department_id" style="width:100px;">
+                        <option value="0">所有</option>
+                        <foreach name="department" item="item">
+                            <option value="{$item.id_department}" <php>echo isset($getData['department_id']) && $getData['department_id']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                        </foreach>
+                    </select>                
+                    <label class="control-label">产品名称:</label>
+                    <input type="text" name="pro_title" style="width: 200px;" value="{$getData.pro_title}" placeholder="请输入产品名称...">
+                    <label class="control-label">产品内部名称:</label>
+                    <input type="text" name="pro_inner_title" style="width: 200px;" value="{$getData.pro_inner_title}" placeholder="请输入产品内部名称...">
+                    <label class="control-label">SKU或条码</label>
+                    <input type="text" name="sku_title" style="width: 200px;" value="{$getData.sku_title}" placeholder="请输入SKU或条码...">
+                    <br/>
+                    <button class="btn btn-primary searchButton">搜索</button>
+                    <button class="btn btn-primary searchImportButton">导出</button>
+                </div>
+            </form>
+            <div class="control-group">
+                仓库：{$data.title} | SKU总数：{$count_product_sku}
+            </div>            
+            <div class="control-group attributesValueList">                
+                <label class="control-label">产品信息:</label>
+                <div class="controls">
+                    <table class="table table-hover table-bordered table-list attributesListBox">
+                        <php>
+                            if($product_arr){
+                            $tempData = array();
+                            //dump($product_arr);
+                            foreach($product_arr as $key=>$item){
+                            echo '<tr><td colspan="10" style="background-color: #f5f5f5;">'.$key.'</td></tr>';
+                            echo '<tr style="font-weight: bold;background:#f5f5f5;"><td>产品图片</td><td>SKU</td><td>条形码</td><td>产品名称</td><td>属性</td><td>可用库存</td><td>实际库存</td><td>未配货库存</td><td>已配货库存</td><td>已审核库存</td></tr>';
+                            foreach($item as $k=>$v) {
+                            echo '<input type="hidden" class="id_warehouse'.$v[id_product_sku].'" name="id_warehouse" value="'.$data['id_warehouse'].'">';
+                            echo '<input type="hidden" class="id_product_sku'.$v[id_product_sku].'" name="id_product_sku" value="'.$v['id_product_sku'].'">';
+                            echo '<input type="hidden" class="id_product'.$v[id_product_sku].'" name="id_product" value="'.$v['id_product'].'">';
+                            echo '<tr>
+                                    <td><img id="photo-'.$k.'-preview" src="'.sp_get_image_preview_url($v['img']).'" style="height:36px;width: 36px;"></td>
+                                    <td>'.$v['sku'].'</td><td>'.$v['barcode'].'</td><td>'.$v['product_title'].'</td><td>'.$v['title'].'</td>
+                                    <td>'.$v['available_quantity'].'</td><td>'.$v['actual_quantity'].'</td><td>'.$v['unpicking_quantity'].'</td><td>'.$v['picked_quantity'].'</td><td>'.$v['approved_quantity'].'</td>
+                            </tr>';
+                            }
+                            }
+                            } else {
+                                echo '无';
+                            }
+                        </php>
+                    </table>
+                </div>
+            </div>      
+            <div class="pagination">{$page}</div>
+        </fieldset>
+    </div>
+    <script src="__PUBLIC__/js/common.js"></script>
+    <script>
+        $('.searchButton').click(function(){
+            $('.form-search input[name=a]').attr('value','stock_update');
+            $('.form-search').attr('action',"{:U('Index/stock_update')}");
+        });
+        $('.searchImportButton').click(function(){
+            $('.form-search input[name=a]').attr('value','stock_import');
+            $('.form-search').attr('action',"{:U('warehouse/import/stock_import')}");
+        });
+        
+        function save_post(i,curObj) {
+            $(curObj).attr('disabled','disabled');
+            $.ajax({
+                url:"{:U('index/stock_post')}",
+                type:'POST',
+                dataType:'json',
+                data:{
+                    'id_warehouse':$('.id_warehouse'+i).val(),
+                    'id_product_sku':$('.id_product_sku'+i).val(),
+                    'id_product':$('.id_product'+i).val(),
+                    'quantity':$('.receiveQty'+i).val()
+                },
+                success:function($data){
+                    $(curObj).removeAttr('disabled');
+                    if($data.sta == 1) {
+                        if(confirm($data.msg+' 是否刷新页面？')){
+                            $('.searchButton').trigger('click');
+                        }
+                    } else {
+                        alert($data.msg);
+                    }
+                }
+            })
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<admintpl file="header" />
+</head>
+<style>
+    .expander{
+        background-image: url(../../public/js/treeTable/images/toggle-expand-dark.png);
+        //background-image: url(../../public/js/treeTable/images/toggle-collapse-dark.png)
+        background-position: left center;
+        background-repeat: no-repeat;
+        cursor: pointer;
+        padding: 0;
+        zoom: 1;
+    }
+    .expander2{
+        background-image: url(../../public/js/treeTable/images/toggle-collapse-dark.png);
+        background-position: left center;
+        background-repeat: no-repeat;
+        cursor: pointer;
+        padding: 0;
+        zoom: 1;
+    }
+</style>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Department/index/index')}">部门列表</a></li>
+        <li><a href="{:U('Department/index/create')}">添加部门</a></li>
+    </ul>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list">
+        <thead>
+        <tr>
+            <th width="50">ID</th>
+            <th> 排序ID</th>
+            <th>负责人</th>
+            <th>名称</th>
+            <th>代号</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="item">
+                
+            <tr>
+                <td width="50">
+                    {$item.id_department}</td>
+                <!-- 自由排序 -->
+                <td  style=" text-align: center;width: 80px;">{$item.sort}</td>
+                <!-- 自由排序 -->
+                <td width="50">{$item.user_nicename}</td>
+                
+                <td><php>if($item['level'] != 1){
+                        echo str_repeat('&nbsp;&nbsp;&nbsp;',$item['level']).'|---'.$item['title'];
+                    }else{
+                        echo $item['title'];
+                    }</php>
+                </td>
+                <td>{$item.department_code}</td>
+                <td width="130">
+                    <a href="{:U('Department/index/creategroup',array(\'did\'=>$item[\'id_department\']))}">添加小组</a>&nbsp;|&nbsp;
+                    <a href="{:U('Department/index/create',array(\'id\'=>$item[\'id_department\']))}">编辑</a>&nbsp;|&nbsp;
+                    <a class="js-ajax-delete" href="{:U('Department/index/delete',array(\'id\'=>$item[\'id_department\']))}">删除</a>
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+
+    <div class="pagination">{$page}</div>
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.expander').click(function(){
+        var did=$(this).attr('value');
+        var bbb=$(this).attr('class');
+        if(bbb=='expander'){
+            $("."+did).show();
+            document.getElementById(did).setAttribute("class", "expander2");
+
+        }else{
+            $("."+did).hide();
+            document.getElementById(did).setAttribute("class", "expander");
+        }
+    });
+</script>
+</body>
+</html>

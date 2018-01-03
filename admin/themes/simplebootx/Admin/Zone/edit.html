@@ -1,0 +1,55 @@
+    <admintpl file="header" />
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('zone/index')}">地区设置</a></li>
+        <li class="active"><a href="{:U('zone/add')}">编辑地区</a></li>
+    </ul>
+    <div class="wrap">
+        <div class="common-form">
+            <form method="post" class="form-horizontal" action="{:U('zone/edit_post')}">
+                <fieldset>
+                    <div class="control-group">
+                        <label class="control-label">{:L('COUNTRY')} :</label>
+                        <div class="controls">
+                            <select name="id_country" id="navcid_select">
+                                <foreach name="country" item="vo">
+                                    <option value="{$vo['id_country']}" <if condition="$data['id_country'] eq $vo['id_country']" > selected</if>>{$vo['title']}</option>
+                                </foreach>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">{:L('ZONE_NAME')} :</label>
+                        <div class="controls">
+                            <input type="text" name="title" value="{$data['title']}"><span class="form-required">*</span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">{:L('code')} :</label>
+                        <div class="controls">
+                            <input type="text" name="code" value="{$data['code']}"><span class="form-required">*</span>
+                        </div>
+                    </div>
+                   <div class="control-group">
+                        <label class="control-label">邮编是否必须 :</label>
+                        <div class="controls">
+                            <select name="zip_must" id="zip_must">
+                              <option {$data['zip_must']==0?'selected':''} value="0">否</option><option {$data['zip_must']==1?'selected':''} value="1">是</option>
+                            </select>
+                        </div>
+                    </div>                     
+                </fieldset>
+                <div class="form-actions">
+                    <input type="hidden" name="id_zone" value="{$data['id_zone']}">
+                    <button type="submit" class="btn btn-primary">{:L('SAVE')}</button>
+                    <a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="__PUBLIC__/js/common.js"></script>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+</body>

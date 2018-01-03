@@ -1,0 +1,137 @@
+<admintpl file="header"/>
+</head>
+<body>
+    <div class="wrap js-check-wrap">
+        <ul class="nav nav-tabs">
+            <li  class="active"><a href="{:U('Goodssku/edit',array('id_sku'=>$list['id_product_sku']))}">{:L('编辑货位SKU')}</a></li>
+        </ul>
+        <form class="form-horizontal js-ajax-form" action="{:U('Goodssku/edit_post')}" method="post">
+            <fieldset>
+                <div class="control-group">
+                    <label class="control-label">{:L('SKU')}</label>
+                    <div class="controls">
+                        <span style="line-height:29px">{$list.sku}</span>
+                        <input type="hidden" name="id_sku" value="{$list.id_product_sku}"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{:L('内部名')}</label>
+                    <div class="controls">
+                        <span style="line-height:30px">{$list.inner_name}</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{:L('属性')}</label>
+                    <div class="controls">
+                        <span style="line-height:30px">{$list.title}</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">仓库</label>
+                    <div class="controls">
+                        <!--<span style="line-height:30px"></span>-->
+                        <select name="warehouse_id" style="width:120px;" id="slect">
+                            <option value="0">请选择</option>
+                            <foreach name="warehouse" item="item">
+                                <option value="{$key}" <if condition="$key EQ $warehouse_id">selected</if>>{$item}</option>
+                            </foreach>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group" id="setl">
+                    <label class="control-label">{:L('货位')}</label>
+                    <div class="controls local" num="1">                            
+                        <foreach name="good_result" item="goods" key='k'>            
+                            <if condition="$goods.id_warehouse eq 1">
+                                <div class="result">                                
+                                    <input type="hidden" name="id_goods[]" value="{$goods.id_goods_sku}"/>
+                                    <select name="good_local_id[]" style="width:120px;" class="local{$k}" ware="{$goods.id_warehouse}">
+                                        <option value="0">请选择</option>
+                                        <foreach name="good_local" item="item">
+                                            <option value="{$key}" <if condition="$key EQ $goods['id_warehouse_allocation']">selected</if>>{$item}</option>
+                                        </foreach>
+                                    </select>
+                                    <if condition="$k eq 0">
+                                        <a href="javaScript:;" class="add_btn">添加</a>
+                                    </if>
+                                    <if condition="$k neq 0">
+                                        <a href="javaScript:;" class="re_btn" wg_id="{$goods.id_goods_sku}">删除</a>
+                                    </if>                                
+                                </div> 
+                            </if>
+                        </foreach>
+                        <empty name="good_result">
+                            <select name="good_local_id[]" style="width:120px;" id="slect_local" num="1">
+                                <option value="0">请选择</option>                            
+                            </select>
+                            <a href="javaScript:;" class="add_btn">添加</a>
+                        </empty>
+                    </div>
+                </div>            
+            </fieldset>
+            <div class="form-actions">
+                <input type="submit" class="btn btn-primary js-ajax-submit" id="add_btn" value="保存">
+                <a class="btn " href="{:U('goodssku/index')}">{:L('BACK')}</a>
+            </div>
+        </form>
+    </div>
+    <script src="__PUBLIC__/js/common.js"></script>
+    <script type="text/javascript">
+        $('#slect').change(function () {
+            var warehouse_id = $('#slect').val();
+            var sku_id = <php>echo $_GET['id_sku']</php>;
+            $.ajax({
+                url: "{:U('goodssku/get_goods_location')}",
+                type: 'post',
+                dataType: 'html',
+                data: {'warehouse_id': warehouse_id, 'sku_id': sku_id},
+                success: function (shtml) {
+                    if ($('#slect_local').attr('num') == 1) {
+                        $('#slect_local').html(shtml);
+                    } else {
+                        $('.local').replaceWith(shtml);
+                    }
+                }
+            })
+        });
+
+        $('.add_btn').live('click', function () {
+            var warehouse_id = $('#slect').val();
+            $.ajax({
+                url: "{:U('goodssku/get_local_html')}",
+                type: 'post',
+                dataType: 'html',
+                data: {'warehouse_id': warehouse_id},
+                success: function (shtml) {
+                    $('#setl').append(shtml);
+                }
+            })
+        });
+
+        $('.re_btn_other').live('click', function () {
+            $(this).parent().remove();
+        });
+
+        $('.re_btn').live('click', function () {
+            if (confirm('确定删除？')) {
+                var gid = $(this).attr('wg_id');
+                var sku_id = <php>echo $list['id_product_sku']</php>;
+                $.ajax({
+                    url: "{:U('goodssku/delete_sku')}",
+                    type: "post",
+                    dataType: "json",
+                    data: {'gid': gid, 'sku_id': sku_id},
+                    success: function (data) {
+                        if (data.status == 1) {
+                            alert(data.msg);
+                            window.location.reload();
+                            $(this).parent().remove();
+                        }
+                    }
+                });
+            }
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,271 @@
+<admintpl file="header" />
+</head>
+<body>
+
+<style>
+.fixedlayer {
+    position: fixed;
+    top: 0px;
+    height: 121px;
+    left: 20px;
+    height: 100px;
+    right: 20px;
+    padding-top: 20px;
+    background-color: #fff;
+    z-index: 10;
+}
+.buttonLayer {margin-bottom: 10px;  background-color: #fff;}
+
+.customerlayer {height: 100%; padding-top: 151px; }
+.customerlayer .pagination { margin-top: 10px; margin-bottom: 0px; }
+.searchLayer {border: solid 1px #ddd; }
+#id_warehouse{height: 30px;}
+.searchLayer input,.searchLayer select{height: 30px;}
+.searchLayer table {width: 100%; background-color: #fff; border-spacing: 1px !important; border-collapse: separate; font-family: "宋体"; table-layout: fixed; }
+.searchLayer table td {padding: 5px; margin: 1px; width: auto; }
+.searchLayer table td.th {background: #f1f1f1; width: 80px; }
+.searchLayer input[type="text"] {margin-bottom: 0px; border: none; box-shadow: none; border-bottom: solid 1px #ddd; border-radius: 0px; outline: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+.searchLayer select {margin-bottom: 0px; border-radius: 0px; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; outline: 0px;  line-height: 20px;}
+
+.tableLayer {width: 100%; overflow: scroll; height: 480px; }
+.tableLayer table{width: 100%}
+.tableLayer table th {border: solid 1px #ddd; padding: 10px; font-weight: bold; background: #f1f1f1; }
+.tableLayer table td {border: solid 1px #ddd; padding: 10px; word-break:break-all;white-space: normal;}
+.ctab-panel {width: 100%; position: relative; margin-bottom: 10px; }
+.ctab-head {height: 40px; }
+.ctab-head > a {display: inline-block; color: #333; padding: 0px 10px; line-height: 40px; }
+.ctab-head > a.active {border: solid 1px #ddd; border-bottom: none; background-color: #fff; border-top: solid 2px #3daae9; }
+.ctab-body {border: solid 1px #ddd; padding: 10px; }
+.btn a{color: white;text-decoration: none;}
+.isimport{background-color: #33485d;}
+</style>
+<form method="GET" action=""  id="form-search">
+<div class="fixedlayer">
+    <div class="searchLayer">
+        
+        <input type="hidden" name="page" value="">
+        <table cellspacing="1">
+            <tr > 
+                <td class="th" style="width: 20px">订单号：</td>
+                <td style="width: 90px">
+                    <input type="text" name="id_increment" class="" value="{$getData['id_increment']}" >                    
+                </td>
+                <td class="th" style="width: 20px">运单号：</td>
+                <td style="width: 90px"> <input type="text" name="track_number"  class="" value="{$getData['track_number']}" ></td>                
+     
+                <td class="th"><span class="btn btn-primary submitButton  searchButton" >查询</span></td>
+            </tr>  
+        </table>
+        
+    </div>   
+         <div class="pagination">{$page}<input type="text" value="" name="displayRow" placeholder="输入每页显示{$getData['displayRow']}数">
+                        <input type="button" class="btn btn-small  searchButton submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">
+                    </div>   
+</div>
+</form>
+<div class="wrap">
+
+    <div class="customerlayer">
+        <div class="ctab-panel">
+            <div class="ctab-head">
+                
+                <a href="{:U('Order/ProblemShipment/apply')}"   class="active">订单信息列表</a>
+                <a href="{:U('Order/ProblemShipment/more_apply')}">批量导入</a>
+            </div>        
+            <div class="ctab-body">
+                <div >
+             
+                    <div class="tableLayer">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>订单号</th>
+                                    <th>业务组</th>
+                                    <th>域名</th>
+                                    <th>商品名称</th>
+                                    <th>物流</th>
+                                    <th>运单号</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <foreach name="orderList" item="item" >
+                                    <tr> 
+                                    <td>{$item.id_increment}</td>            
+                                    <td>{$departmentList[$item['id_department']]}</td>            
+                                    <td>{$domainList[$item['id_domain']]}</td>            
+                                    <td>
+                                        <foreach name="item.products" item="product" key='key'>
+                                        {$product.product_title}(<span style="color:red;"> x </span>{$product.quantity})<hr style="margin:2px 0;color:green;border: 1px solid;">
+                                        </foreach>                                    
+
+                                    </td>            
+                                    <td>{$shipList[$item['id_shipping']]}</td>            
+                                    <td>{$item.track_number}</td>          
+                                    <td>
+                                        <if condition="$item['applyinfo']['status']  eq  1">
+                                            <input type='button' class="btn btn-primary  editapply btn_order " value="编辑">
+                                            <input type='hidden' class='problem_order_id' name="problem_order_id" value="{$item['applyinfo']['id']}">
+                                        <elseif condition="$item['applyinfo']['status']  eq  2"/>
+                                        <else />
+                                            <input type='button' class="btn btn-primary  apply btn_order " value="录入">
+                                        </if>
+                                        <span class="apply" style="display: none;">
+                                        问题类型：<select class="reasontype">
+                                        <foreach name="reasontype" item="reson" key='typekey'>
+                                        <option {$item['applyinfo']['reasontype']==$typekey?"selected='true'":''} value='{$typekey}'>{$reson}</option>
+                                        </foreach>
+                                        </select>
+                                        <br/><br/>                                        
+                                        物流时间：<input class="logisticsdate js-date date"  onmouseover="showTime(this)" type="text" name="bill_date"  value="{$item['applyinfo']['logisticsdate']}" autocomplete="off"><br/>
+                                        原因描述：<textarea class="reason_remark" style="width:200px;height: 30px;" placeholder="请填写描述信息" name="apply_remark" rows="3" cols="18">{$item['applyinfo']['reason_remark']}</textarea>
+                                        </span>                                         
+                                        <input type='hidden' class='id_increment' name="id_increment" value="{$item.id_increment}">
+                                        <input type='hidden' class='id_order' name="id_order" value="{$item.id_order}">
+                                        <input type='hidden' class='track_number' name="track_number" value="{$item.track_number}">
+                                    </td>    
+                                    </tr>
+                                </foreach>      
+                            </tbody>
+                        </table>
+                    </div>
+                
+                </div>            
+                <div  class="hide">
+                    <div class="control-group">
+                        <span style="color: red"> 导入数据暂时限制为200条</span>
+                        <div class="controls">
+                        <textarea id="import_data" placeholder="从Excel中复制:物流登记时间,运单号,问题类型,原因描述" style="width: 25%; height: 400px;"></textarea>
+                        <a id="import_btn" class="btn isimport">导入</a>
+                        <div id="warning"></div>
+                        </div>
+                    </div>  
+                    <div id="errmsg" style="color:red;"></div>
+                    
+
+
+                </div>
+
+
+            </div>
+        </div>
+
+    
+    </div>
+
+</div>
+
+
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/artDialog/artDialog.js"></script>
+<script src="__PUBLIC__/js/jquery.stickytableheaders.js"></script>
+<script>
+
+
+    function showTime(obj){
+        $(obj).datePicker({time: true,timeHours: 00,timeMinutes: 00});
+    }
+    $(document).ready(function(){
+        var top=$('.fixedlayer').height();
+        var height_screen=document.body.clientHeight  ;
+        $('.tableLayer').height(height_screen-top-125);
+        $('.customerlayer').css('padding-top',top);
+        $('.customerlayer').css('margin-bottom',10);
+        $(".tableLayer table").stickyTableHeaders({scrollableArea: $('.tableLayer')});
+    });
+    $('.ctab-head a').on('click',function(){
+        $(this).addClass("active").siblings().removeClass("active");
+        var index = $(this).index();
+        $(".ctab-body>div").eq(index).removeClass("hide").siblings().addClass("hide");
+    })
+
+
+    $('.searchButton').on('click',function(){
+        $('#form-search').attr('action',"{:U('Order/ProblemShipment/apply')}"); 
+        $('#form-search').trigger('submit');
+        
+    });
+$('.btn_order').on('click',function(){   
+
+    var orderobj={};
+    orderobj.id_order=$(this).siblings('.id_order').val();
+    orderobj.id_increment=$(this).siblings('.id_increment').val();
+    if($(this).hasClass('editapply')){
+        orderobj.problem_order_id=$(this).siblings('.problem_order_id').val();
+    }    
+    art.dialog({
+            id:'menu_4834783', 
+            title:'问题件录入', content:$(this).siblings('.apply').html(),
+            lock:true, 
+            okVal: "确定",
+            ok: function () { 
+                orderobj.reasontype=$('.reasontype').val();
+                orderobj.logisticsdate=$('.logisticsdate').val();
+                orderobj.reason_remark=$('.reason_remark').val();
+                orderobj.track_number=$('.track_number').val();
+                $.ajax({
+                    url:"{:U('ProblemShipment/submitApply')}",
+                    type:'POST',
+                    dataType:'json',
+                    data:{'orderdata':orderobj},
+                    success:function(data){
+                        if(data.status == 1) {                               
+                            alert(data.message);                                                                 
+                            window.location.reload();
+                        }else{
+                            alert(data.message); 
+                        }
+                    }
+                });
+
+            },
+            cancelVal: "取消",
+            cancel: function () { }         
+          });  
+});    
+
+
+        $('#import_btn').on('click', function(){
+            var orderarr=[];
+            var data = $('#import_data').val().split("\n");
+            // var re = /^([1-9]\d*|[0]{1,})$/ ; 
+            for(var i in data){
+                if(data[i].trim() === ''){
+                    continue;
+                }
+                var item={};
+                var  aa=data[i].replace(/[\t]+/g, "\t");
+                 var  tmp = aa.split("\t");
+                item.track_number= tmp[1];
+                item.logisticsdate=tmp[0];
+                item.reasontypestr=tmp[2];
+                item.reason_remark=tmp[3];
+                orderarr.push(item);
+            }
+            $.ajax({
+                url:"{:U('ProblemShipment/moreApply')}",
+                type:'POST',
+                dataType:'json',
+                data:{'orderarr':orderarr},
+                success:function(data){               
+
+                    if(data.status==0){
+                        alert('导入数据有误，请查看错误信息！');
+                        $('#errmsg').html('');
+                        var  essarr=data.err;
+                        for(var i in essarr){
+                            var essstr=essarr[i]+'<br/>';
+                            $('#errmsg').append(essstr);
+                        }                        
+                    }else{
+                        alert('成功导入！');
+                    }
+
+                }
+            });            
+        });  
+</script>
+</body>
+</html>
+

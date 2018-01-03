@@ -1,0 +1,126 @@
+<admintpl file="header" />
+<style>
+    .form-horizontal .controls {
+        line-height: 29px;
+        margin-left: 138px;
+    }
+    .form-horizontal .control-group {
+        margin-bottom: 5px;
+    }
+    .form-horizontal .control-label {
+        width: 130px
+    }
+</style>
+</head>
+
+<body>
+<div>
+    <div class="wrap">
+        <div class="form-horizontal">
+            <h2 style="text-align: center">采购汇总表</h2>
+            <div class="control-group">
+                <label class="control-label">采购下单日期：：</label>
+                <div class="controls">
+                    {$list[0]['inner_purchase_time']}
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">所属部门：</label>
+                <div class="controls" >
+                    {$list[0]['department']}
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">采购员：</label>
+                <div class="controls" >
+                    {$list[0]['user']}
+                </div>
+            </div>
+            <table class="table table-hover table-bordered table-list" border="1" style="border-collapse:collapse;">
+                <thead>
+                        <tr>
+                            <th>序号</th><th>采购渠道</th><th>供应商</th><th>内部采购订单</th><th>阿里巴巴订单号</th><th>内部名</th><th>采购数量</th>
+                          <!--  <th>单价</th>-->
+                            <th>采购金额</th>
+                     <!--       <th>采购单号</th>
+                            <th>产品名称</th>
+                            <th>采购总数</th>
+                            <th>单价</th>
+                            <th>总价</th>
+                            <th>供应厂商</th>-->
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <php>$alltotal=0;$allprice=0;</php>
+                        <foreach name="list" item="item" key='key'>
+                            <tr>
+                                <td ><php>echo $key+1</php></td>
+                                <td >{$item.purchase_channel}</td>
+                                <td >{$item.supplier}</td>
+                                <td >{$item.inner_purchase_no}</td>
+                                <td >{$item.alibaba_no}</td>
+
+                                <td><php>
+                                    if(count($item['prodcut']['name']) >1){
+                                        foreach($item['prodcut']['name'] as $v){
+                                        echo $v."*".$item['prodcut'][$v].",";
+                                        }
+                                    }else{
+                                    foreach($item['prodcut']['name'] as $v){
+                                    echo $v;
+                                    }
+                                    }
+
+
+                                </php></td>
+
+                                <td >{$item.total}</td>
+                             <!--   <td >
+                                    <php>echo round(($item['price']-$item['price_shipping'])/$item['total'],2)</php>
+                                </td>-->
+                                <td >{$item.price}</td>
+                                <php>$alltotal=$alltotal+$item['total'];$allprice=$allprice+$item['price'];</php>
+                            </tr>
+                        </foreach>
+                        <td ></td>
+                        <td ></td>
+                        <td ></td>
+                        <td ></td>
+                        <td ></td>
+
+                        <td></td>
+                        <td > <php> echo $alltotal;</php></td>
+                        <td > <php> echo $allprice;</php></td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+            <div class="control-group">
+                <label class=""  style="width: 30%;float: left;    margin-left: 20px;"> 审核：		</label>
+                <div class="controls">
+                </div>
+                <label class=""  style="width: 30%;float: left;    margin-left: 20px;">复核：</label>
+                <div class="controls" >
+                </div>
+                <label class=""  style="width: 30%;float: left;    margin-left: 20px;">制单人：</label>
+                <div class="controls" >
+                </div>
+            </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<script src="__PUBLIC__/js/common.js"></script>
+<!--<script src="__PUBLIC__/js/jquery.stickytableheaders.js"></script>-->
+<script type="text/javascript">
+
+</script>
+</body>
+</html>

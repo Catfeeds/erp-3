@@ -1,0 +1,44 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li><a href="{:U('blacklist/index')}">黑名单列表</a></li>
+        <li class="active"><a href="{:U('blacklist/add')}">导入黑名单</a></li>
+    </ul>
+    <div class="wrap">
+        <div class="common-form">
+            <form method="post" name="myForm" action="{:U('blacklist/add')}" enctype="multipart/form-data"  class="form-horizontal">
+                <div class="control-group" style="line-height: 36px;">
+                    <div class="control-group">
+                        <div class="controls">
+                            <p>直接从Excel复制:姓名,电话,邮箱,地址</p>
+                            <textarea name="data" style="width:550px;height:300px;">{$data}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" onclick="textarea()">导入</button>
+                </div>
+            </form>
+            <present name="Think.post.data">
+                <if condition="$ass neq null">
+                    <div style="color: red;">导入成功</div>
+                </if>
+            </present>
+        </div>
+    </div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+    function textarea(){
+        var textarea=$("textarea").val();
+        if(textarea==""){
+            alert("导入的数据不能为空！");
+            document.myForm.attributes["action"].value="/new_erp/Admin/blacklist/index";
+
+        }
+    }
+</script>
+</body>
+</html>

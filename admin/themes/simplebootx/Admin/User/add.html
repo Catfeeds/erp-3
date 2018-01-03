@@ -1,0 +1,106 @@
+<admintpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('user/index')}">{:L('ADMIN_USER_INDEX')}</a></li>
+			<li class="active"><a href="{:U('user/add')}">{:L('ADMIN_USER_ADD')}</a></li>
+		</ul>
+		<form method="post" enctype="multipart/form-data" class="form-horizontal js-ajax-form" action="{:U('User/add_post')}">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">登录用户名</label>
+					<div class="controls">
+						<input type="text" name="user_login">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">{:L('PASSWORD')}</label>
+					<div class="controls">
+						<input type="password" name="user_pass">
+					</div>
+				</div>
+                <div class="control-group">
+                    <label class="control-label">真实姓名</label>
+                    <div class="controls">
+                        <input type="text" name="user_nicename">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">电话</label>
+                    <div class="controls">
+                        <input type="text" name="user_tel">
+                    </div>
+                </div>
+				<div class="control-group">
+					<label class="control-label">{:L('EMAIL')}</label>
+					<div class="controls">
+						<input type="text" name="user_email">
+					</div>
+				</div>
+                <div class="control-group">
+                    <label class="control-label">上级部门:</label>
+                    <div class="controls">
+                        <select name="id_department[]" multiple="multiple" style="width:80%;height:300px;">
+                            <option value="0">--</option>
+                            <foreach name="department" item="item">
+                                <option value="{$item.id_department}" <php>echo $_GET['id_department']==$item['id_department']?'selected="selected"':'';</php>>{$item.title}</option>
+                            </foreach>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">上级领导</label>
+                    <div class="controls">
+                        <select name="superior_user_id">
+                            <option value="0"></option>
+                            <foreach name="all_user" item="vo">
+                                <option value="{$vo.id}"<php> echo $vo['id']==$superior_user_id?' selected="selected"':'';</php>>{$vo.user_nicename}</option>
+                            </foreach>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">所属仓库</label>
+                    <div class="controls">
+                        <select name="belong_ware_id[]" multiple="multiple" style="width:14.7%;height:100px;">
+                            <foreach name="warehouse" item="ware">
+                                <option value="{$ware.id_warehouse}"<php> if(isset($_GET['belong_ware_id'])){
+                                 echo $_GET['belong_ware_id']==$ware['id_warehouse']?' selected="selected"':'';   
+                                 }else{
+                                 echo 'selected="selected"'; 
+                                 }</php>>{$ware.title}</option>
+                            </foreach>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">所属地区</label>
+                    <div class="controls">
+                        <select name="belong_zone_id[]" multiple="multiple" style="width:14.7%;height:100px;">
+                            <foreach name="zone" item="zoneitem">
+                                <option value="{$zoneitem.id_zone}"<php> if($zone_user){echo in_array($zoneitem['id_zone'],$zone_user)?' selected="selected"':'';}else{
+                                echo 'selected="selected"';
+                                }</php>>{$zoneitem.title}</option>
+                            </foreach>
+                        </select>
+                    </div>
+                </div>
+				<div class="control-group">
+					<label class="control-label">权限</label>
+					<div class="controls">
+						<foreach name="roles" item="vo">
+						<label class="checkbox inline"><input value="{$vo.id}" type="checkbox" name="role_id[]" <if condition="sp_get_current_admin_id() neq 1 && $vo['id'] eq 1">disabled="true"</if>>{$vo.name}</label>
+						</foreach>
+					</div>
+				</div>
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">{:L('ADD')}</button>
+				<a class="btn" href="javascript:history.back(-1);">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

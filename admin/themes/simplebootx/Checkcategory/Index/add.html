@@ -1,0 +1,47 @@
+<admintpl file="header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:U('Checkcategory/index/index')}">分类管理</a></li>
+			<li class="active"><a href="{:U('Checkcategory/index/add')}"><php>echo (isset($category['id'])&&$category['id'])?'编辑':'添加分类';</php></a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form" action="{:U('Checkcategory/index/add_post')}">
+			<fieldset>
+                <php>if(isset($category['id_category'])){</php>
+                 <input type="hidden" name="id_category" value="<php>echo $category['id_category'];</php>">
+				<input type="hidden" name="old_title" value="<php>echo $category['title'];</php>">
+                <php>}</php>
+				<div class="control-group">
+					<label class="control-label">上级:</label>
+					<div class="controls">
+						<select name="parent_id">
+							<option value="0">作为一级菜单</option>
+							{$select_categorys}
+						</select>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">名称:</label>
+					<div class="controls">
+						<input type="text" name="title" value="<php>echo isset($category['title'])?$category['title']:'';</php>">
+						<span class="form-required">*</span>
+					</div>
+				</div>
+                <div class="control-group">
+                    <label class="control-label">排序:</label>
+                    <div class="controls">
+                        <input type="text" name="listorder" value="<php>echo isset($category['listorder'])?$category['listorder']:'';</php>">
+                        <span class="form-required">*</span>
+                    </div>
+                </div>
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary js-ajax-submit">保存</button>
+				<a class="btn" href="{:U('Checkcategory/index/index')}">{:L('BACK')}</a>
+			</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>

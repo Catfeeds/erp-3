@@ -1,0 +1,68 @@
+<admintpl file="header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li  class="active"><a href="{:U('Goodssku/edit',array('id_warehouse_allocation'=>$_GET['id_warehouse_allocation']))}">{:L('编辑货位SKU')}</a></li>
+    </ul>
+    <form class="form-horizontal js-ajax-form" action="{:U('Goodssku/edit')}" method="post">
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label">{:L('SKU')}</label>
+                <div class="controls">
+                    <input type="text" name="sku" value="{$list.goods_name}"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('内部名')}</label>
+                <div class="controls">
+                    <input type="text" name="inner_name"  value="{$list.goods_name}"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('属性')}</label>
+                <div class="controls">
+                    <input type="text" name="value"  value="{$list.goods_name}"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('货位')}</label>
+                <div class="controls">
+                    <select name="id_warehouse" style="width:100px;" id="id_warehouse">
+                        <option value="0">所有</option>
+                        <foreach name="warehouse" item="item">
+                            <option value="{$key}" <if condition="$key EQ $list['id_warehouse' ]">selected</if>>{$item}</option>
+                        </foreach>
+                    </select>
+                    <button class="btn">+</button>
+                </div>
+            </div>
+            <table border="1" width="100%" class="table_a" id="properties-tab-tb"
+                   style="display:none;"
+                    >
+                <tr style='background-color:lightgreen;'>
+                    <td style="text-align:right" width="25%">商品类型：</td>
+                    <td>
+                        <select name='type_id' onchange="show_attribute()">
+                            <option value="0">-请选择-</option>
+                            <foreach name='typeinfo' item='v'>
+                                <option value='{$v.type_id}'>{$v.type_name}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+        <div class="form-actions">
+             <input type="hidden" name="id_warehouse_allocation" value="{$_GET['id_warehouse_allocation']}"/>
+            <button type="button" class="btn btn-primary js-ajax-submit" id="add_btn">{:L('SAVE')}</button>
+            <a class="btn " href="{:U('Position/index')}">{:L('BACK')}</a>
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<admintpl file="header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Area/add_area')}">{:L('添加货位区域')}</a></li>
+    </ul>
+    <form class="form-horizontal js-ajax-form" action="{:U('Area/add_area')}" method="post">
+        <fieldset>
+            <!--                <div class="control-group">
+                                <label class="control-label">{:L('广告名称')}</label>
+                                <div class="controls">
+                                    <input type="text" name="id_advert" value="{$data.ad_name}" disabled="disabled"/>
+                                    <input type="hidden" name="id_ad" value="{$data.ad_id}">
+                                    <span class="form-required">*</span>
+                                </div>
+                            </div>-->
+            <div class="control-group">
+                <label class="control-label">{:L('所属仓库')}</label>
+                <div class="controls">
+                    <select name="id_warehouse" style="width:100px;" id="id_warehouse">
+                        <option value="0">所有</option>
+                        <foreach name="warehouse" item="item">
+                            <option value="{$key}" <if condition="$key EQ $_GET['id_warehouse']">selected</if>>{$item}</option>
+                        </foreach>
+                    </select>
+
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">货位区域编码</label>
+                <div class="controls">
+                    <input type="text" name="coding" id="coding"/>
+
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{:L('货位区域名称')}</label>
+                <div class="controls">
+                    <input type="text" name="title" id="title"/>
+
+                </div>
+            </div>
+
+        </fieldset>
+        <div class="form-actions">
+            <!--				<input type="hidden" name="user_id" value="{$advert_product.user_id}"/>
+                            <input type="hidden" name="advert_product_id" value="{$advert_product.advert_product_id}"/>-->
+            <button type="button" class="btn btn-primary js-ajax-submit" id="add_btn">{:L('ADD')}</button>
+            <a class="btn" href="{:U('Area/list_area')}">{:L('BACK')}</a>
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $("#add_btn").click(function(){
+        var id_warehouse = $('#id_warehouse option:selected').val();
+        var coding = $('#coding').val();
+        var title = $('#title').val();
+        if(id_warehouse=='0')
+        {
+            alert('请选择仓库');
+            return false;
+        }
+        if(id_warehouse&&coding&&title){
+            var flag = true;
+            $.ajax({
+                url:"{:U('Area/select_find')}",
+                type:'get',
+                dataType:'json',
+                data:{'coding':coding,'title':title,'id_warehouse':id_warehouse},
+                success:function(data){
+                    if(data.flag==0){
+                        console.log(data);
+                        $('form').submit();
+                    }else{
+                        console.log(data);
+                        alert(data.msg);
+                         flag = false;
+                    }
+                }
+            });
+            return flag;
+        }else
+          return false;
+    })
+</script>
+
+
+</body>
+</html>

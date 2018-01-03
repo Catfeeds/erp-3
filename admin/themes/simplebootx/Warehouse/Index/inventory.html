@@ -1,0 +1,162 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="fixedlayer" style="height: 40px;">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Index/inventory')}">进销存查询</a></li>
+    </ul>
+</div>
+<div class="wrap">
+    <div class="customerlayer" style="height: 300px;">
+    <form method="post" action="{:U('Index/statistics')}"  class="well form-search"  style="margin-top: -80px;">
+        <div class="searchLayer" style="padding:20px;background-color: #ecf0f1;">
+            <table cellspacing="1">
+                <tr>
+                   
+                    <td class="th">內部名：</td>
+                    <td>
+                        <input type="text" name="innername" value="{$Think.post.innername}" style="height: 40px;">
+                    </td>
+                    <td class="th">SKU：</td>
+                    <td style="white-space:nowrap;">
+                        <input type="text" name="sku" value="{$Think.post.sku}" style="height: 40px;">
+                    </td>
+
+                </tr>
+
+            </table>
+            <br/>
+
+            <button class="btn btn-primary searchButton">搜索</button>
+            <button class="btn btn-primary searchExportButton">导出</button>
+
+        </div>
+
+    </form>
+    <div>
+
+    </div>
+    <fieldset>
+    <table class="table table-hover table-bordered table-list order-table">
+        <thead class="myth1" style="display:none;">
+        <tr>
+            <th>属性</th>
+            <th>內部名</th>
+            <th>SKU</th>
+            <th>总产品数</th>
+            <th>总采购数</th>
+            <th>总入库数</th>
+            <th>总未入库</th>
+            <th>已发货总量</th>
+        </tr>
+        </thead>
+        <thead class="myth2">
+        <tr>
+            <th>属性</th>
+            <th>內部名</th>
+            <th>SKU</th>
+            <th>总产品数</th>
+            <th>总采购数</th>
+            <th>总入库数</th>
+            <th>总未入库</th>
+            <th>已发货总量</th>
+            
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="statistics" item="stat" key="shipping_name">
+            <if condition="$stat.id_product neq ''">
+                <tr>
+                    <td>{$stat.sku_title}</td>
+                    <td>{$stat.inner_name}</td>
+                    <td>{$stat.sku}</td>
+                    <!-- 总产品数  -->
+                    <td>
+                        <php>if(!empty($stat['total_product'])){
+                                echo $stat['total_product'];
+                            }else{
+                                echo 0; 
+                            }
+                        </php>
+                    </td>
+                    <!-- 总采购数 total -->
+                    <td>
+                        <php>if(!empty($stat['total_purchase'])){
+                                echo $stat['total_purchase'];
+                            }else{
+                                echo 0; 
+                            }
+                        </php>
+                    </td>
+                    
+                    <!-- 总入库数 -->
+                    <td>
+                        <php>if(!empty($stat['total_warehouse'])){
+                                if($stat['total_purchase'] >= $stat['total_warehouse']){
+                                    echo $stat['total_warehouse'];
+                                }else{
+                                    echo $stat['total_purchase'];
+                                }
+                            }else{
+                                echo 0; 
+                            }
+                        </php>
+                    </td>
+                    <!-- 总未入库数 -->
+                    <td>
+                        <php>if(!empty($stat['total_no_warehouse'])){
+                                echo $stat['total_no_warehouse'];
+                            }else{
+                                echo 0; 
+                            }
+                        </php>
+                    </td>
+                    <!-- 发货总量 -->
+                    <td>{$stat.deliver_number}</td>
+
+                </tr>
+            </if>
+        </foreach>
+        </tbody>
+    </table>
+       <!-- <div class="pagination">{$page}</div>-->
+    </fieldset>
+</div>
+ </div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','statistics');
+        $('.form-search').attr('action',"{:U('Warehouse/Index/inventory')}");
+    });
+    $('.searchExportButton').click(function(){
+        $('.form-search input[name=a]').attr('value','export_statistics');
+        $('.form-search').attr('action',"{:U('Warehouse/Index/export_inventory')}");
+    });
+    /* 表头随滚动固定 */
+    $(function(){
+        var thtop,thleft,thwidth,thadd,alltd,myW;
+        var he=$(".fixedlayer");
+        var me=$(".order-table .myth1");
+        thtop=he.height()+parseInt(he.css("padding-top"))+"px";
+        thleft=he.css("left");
+        thwidth=$(".myth2").css("width");
+        thadd=$(".myth2").offset().top;
+        alltd=$(".order-table tr").eq(3).find("td");
+        for(var i=0;i<alltd.length;i++){
+            myW=alltd.eq(i).width();
+            me.find("th").eq(i).width(myW);
+        }
+        $(window).scroll(function(){
+            var scrollH=$(window).scrollTop();
+            if(scrollH>thadd){
+               me.css({"top":thtop,"left":thleft,"width":thwidth,"position":"fixed","z-index":"3","background-color":"#fff","display":"block"});
+            }else{
+               me.css({"top":"auto","left":"auto","width":"auto","position":"static","z-index":"1","display":"none"});
+            }
+        });
+        
+    })
+</script>
+</body>
+</html>

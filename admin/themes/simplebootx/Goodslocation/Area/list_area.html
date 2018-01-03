@@ -1,0 +1,161 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Area/list_area')}">货位区域列表</a></li>
+        <!--<li><a href="{:U('Order/settleaccounts')}">结款更新</a></li>
+        <li><a href="{:U('Order/updatetrackstatus')}">签收更新</a></li>
+        <li><a href="{:U('Order/sendtracknumber')}">发送快递单号</a></li>
+        <li style="display: none;"><a href="{:U('Order/importtracknumber')}">导入快递号</a></li>-->
+    </ul>
+    <form method="get" action=""  class="well form-search">
+        <input type="hidden" name="g" value="<php>echo MODULE_NAME;</php>">
+        <input type="hidden" name="m" value="<php>echo CONTROLLER_NAME;</php>">
+        <input type="hidden" name="a" value="<php>echo ACTION_NAME;</php>">
+        <div class="control-group" style="line-height: 36px;">
+            <label class="control-label">仓库:</label>
+            <select name="id_warehouse" style="width:100px;" id="id_warehouse">
+                <option value="0">所有</option>
+                <foreach name="warehouse" item="item">
+                    <option value="{$key}" <if condition="$key EQ $_GET['id_warehouse']">selected</if>>{$item}</option>
+                </foreach>
+            </select>
+
+            <label class="control-label">货位区域编码:</label>
+            <select name="coding" id="coding">
+            </select>
+            <label class="control-label">货位区域名称:</label>
+            <select name="title" id="title">
+            </select>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="btn btn-primary searchButton" id="searchBtn">搜索</button>
+            <a href="{:U('Area/add_area')}" class="btn btn-primary searchButton">添加货位区域</a>
+        </div>
+    </form>
+    <fieldset>
+        <table class="table table-hover table-bordered table-list order-table">
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>货位区域编码</th>
+                <th>货位区域名称</th>
+                <th>所属仓库</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <foreach name="areas" item="list">
+                <tr style="<php>
+                switch($order['blacklist_level']){
+                    case 1:case 2:
+                    case 3:
+                        echo 'background:rgba(255, 229, 0, 0.3);';
+                    case 4:
+                    case 10:
+                        echo 'background:rgba(244, 54, 54, 0.5);';
+                    break;
+                }
+                echo $order['order_repeat']>0?'color:red;':'';
+                </php>">
+                    <td>{$list.id_goods_area}</td>
+                    <td>{$list.coding}</td>
+                    <td>{$list.title}</td>
+                    <td>{$warehouse[$list['id_warehouse']]}</td>
+                    <td>
+                        <a href="{:U('Area/edit_area',array('id_goods_area'=>$list['id_goods_area']))}"  class="btn btn-small">编辑</a>
+                        <a href="{:U('Area/delete_area',array('id_goods_area'=>$list['id_goods_area']))}"  class="btn btn-small js-ajax-delete">删除</a>
+                    </td>
+                </tr>
+            </foreach>
+            </tbody>
+        </table>
+
+    </fieldset>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.submitDisplayRow').click(function(){
+        var getRow = $(this).parent().find('input[name=displayRow]').val();
+        if(getRow){
+            $.post("{:U('Ordercheck/setpagerow')}",{'row':getRow},function(data){
+                window.location.reload();
+            });
+        }
+    });
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','list_area');
+        $('.form-search').attr('action',"{:U('Goodslocation/Area/list_area')}");
+    });
+    function select_warehouse()
+    {
+        $('#coding').empty();
+
+        var  select = $('#id_warehouse').val();
+        if(select == 0){	//未选择仓库
+            $('#coding').append('<option value="0">所有</option>');
+        }else{
+            $.ajax({
+                url:"{:U('Area/select_by_warehouse')}",
+                type:'get',
+                dataType:'json',
+                async:false,
+                data:{'id_warehouse':select},
+                success:function(data){
+                    $('#coding').append('<option value="0">所有</option>');
+                    $.each(data,function(index,elem){
+                        $('#coding').append('<option value="'+elem['coding']+'" >'+elem['coding']+'</option>');
+                        if(elem['coding']=='<?php echo $_GET["coding"]; ?>')
+                        {
+                            $("#coding [value='"+elem['coding']+"']").attr("selected","selected");
+                        }
+                    });
+                }
+            });
+        }
+    }
+    function select_coding()
+    {
+        var  title =  $("#coding option:selected").val();
+        $('#title').empty();
+        if( title == "0" || typeof(title) == "undefined"){
+            $('#title').append('<option value="0">所有</option>');
+        }else{
+            $.ajax({
+                url:"{:U('Area/select_by_goods_area_coding')}",
+                type:'get',
+                dataType:'json',
+                async:false,
+                data:{'coding':title},
+                success:function(data){
+                    $('#title').append('<option value="0">所有</option>');
+                    $.each(data,function(index,elem){
+                        $('#title').append('<option value="'+elem['title']+'" >'+elem['title']+'</option>');
+                        if(elem['title']=='<?php echo $_GET["title"]; ?>')
+                        {
+                            $("#title [value='"+elem['title']+"']").attr("selected","selected");
+                        }
+                    });
+
+                }
+            });
+        }
+    }
+
+
+
+    $('#id_warehouse').change(function(){
+        select_warehouse();
+        select_coding();
+    });
+    $('#coding').change(function(){
+        select_coding();
+    });
+    $(function(){
+        select_warehouse();
+        select_coding();
+    });
+
+</script>
+</body>
+</html>

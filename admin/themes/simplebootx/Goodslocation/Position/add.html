@@ -1,0 +1,121 @@
+<admintpl file="header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Position/add')}">{:L('添加货位')}</a></li>
+    </ul>
+    <form class="form-horizontal js-ajax-form" action="{:U('Position/add')}" method="post">
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label">{:L('所属仓库')}</label>
+                <div class="controls">
+                    <select name="id_warehouse" style="width:100px;" id="id_warehouse">
+                        <option value="0">所有</option>
+                        <foreach name="warehouse" item="item">
+                            <option value="{$key}" <if condition="$key EQ $_GET['id_warehouse']">selected</if>>{$item}</option>
+                        </foreach>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">{:L('货位区域名称')}</label>
+                <div class="controls">
+                        <select name="id_goods_area" style="width:100px;" id="id_goods_area" >
+                        </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">货位名称</label>
+                <div class="controls">
+                    <input type="text" name="goods_name" id="goods_name"/>
+                </div>
+            </div>
+
+        </fieldset>
+        <div class="form-actions">
+            <button type="button" class="btn btn-primary js-ajax-submit" id="add_btn">{:L('ADD')}</button>
+            <a class="btn" href="{:U('Position/index')}">{:L('BACK')}</a>
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('#id_warehouse').change(function(){
+        $('#id_goods_area').empty();
+        var id_warehouse = $('#id_warehouse option:selected').val();
+        if(id_warehouse!=0){
+            $.ajax({
+                url:"{:U('Position/select_by_warehoues')}",
+                type:'get',
+                dataType:'json',
+                data:{'id_warehouse':id_warehouse},
+                success:function(data){
+                    if(data['flag']!=1)
+                    {
+                        $.each(data,function(index,elem){
+                            $('#id_goods_area').removeAttr("disabled");
+                            $('#id_goods_area').append('<option value="'+elem['id_goods_area']+'" >'+elem['title']+'</option>');
+                        });
+                    }else
+                    {
+                        alert(data.msg);
+                        $('#id_goods_area').attr("disabled","disabled");
+                    }
+
+                }
+            });
+        }
+    });
+    $("#add_btn").click(function(){
+        var id_warehouse = $('#id_warehouse option:selected').val();
+        var id_goods_area = $('#id_goods_area option:selected').val();
+        var goods_name = $('#goods_name').val();
+        var reg = /^([A-Za-z])([A-Za-z])(-)(\d{2})(-)(\d{2})$/;
+        var a =  goods_name.match(reg);
+
+        if(id_warehouse=='0')
+        {
+            alert('请选择仓库');
+            return false;
+        }
+        if(id_goods_area==null)
+        {
+            alert('没有货位区域名称，不能提交');
+        }
+        if(goods_name==null)
+        {
+            alert('没有货位名称，不能提交');
+        }
+        if(a==null)
+        {
+            alert('货位名称有误，请重新输入');
+            return false;
+        }
+        if(id_warehouse&&id_goods_area&&goods_name){
+            var flag = true;
+            $.ajax({
+                url:"{:U('Position/select_find')}",
+                type:'get',
+                dataType:'json',
+                data:{'id_goods_area':id_goods_area,'goods_name':goods_name,'id_warehouse':id_warehouse},
+                success:function(data){
+                    if(data.flag==0){
+                        console.log(data);
+                        $('form').submit();
+                    }else{
+                        console.log(data);
+                        alert(data.msg);
+                         flag = false;
+                    }
+                }
+            });
+            return flag;
+        }else
+          return false;
+    })
+</script>
+</body>
+</html>

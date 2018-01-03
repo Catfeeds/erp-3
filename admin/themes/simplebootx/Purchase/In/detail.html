@@ -1,0 +1,202 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="fixedlayer" style="height: 40px;">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Purchase/In/detail')}">入库明细查询</a></li>
+    </ul>
+</div>
+<div class="wrap">
+    <div class="customerlayer" style="height: 300px;">
+        <form method="get" action=""  class="form-search" style="margin-top: -80px;">
+             <div class="searchLayer" style="padding:20px;background-color: #ecf0f1;">
+                <table cellspacing="1">
+                    <tr>
+                        <td class="th">部门：</td>
+                        <td>
+                            <select name="id_department" style="width:100px;height:30px">
+                                <option value="0">所有</option>
+                                <foreach name="data['departments']" item="item">
+                                    <option value="{$item.id_department}" <php>echo isset($_GET['id_department']) && $_GET['id_department']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                                </foreach>
+                            </select>
+                        </td>
+                        <td class="th">仓库：</td>
+                        <td>
+                            <select name="id_warehouse" style="width:120px;height:30px">
+                                <option value="0">所有</option>
+                                <foreach name="data['warehouses']" item="item">
+                                    <option value="{$item.id_warehouse}" <php>echo isset($_GET['id_warehouse']) && $_GET['id_warehouse']==$item['id_warehouse'] ? 'selected' : ''</php>>{$item.title}</option>
+                                </foreach>
+                            </select>
+                        </td>
+                        <td class="th">状态：</td>
+                        <td>
+                            <select name="status" style="width:120px;height:30px">
+                                <option value="0">所有</option>
+                                <option value="1" <php>echo !isset($_GET['status'])||$_GET['status']==1?'selected':'';</php>>未入库</option>
+                                <option value="2" <php>echo isset($_GET['status'])&&$_GET['status']==2?'selected':'';</php>>已入库</option>
+                                <option value="3" <php>echo isset($_GET['status'])&&$_GET['status']==3?'selected':'';</php>>部分入库</option>
+                            </select>
+                        </td>
+                        <td class="th">制单时间：</td>
+                        <td colspan="2" style="white-space:nowrap;">
+                            <input type="text" name="start_time" class="js-datetime" value="<php>echo $_GET['start_time']</php>" style="width: 120px;" autocomplete="off">-
+                            <input type="text" class="js-datetime" name="end_time" value="<php>echo $_GET['end_time'];</php>" style="width: 120px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="th">采购单号：</td>
+                        <td>
+                            <input type="text" name="purchase_no" value="{$_GET['purchase_no']}"/>
+                        </td>
+                        <td class="th">内部采购单号：</td>
+                        <td>
+                            <input type="text" name="inner_purchase_no" value="{$_GET['inner_purchase_no']}"/>
+                        </td>
+                        <td class="th">SKU：</td>
+                        <td>
+                            <input type="text" name="sku" value="{$_GET['sku']}"/>
+                        </td>
+                        <td class="th">采购渠道订单号：</td>
+                        <td colspan="2" style="white-space:nowrap;">
+                            <input type="text" name="alibaba_no" value="{$_GET['alibaba_no']}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="th">单据类型：</td>
+                        <td>
+                            <select name="billtype" style="width:120px;height:30px">
+                                <option value="0">所有</option>
+                                <option value="1" <php>echo !isset($_GET['billtype'])||$_GET['billtype']==1?'selected':'';</php>>采购入库</option>
+                                <option value="2" <php>echo isset($_GET['billtype'])&&$_GET['billtype']==2?'selected':'';</php>>采购退货</option>
+                            </select>
+                        </td>
+                        <td class="th">采购快递单号：</td>
+                        <td>
+                            <input type="text" name="shipping_no" value="{$_GET['shipping_no']}"/>
+                        </td>
+                        <td class="th">产品内部名：</td>
+                        <td>
+                            <input type="text" name="inner_name" value="{$_GET['inner_name']}">
+                        </td>
+                        <td class="th">入库日期：</td>
+                        <td colspan="2" style="white-space:nowrap;">
+                            <input type="text" name="start_intime" class="js-datetime" value="<php>echo $_GET['start_intime']</php>" style="width: 120px;" autocomplete="off">-
+                            <input type="text" class="js-datetime" name="end_intime" value="<php>echo $_GET['end_intime'];</php>" style="width: 120px;">
+                        </td>
+
+                    </tr>
+                    <tr>
+
+                    </tr>
+                </table>
+                 <br/>
+                 <button class="btn btn-primary searchButton">搜索</button>
+            </div>
+
+        </form>
+        <div class="ctab-panel">
+            <div class="ctab-head">
+                <a href="{:U('Purchase/In/index')}" >采购入库单列表</a>
+                <a href="{:U('Purchase/In/detail')}" class="active">入库明细查询</a>
+            </div>
+            <div class="ctab-body">
+                <div class="tableLayer">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>制单日期</th>
+                                <th>入库日期</th>
+                                <th>单据类型</th>
+                                <th>所属仓库</th>
+                                <th>所属部门</th>
+                                <th>创建的员工</th>
+                                <th>供应商</th>
+                                <th>采购单号</th>
+                                <th>内部采购单号</th>
+                                <th>采购渠道订单号</th>
+                                <th>采购快递订单号</th>
+                                <th>产品内部名</th>
+                                <th>SKU</th>
+                                <th>属性值</th>
+                                <th>采购单价</th>
+                                <th>采购数量</th>
+                                <th>到货数量</th>
+                                <!--<th>采购总数量</th>-->
+                                <!--<th>采购收到总数量</th>-->
+                                <!--<th>采购总价格</th>-->
+                                <!--<th>本次采购运费</th>-->
+                                <!--<th>快递单号</th>-->
+                                <th>采购状态</th>
+                                <th>预计发货时间</th>
+                                <th>预计到货时间</th>
+                                <th>建立日期 </th>
+                                <th>更新日期  </th>
+                                <th>入库人</th>
+                                <th>采购渠道</th>
+                                <th>备注</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <foreach name="data['purchase_lists']" item="purchase_list">
+                                <tr>
+                                    <td>{$purchase_list['id_purchaseinitem']}</td>
+                                    <td>{$purchase_list['billdate']}</td>
+                                    <td>{$purchase_list['intime']}</td>
+                                    <td>{$purchase_list['billtype']}</td>
+                                    <td>{$purchase_list['id_warehouse']}</td>
+                                    <td>{$purchase_list['id_department']}</td>
+                                    <td>{$purchase_list['id_users']}</td>
+                                    <td>{$purchase_list['id_supplier']}</td>
+                                    <td>{$purchase_list['purchase_no']}</td>
+                                    <td>{$purchase_list['inner_purchase_no']}</td>
+                                    <td>{$purchase_list['alibaba_no']}</td>
+                                    <td>{$purchase_list['shipping_no']}</td>
+                                    <td>{$purchase_list['inner_name']}</td>
+                                    <td>{$purchase_list['sku']}</td>
+                                    <td>{$purchase_list['option_value']}</td>
+                                    <td>{$purchase_list['price']}</td>
+                                    <td>{$purchase_list['quantity']}</td>
+                                    <td>{$purchase_list['received']}</td>                                    <!--<td>{$purchase_list['total']}</td>-->
+                                    <!--<td>{$purchase_list['total_received']}</td>-->
+                                    <!--<td>{$purchase_list['price']}</td>-->
+                                    <!--<td>{$purchase_list['price_shipping']}</td>-->
+                                    <!--<td>{$purchase_list['track_number']}</td>-->
+                                    <td>{$purchase_list['status']}</td>
+                                    <td>{$purchase_list['date_from']}</td>
+                                    <td>{$purchase_list['date_to']}</td>
+                                    <td>{$purchase_list['created_at']}</td>
+                                    <td>{$purchase_list['updated_at']}</td>
+                                    <td>{$purchase_list['inerid']}</td>
+                                    <td>{$purchase_list['purchase_channel']}</td>
+                                    <td>{$purchase_list['remark']}</td>
+
+                                </tr>
+                            </foreach>
+                        </tbody>
+                    </table>
+                </div>
+               <div class="pagination">{$page}</div>
+                <div style="margin-bottom:5%"></div>
+                   <!--<input type="text" value="" name="displayRow" placeholder="输入每页显示数">
+                    <input type="button" class="btn btn-small submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">-->
+                <!--</div>-->
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('Purchase/In/detail')}");
+        $('.form-search') .submit();
+    });
+</script>
+</body>
+</html>

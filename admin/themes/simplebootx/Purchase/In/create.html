@@ -1,0 +1,157 @@
+<admintpl file="header" />
+</head>
+<body>
+<div class="fixedlayer" style="height:20px">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:U('Purchase/In/create')}">新增采购入库单</a></li>
+    </ul>
+</div>
+<div class="wrap">
+    <div class="customerlayer" style="margin-top:-80px">
+       <form method="get" action=""  class="form-search">
+        <div class="searchLayer" style="padding:20px;background-color: #ecf0f1;">
+                <table cellspacing="1">
+                    <tr>
+                        <td class="th">部门：</td>
+                        <td>
+                            <select name="id_department" style="width:100px;height:30px">
+                            <option value="0">所有</option>
+                            <foreach name="data['departments']" item="item">
+                                <option value="{$item.id_department}" <php>echo isset($_GET['id_department']) && $_GET['id_department']==$item['id_department'] ? 'selected' : ''</php>>{$item.title}</option>
+                            </foreach>
+                            </select>
+                        </td>
+                        <td class="th">仓库：</td>
+                        <td>
+                            <select name="id_warehouse" style="width:120px;height:30px">
+                                <option value="0">所有</option>
+                                <foreach name="data['warehouses']" item="item">
+                                    <option value="{$item.id_warehouse}" <php>echo isset($_GET['id_warehouse']) && $_GET['id_warehouse']==$item['id_warehouse'] ? 'selected' : ''</php>>{$item.title}</option>
+                                </foreach>
+                            </select>
+                        </td>
+                        <td class="th">状态：</td>
+                        <td>
+                            <select name="status" style="width:120px;height:30px">
+                            <option value="0">所有</option>
+                            <foreach name="data['pur_status']" item="item">
+                                <option value="{$item.id_purchase_status}" <php>echo (isset($_GET['status']) && $_GET['status']==$item['id_purchase_status'])||(!isset($_GET['status']) && $item['id_purchase_status']==5) ? 'selected' : ''</php>>{$item.title}</option>
+                            </foreach>
+                             </select>
+                        </td>
+                        <td class="th">创建时间：</td>
+                        <td>
+                            <input type="text" name="start_time" class="js-datetime" value="<php>echo $_GET['start_time'];</php>" style="width: 120px;" autocomplete="off">-
+                            <input type="text" class="js-datetime" name="end_time" value="<php>echo $_GET['end_time'];</php>" style="width: 120px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="th">采购单号：</td>
+                        <td>
+                            <input type="text" name="purchase_no" value="{$_GET['purchase_no']}"style="width:150px"/>
+                        </td>
+                        <td class="th">内部采购单号：</td>
+                        <td>
+                            <input type="text" name="inner_purchase_no" value="{$_GET['inner_purchase_no']}"/>
+                        </td>
+                       <td class="th">采购渠道订单号：</td>
+                        <td>
+                            <input type="text" name="alibaba_no" value="{$_GET['alibaba_no']}"/>
+                        </td>
+                        <td class="th">采购快递单号：</td>
+                        <td>
+                            <input type="text" name="shipping_no" value="{$_GET['shipping_no']}"/>
+                        </td>
+                    </tr>
+                </table>
+                <br/>
+               <button class="btn btn-primary searchButton">搜索</button>
+            <a class="btn" href="{:U('In/index')}">{:L('BACK')}</a>
+         </div>
+       </form>
+        <!--  -->
+        <div class="ctab-panel">
+            <div class="ctab-head">
+                <a href="{:U('Purchase/In/create')}" class="active">新增采购单列表</a>
+                <!--<a href="{:U('Purchase/In/detail')}">采购单明细查询</a>-->
+            </div>
+            <div class="ctab-body">
+                <div class="tableLayer">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>操作</th>
+                                <th>所属仓库</th>
+                                <th>所属部门</th>
+                                <th>创建的员工</th>
+                                <th>供应商</th>
+                                <th>采购单号</th>
+                                <th>内部采购单号</th>
+                                <th>采购渠道订单号</th>
+                                <th>采购快递单号</th>
+                                <th>采购总数量</th>
+                                <th>采购收到总数量</th>
+                                <th>采购总价格</th>
+                                <th>本次采购运费</th>
+                                <th>快递单号</th>
+                                <th>采购状态</th>
+                                <th>预计发货时间</th>
+                                <th>预计到货时间</th>
+                                <th>建立日期 </th>
+                                <th>更新日期  </th>
+                                <th>采购渠道</th>
+                                <th>备注</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <foreach name="data['purchase_lists']" item="purchase_list">
+                                <tr>
+                                    <td>{$purchase_list['id_purchase']}</td>
+                                    <td><a href="{:U('In/add',array('id'=>$purchase_list['id_purchase']))}">新增</a></td>
+                                    <td>{$purchase_list['id_warehouse']}</td>
+                                    <td>{$purchase_list['id_department']}</td>
+                                    <td>{$purchase_list['id_users']}</td>
+                                    <td>{$purchase_list['id_supplier']}</td>
+                                    <td>{$purchase_list['purchase_no']}</td>
+                                    <td>{$purchase_list['inner_purchase_no']}</td>
+                                    <td>{$purchase_list['alibaba_no']}</td>
+                                    <td>{$purchase_list['shipping_no']}</td>
+                                    <td>{$purchase_list['total']}</td>
+                                    <td>{$purchase_list['total_received']}</td>
+                                    <td>{$purchase_list['price']}</td>
+                                    <td>{$purchase_list['price_shipping']}</td>
+                                    <td>{$purchase_list['track_number']}</td>
+                                    <td>{$purchase_list['status']}</td>
+                                    <td>{$purchase_list['date_from']}</td>
+                                    <td>{$purchase_list['date_to']}</td>
+                                    <td>{$purchase_list['created_at']}</td>
+                                    <td>{$purchase_list['updated_at']}</td>
+                                    <td>{$purchase_list['purchase_channel']}</td>
+                                    <td>{$purchase_list['remark']}</td>
+                                </tr>
+                            </foreach>
+                        </tbody>
+                    </table>
+                </div>
+               <div class="pagination">{$page}</div>
+                   <!-- <input type="text" value="" name="displayRow" placeholder="输入每页显示数">-->
+                    <!--<input type="button" class="btn btn-small submitDisplayRow" style="height: 30px;margin-top:-9px;" value="确定">-->
+                <!--</div>-->
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script type="text/javascript">
+    $('.searchButton').click(function(){
+        $('.form-search input[name=a]').attr('value','index');
+        $('.form-search').attr('action',"{:U('Purchase/In/create')}");
+        $('.form-search') .submit();
+    });
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<admintpl file="header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:U('Index/index')}">{:L('邮件队列管理')}</a></li>
+			<li><a href="{:U('Index/add')}">{:L('添加邮件')}</a></li>
+		</ul>
+        <form method="post" class="form-horizontal js-ajax-form" action="{:U('Index/index')}">
+			<table class="table table-hover table-bordered">
+				<thead>
+					<tr>
+						<th width="30"></th>
+						<th align="left">域名</th>
+						<th align="left">发送人邮箱</th>
+						<th align="left">收件人邮箱</th>
+						<th align="left">标题</th>
+						<th align="left">邮件类型</th>
+                        <th align="left">错误次数</th>
+                        <th align="left">错误消息</th>
+						<th align="left">添加时间</th>
+						<th align="left">发送时间</th>
+                        <th align="left">成功发送</th>
+						<th width="120">操作</th>
+					</tr>
+					<tr>
+						<th width="30">ID</th>
+						<th align="left">
+                            <input type="text" name="name" style="width:80px;" value="{$Think.post.name}"/>
+						</th>
+						<th align="left"></th>
+						<th align="left">
+                            <input type="text" name="from_addr" style="width:80px;" value="{$Think.post.from_addr}"/>
+                        </th>
+						<th align="left">
+                            <input type="text" name="subject" style="width:80px;" value="{$Think.post.subject}"/>
+                        </th>
+						<th align="left"></th>
+						<th align="left"></th>
+						<th align="left"></th>
+						<th align="left"></th>
+						<th align="left"></th>
+						<th align="left"></th>
+						<th width="120">
+                            <button type="submit" class="btn btn-primary btn-small">搜索</button>
+                        </th>
+					</tr>
+				</thead>
+				<tbody>
+					<foreach name="queues" item="vo">
+					<tr>
+						<td>{$vo.id_mail_queue}</td>
+						<td>{$vo.name}</td>
+						<td>{$vo.from_addr}</td>
+						<td>{$vo.to_addr}</td>
+                        <td>{$vo.subject}</td>
+                        <td>{$vo.type}</td>
+                        <td>{$vo.err_count}</td>
+                        <td>{$vo.err_msg|substr=0,23}</td>
+                        <td>
+                            <if condition="$vo['created_at'] neq ''">
+                                {$vo.created_at}
+                            </if>
+                        </td>
+                        <td>
+                            <if condition="$vo['date_send'] neq ''">
+                                {$vo.date_send|date='Y-m-d H:i:s',###}
+                            </if>
+                        </td>
+                        <td>
+                            <if condition="$vo['status'] eq 1">
+                                <font color="red">╳</font>
+                                <else />
+                                <font color="red">√</font>
+                            </if>
+                        </td>
+						<td>
+
+
+							<!-- <a href="javascript:open_iframe_dialog('{:U('domain/member',array('id'=>$vo['id']))}','成员管理');">成员管理</a>| -->
+							<a href="{:U('Index/edit',array('id'=>$vo['id_mail_queue']))}">{:L('EDIT')}</a>|
+							<a class="js-ajax-delete" href="{:U('Index/delete',array('id'=>$vo['id_mail_queue']))}">{:L('DELETE')}</a>|
+                                                        <a href="{:U('Index/manual_send',array('id'=>$vo['id_mail_queue']))}">{:L('手动发送')}</a>
+
+						</td>
+					</tr>
+					</foreach>
+				</tbody>
+			</table>
+            <div class="pagination">{$Page}</div>
+		</form>
+	</div>
+	<script src="__PUBLIC__/js/common.js"></script>
+</body>
+</html>
